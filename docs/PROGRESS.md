@@ -38,14 +38,13 @@ awaits its cross-model review (SPEC H1).
 | Second `pnpm build` | 103 ms, FULL TURBO | cache hit |
 | Playwright smoke, 6 projects | 5.7 s, all passing | green |
 | arm64 agent under QEMU | `lumen-agent 0.0.0-dev (455ae03, …, linux/arm64)` | prints version |
+| Fresh clone → `db: ok` following README.md | 23 s (clone 5 s, install 9 s with a warm store, infra 2 s, API ready 5 s, web ready 2 s) | < 5 min |
 
 ## Next
 1. Cross-model review of Phase 0 with SPEC H1 (the six probes in
    `docs/phases/PHASE-00-foundations.md` §9); fix findings.
-2. Remove `continue-on-error` from the `buf breaking` CI step now that `main`
-   carries the first proto.
-3. Decide `docs/DECISIONS.md` 0003 (visual tokens) and skim `docs/SPEC_QUESTIONS.md`.
-4. Phase 1 — Design system: paste the session prompt from
+2. Decide `docs/DECISIONS.md` 0003 (visual tokens) and skim `docs/SPEC_QUESTIONS.md`.
+3. Phase 1 — Design system: paste the session prompt from
    `docs/phases/PHASE-01-design-system.md` §12 into a fresh session.
 
 ## Known gaps

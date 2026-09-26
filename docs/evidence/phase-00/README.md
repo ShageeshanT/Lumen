@@ -17,7 +17,7 @@ from the repository root unless noted.
 | Geist Sans and Mono self-hosted | Two `woff2` preloads from `/_next/static/media/`, no font CDN hosts, `size-adjust` fallbacks present |
 | Proto round trip byte-identical Go ↔ TS | `packages/protocol/roundtrip_test.go` writes `testdata/agent_hello.bin` (137 bytes); `src/roundtrip.test.ts` decodes and re-encodes it to equal bytes |
 | Every J6 code in the catalog with voice tests | `packages/shared/src/errors/catalog.test.ts`: 26 codes × 2 contexts, all rules pass |
-| Fresh clone to `db: ok` under five minutes | Timed run recorded in PROGRESS.md |
+| Fresh clone to `db: ok` under five minutes | 23 s: `git clone` 5 s, `pnpm install --frozen-lockfile` 9 s (warm store), `pnpm dev:infra` 2 s, `/v1/health` reporting `db: ok` 5 s after `pnpm dev`, `:3000` 2 s later |
 | DECISIONS.md entries | 0005–0024 |
 
 ## Go binaries

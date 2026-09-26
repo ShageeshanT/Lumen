@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 
 import { fetchHealth, type HealthState } from "@/lib/api";
 
+/** How often the line refreshes. Cheap, and "everything is live" (SPEC C3). */
+const POLL_INTERVAL_MS = 5_000;
+
 function describe(state: HealthState): string {
   switch (state.kind) {
     case "loading":
@@ -21,13 +24,18 @@ export function HealthLine() {
 
   useEffect(() => {
     let cancelled = false;
-    void fetchHealth().then((next) => {
-      if (!cancelled) {
-        setState(next);
-      }
-    });
+    const refresh = () => {
+      void fetchHealth().then((next) => {
+        if (!cancelled) {
+          setState(next);
+        }
+      });
+    };
+    refresh();
+    const timer = setInterval(refresh, POLL_INTERVAL_MS);
     return () => {
       cancelled = true;
+      clearInterval(timer);
     };
   }, []);
 

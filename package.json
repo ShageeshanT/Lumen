@@ -9,7 +9,7 @@
     "node": ">=22 <25"
   },
   "scripts": {
-    "dev": "turbo run dev --parallel",
+    "dev": "turbo run dev",
     "dev:infra": "docker compose -f docker-compose.dev.yml up -d --wait",
     "build": "turbo run build",
     "build:go": "bash scripts/build-go.sh",

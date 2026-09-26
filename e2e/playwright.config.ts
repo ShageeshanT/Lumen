@@ -25,13 +25,28 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: { maxDiffPixelRatio: 0.002 },
   },
-  webServer: {
-    command: "pnpm dev",
-    cwd: "..",
-    url: "http://localhost:3000",
-    reuseExistingServer: !isCi,
-    timeout: 180_000,
-  },
+  // Both servers are started (or reused when already running). The API entry
+  // waits for /v1/health to answer 200, so tests never start against a server
+  // whose database is still coming up (503 keeps Playwright waiting).
+  webServer: [
+    {
+      command: "pnpm --filter @lumen/api dev",
+      cwd: "..",
+      url: "http://localhost:4000/v1/health",
+      reuseExistingServer: !isCi,
+      timeout: 180_000,
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+    {
+      command: "pnpm --filter @lumen/web dev",
+      cwd: "..",
+      url: "http://localhost:3000",
+      reuseExistingServer: !isCi,
+      timeout: 180_000,
+      stderr: "pipe",
+    },
+  ],
   projects: Object.entries(viewports).flatMap(([size, viewport]) =>
     schemes.map((colorScheme) => ({
       name: `${size}-${colorScheme}`,
