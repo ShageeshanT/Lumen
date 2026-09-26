@@ -390,72 +390,77 @@ Lumen's look is its own. Design from the tokens and principles below. Do not ref
 9. **Spatial memory.** Canvas positions persist. Things stay where the user put them.
 10. **Fast feels simple.** Optimistic updates, skeletons instead of spinners, prefetching, no layout shift.
 
-### C4. Design tokens (original identity: "calm graphite + aurora teal")
+### C4. Design tokens (identity: "Signal", an instrument panel)
+
+Chosen 2026-09-26 by the owner from their own reference images (Direction D in
+`docs/design/directions/`). The source of truth for every value is
+`packages/ui/src/tokens/*.css`; `docs/UI_DECISIONS.md` records why each one
+changed from the original "calm graphite + aurora teal" proposal.
+
+**Character:** a precise instrument. Near-black field with a fine grid, one
+electric-blue signal, a blue-violet glow behind the focal object, square corners,
+corner brackets, uppercase mono labels, pixel display titles. Everything else is
+measured and labelled. Motion says the system is live.
 
 **Dark theme (default)**
 
 | Token | Value | Use |
 |---|---|---|
-| `bg` | `#0D0F12` | App background |
-| `bg-canvas` | `#0B0D10` with dot grid `#1A1E23` (24px) | Canvas |
-| `surface` | `#14171B` | Cards, panels |
-| `surface-raised` | `#1B1F24` | Popovers, menus, modals |
-| `surface-hover` | `#20252B` | Row/card hover |
-| `border` | `#262B31` | Default borders |
-| `border-strong` | `#343A42` | Focused/selected borders |
-| `text` | `#E8EAED` | Primary text |
-| `text-secondary` | `#9BA3AD` | Labels, meta |
-| `text-muted` | `#646C76` | Placeholders, disabled |
-| `accent` | `#14B8A6` | Primary buttons, links, focus |
-| `accent-hover` | `#2DD4BF` | Hover |
-| `accent-subtle` | `rgba(20,184,166,0.12)` | Selected backgrounds |
-| `success` | `#22C55E` | Active/healthy |
-| `warning` | `#F59E0B` | Building/deploying, warnings |
-| `danger` | `#EF4444` | Failed/crashed, destructive |
-| `info` | `#3B82F6` | Informational |
-| `sleeping` | `#64748B` | Sleeping/stopped |
+| `bg` | `#050608` | App background |
+| `bg-canvas` | `#040506` with an 8 px grid `#0F1318` and a 96 px major grid `#161B22`, plus a vignette | Canvas |
+| `surface` | `#0A0C10` | Cards, panels |
+| `surface-raised` | `#0F1217` | Popovers, menus, modals |
+| `surface-hover` | `#151920` | Row/card hover |
+| `border` | `#1E232B` | Default borders |
+| `border-strong` | `#353C47` | Brackets, dashed groups, hover borders |
+| `text` | `#E9ECF2` | Primary text |
+| `text-secondary` | `#8C94A3` | Labels, meta |
+| `text-muted` | `#545B67` | Placeholders, disabled, bracket glyphs only |
+| `accent` | `#5B7CFF` | Signal: focus, selection, live data, links (non-text) |
+| `accent-text` | `#7B93FF` | Accent-colored text |
+| `accent-fill` / `accent-ink` | `#3D5AFE` / `#FFFFFF` | Filled accent surfaces (switch on, checkbox) |
+| `glow-a` / `glow-b` | blue 22 %, violet 16 % | Light field behind the focal object |
+| `success` / `-text` | `#2BD97C` | Active, healthy |
+| `warning` / `-text` | `#F5B83D` | Building, deploying, warnings |
+| `danger` / `-text` | `#FF4D5E` / `#FF6B78` | Failed, crashed, destructive |
+| `info` / `-text` | `#5B9BFF` / `#7AB0FF` | Informational |
+| `sleeping` / `-text` | `#6B7280` / `#9AA3B2` | Sleeping, stopped |
 
-**Light theme**
+**Light theme ("blueprint paper")**: `bg #F3F4F6`, surface `#FFFFFF`, border
+`#DCDFE5` / `#B5BBC6`, text `#07090D` / `#4E5663`, accent `#3D5AFE` (text
+`#2A44D6`), status text tiers `#166534`, `#92400E`, `#B91C1C`, `#1D4ED8`, `#475569`.
 
-| Token | Value |
-|---|---|
-| `bg` | `#F7F7F5` |
-| `bg-canvas` | `#F3F3F0`, dots `#DEDDD8` |
-| `surface` | `#FFFFFF` |
-| `surface-raised` | `#FFFFFF` + shadow |
-| `border` | `#E4E3DF` |
-| `text` | `#16181B` |
-| `text-secondary` | `#5B626B` |
-| `accent` | `#0D9488` |
+Every `-text` token holds 4.5:1 and every base status color 3:1 on all four
+surfaces in both themes (tested).
 
-**Typography:** Geist Sans for UI, Geist Mono for logs, variables, IDs and code (verify the license, SIL OFL, at build time).
-- Scale: 12 / 13 / **14 (base)** / 16 / 20 / 24 / 32
-- Weights: 400 / 500 / 600
-- Line-height: 1.5 for body, 1.25 for headings
-- Tabular numerals for metrics and durations
+**Typography:** three voices, all SIL OFL.
+- Geist Pixel Square for display, page and section titles (uppercase, +0.02em, line-height 1.1)
+- Geist Mono for identifiers, values, logs and, in uppercase with +0.08em tracking at 11 px, for chrome: labels, buttons, tags, nav, section numbers
+- Geist Sans for anything read as a sentence (messages, descriptions, helper text, errors); never uppercase
+- Scale: 11 / 12 / 13 / **14 (base)** / 16 / 20 / 24 / 32. Weights 400 / 500 / 600. Tabular numerals for metrics and durations.
 
 **Spacing and shape**
 - Spacing: 4px grid (4, 8, 12, 16, 20, 24, 32, 48, 64)
-- Radius: 6 (inputs, buttons), 10 (cards), 14 (modals, panels), full (pills)
-- Elevation: dark theme uses borders plus subtle inner highlight; light theme uses soft shadows (`0 1px 2px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.06)`)
+- Radius: 2 (controls, cards, kbd), 4 (modals, panels), full only for avatars
+- HUD corner brackets (`.hud`) frame focal boxes; they spread 3 px on hover
+- Elevation: dark uses borders and an accent glow on the selected object only; light uses soft shadows
 
 **Motion**
-- 120ms ease-out for hovers and presses
-- 200ms `cubic-bezier(.2,.8,.2,1)` for panels and modals
-- Springs for canvas node moves
-- Status dots pulse softly while building
-- Always respect `prefers-reduced-motion`
+- 120ms ease-out for hovers and presses; 200ms `cubic-bezier(.2,.8,.2,1)` for panels and modals; springs for canvas node moves
+- Entrance: each element reveals in 240ms with a 45ms stagger (a screen assembles in under 700ms); a page title may decode once in under 360ms
+- Ambient: data flows along edges (1.4s loop), the glow breathes (9s), building markers blink like an LED (1.6s)
+- Nothing else exceeds 300ms. Everything above stops under `prefers-reduced-motion` and the account preference; the spinner keeps turning
 
-**Status language (always icon + color + text, never color alone)**
-- ● Active (success)
-- ◐ Building / Deploying (warning, pulsing)
+**Status language (always marker + color + text, never color alone)**, written as bracket tags `[ ■ ACTIVE ]` with a 6 px square marker
+- ■ Active (success)
+- ■ Building / Deploying (warning, marker blinks)
 - ✕ Failed (danger)
 - ⟳ Crashed, restarting (danger)
 - ☾ Sleeping (sleeping)
 - ■ Stopped (muted)
 - … Queued (muted)
 
-**Icons:** Lucide for UI. Framework/language icons auto-detected per service (Node, Python, Go, Rust, Ruby, PHP, Java, .NET, Deno, Bun, static). Use an icon set whose license permits it, and record it in DECISIONS.md.
+**Icons:** Lucide (ISC) at 14 / 16 / 20 px with stroke 1.5 and square caps and joins. Framework/language icons auto-detected per service (Node, Python, Go, Rust, Ruby, PHP, Java, .NET, Deno, Bun, static). Use an icon set whose license permits it, and record it in DECISIONS.md.
 
 ### C5. Component library (`packages/ui`, with a live gallery at `/dev/components`)
 - **Buttons:** primary, secondary, ghost, danger; sizes sm/md; loading state; icon-only with tooltip
@@ -466,7 +471,7 @@ Lumen's look is its own. Design from the tokens and principles below. Do not ref
 - **Overlays:** Command palette (⌘K), Dropdown menu, Context menu, Popover, Tooltip, Modal, Confirm dialog (typed confirmation variant), Side panel/drawer (resizable), Sheet (mobile)
 - **Navigation:** Tabs (underline, with counts), Breadcrumbs, Environment switcher, Workspace switcher
 - **Feedback:** Toasts (with action + undo), Inline alert/banner (info/warn/danger with action button), Progress steps (deploy timeline), Skeletons, Empty state (icon, title, one sentence, primary action)
-- **Status:** Status pill/dot (C4 status language), Badge, Avatar, Avatar stack, Kbd (shortcut hint)
+- **Status:** Status tag and marker (C4 status language), Badge, Avatar, Avatar stack, Kbd (shortcut hint)
 - **Data display:** Data table (sortable, virtualized, row actions), Charts (line/area with synced crosshair, limit line), Code block / terminal (xterm), Diff viewer (for staged changes and config)
 - **Specialized:**
   - **Log viewer:** virtualized, ANSI colors, JSON expand, level colors, search highlight, pause-on-scroll, "Jump to live"

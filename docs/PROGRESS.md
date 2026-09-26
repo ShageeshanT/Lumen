@@ -3,7 +3,7 @@
 _Updated: 2026-09-26_
 
 ## Current phase
-Phase 1 — Design direction and design system. In progress (sessions 1–2 of 7
+Phase 1 — Design direction and design system. In progress (sessions 1–3 of 7
 done). **Direction chosen: D "Signal"** (owner's reference images, 2026-09-26),
 and its tokens, type, surfaces and motion are live in `@lumen/ui`. Phase 0
 awaits its cross-model review (SPEC H1).
@@ -24,6 +24,12 @@ awaits its cross-model review (SPEC H1).
 - Gallery: Tokens (live contrast table), Typography, Signal surfaces pages.
 - Playwright: smoke + theme specs, 42 runs across 6 projects, including no-flash
   at 6× CPU throttle and a guard that color utilities override text styles.
+- Session 3: SPEC C4 rewritten to Signal. Icon (83-icon Lucide allowlist, Signal
+  stroke), LumenMark, the status model, StatusMarker, StatusTag, Button,
+  IconButton, Spinner, Tooltip, Kbd, Badge, Avatar. Gallery registry with a page
+  per component; registry.json; gallery spec with 156 element screenshots
+  (26 examples × 6 projects), axe on every page, tooltip-on-focus and
+  reduced-motion checks. 124 unit tests, 66 Playwright tests.
 
 ## Done
 - 2026-09-26 — Repository initialized. Spec saved as `docs/SPEC.md`. `CLAUDE.md`
@@ -61,15 +67,17 @@ awaits its cross-model review (SPEC H1).
 | Fresh clone → `db: ok` following README.md | 23 s (clone 5 s, install 9 s with a warm store, infra 2 s, API ready 5 s, web ready 2 s) | < 5 min |
 
 ## Next
-1. Update SPEC C4 to the Direction D values (SPEC_QUESTIONS 40–41) so the spec
-   stays the source of truth before Phase 5.
-2. Phase 1 sessions 3–7 in the Signal language: icons (Lucide at stroke 1.5 with
-   square caps, status markers), then components group by group (buttons with
-   HUD brackets, form controls, overlays, navigation, feedback, status tags,
-   data display, canvas node / edge / group with leader lines and edge flow), the
-   `Decode` title component, the gallery registry and the screenshot / axe /
-   keyboard specs.
-3. Cross-model review of Phase 0 (SPEC H1) and Phase 1 (SPEC H2).
+1. Phase 1 sessions 4–7 in the Signal language: form controls (input, select,
+   combobox, switch, checkbox, radio, segmented control, slider, key-value editor,
+   copy and secret fields, field), overlays (command palette, dropdown and
+   context menus, popover, modal, confirm dialog, side panel, sheet, split
+   button), navigation (tabs, breadcrumbs, environment and workspace switchers,
+   rail, top bar), feedback (toast, alert, progress steps, skeleton, empty state,
+   error card), data display (table, chart, code block, terminal frame, diff),
+   specialized (log viewer, canvas node / volume / group / edge, stepper, DNS and
+   port-check cards), framework icons, the Decode title component, the keyboard
+   spec.
+2. Cross-model review of Phase 0 (SPEC H1) and Phase 1 (SPEC H2).
 
 ## Known gaps
 - Screenshot baselines exist for Windows only; CI runs the smoke test with

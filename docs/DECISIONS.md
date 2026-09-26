@@ -336,3 +336,47 @@ surface and elevation classes in `@layer components`, so Tailwind utilities
 always override them.
 **Why:** Unlayered styles beat layered utilities; a color utility on a text-styled
 element was being ignored. Guarded by a Playwright test.
+
+## 0034 · 2026-09-26 · Radix primitives, added one at a time
+**Decision:** `@radix-ui/react-slot` 1.3.3 (MIT) for `asChild` and
+`@radix-ui/react-tooltip` 1.2.16 (MIT) for tooltips, pinned in the catalog.
+Further primitives (dialog, dropdown, popover, tabs, select…) are added with the
+components that need them.
+**Why:** SPEC tech stack; accessible behavior (focus, Escape, collision
+handling) without re-implementing it.
+
+## 0035 · 2026-09-26 · tailwind-merge configured with Lumen's theme
+**Decision:** `cn()` uses `extendTailwindMerge` with Lumen's color names, text
+sizes, radii, fonts, tracking and leading, plus a `text-style` class group for
+the named text styles.
+**Why:** The default config treats unknown `text-*` classes as colors, so
+`cn("text-action", "text-success-text")` silently dropped the text style.
+Unit-tested.
+
+## 0036 · 2026-09-26 · Tailwind scans packages/ui explicitly; forced-state variants
+**Decision:** `globals.css` adds `@source "../../../../packages/ui/src"` and three
+custom variants, `is-hover`, `is-active`, `is-focus`, which match the real
+pseudo-class or `data-force~="hover|active|focus"`. The global focus ring also
+matches `[data-force~="focus"]`.
+**Why:** Tailwind's automatic source detection ignores workspace links, so
+classes used only inside `packages/ui` were never generated. The forced
+variants let the gallery render hover, pressed and focus states for screenshots
+without a pointer.
+
+## 0037 · 2026-09-26 · Gallery registry drives pages, screenshots and axe
+**Decision:** Each component ships `<name>.examples.tsx` exporting a
+`ComponentDoc`; `COMPONENT_DOCS` in `@lumen/ui/examples` lists them in order.
+The gallery nav and `/dev/components/[slug]` render from it,
+`/dev/components/registry.json` exposes it, and `e2e/tests/gallery.spec.ts`
+screenshots every example element in all six projects and runs axe on every
+page. A unit test fails if an exported component has no gallery page.
+**Why:** One list means a new component cannot ship without states, screenshots
+and an accessibility check.
+
+## 0038 · 2026-09-26 · Muted text is never informative; decorative brackets are pseudo-elements
+**Decision:** `text-muted` (under 4.5:1) is used only for placeholders, disabled
+controls and decoration. The `[ ]` around status tags are CSS `::before` /
+`::after` content so they stay dim without being text. Section numbers, nav
+group labels and the "then" in shortcuts use `text-secondary`.
+**Why:** axe flagged each of these; they carried meaning or were real text.
+

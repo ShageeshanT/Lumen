@@ -4,6 +4,17 @@
 @import "@lumen/ui/tokens.css";
 @import "@lumen/ui/styles.css";
 
+/* Components in packages/ui use utilities too; Tailwind does not scan workspace links on its own. */
+@source "../../../../packages/ui/src";
+
+/*
+ * Interaction variants that the gallery can force for screenshots:
+ * data-force="hover focus active" on an element renders that state without a pointer.
+ */
+@custom-variant is-hover (&:hover, &[data-force~="hover"]);
+@custom-variant is-active (&:active, &[data-force~="active"]);
+@custom-variant is-focus (&:focus-visible, &[data-force~="focus"]);
+
 /*
  * Tailwind reads the tokens through this inline mapping so utilities such as
  * bg-surface, text-text-secondary, border-border, rounded-card and gap-4 exist,

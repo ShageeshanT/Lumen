@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { Text } from "@lumen/ui";
+import { StatusTag, Text } from "@lumen/ui";
 
 function Example({
   title,
@@ -105,25 +105,10 @@ export function SignalDemo() {
 
       <Example title="Status markers" note="square markers · .blink for building and deploying">
         <div className="flex flex-wrap gap-6">
-          {[
-            ["Active", "bg-success", "text-success-text", false],
-            ["Building", "bg-warning", "text-warning-text", true],
-            ["Failed", "bg-danger", "text-danger-text", false],
-            ["Sleeping", "bg-sleeping", "text-sleeping-text", false],
-          ].map(([label, dot, text, blink]) => (
-            <span
-              key={String(label)}
-              className={`text-action inline-flex items-center gap-2 ${String(text)}`}
-            >
-              <span className="text-text-muted">[</span>
-              <span
-                aria-hidden="true"
-                className={`size-[6px] ${String(dot)} ${blink === true ? "blink" : ""}`}
-              />
-              {label}
-              <span className="text-text-muted">]</span>
-            </span>
-          ))}
+          <StatusTag status="active" />
+          <StatusTag status="building" />
+          <StatusTag status="failed" />
+          <StatusTag status="sleeping" />
         </div>
       </Example>
     </div>

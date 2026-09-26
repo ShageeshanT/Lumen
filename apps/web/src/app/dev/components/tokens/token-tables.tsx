@@ -142,7 +142,7 @@ function Cell({
   exempt?: boolean;
 }) {
   if (value === null) {
-    return <td className="text-text-muted px-3 py-1 text-right">–</td>;
+    return <td className="text-text-secondary px-3 py-1 text-right">–</td>;
   }
   const passes = value >= threshold;
   return (

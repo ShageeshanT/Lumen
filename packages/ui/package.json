@@ -13,7 +13,9 @@
     "./styles.css": "./src/styles/index.css",
     "./theme": "./src/theme/index.ts",
     "./lib": "./src/lib/index.ts",
-    "./text-styles": "./src/styles/text-styles.ts"
+    "./text-styles": "./src/styles/text-styles.ts",
+    "./components": "./src/components/index.ts",
+    "./examples": "./src/examples/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -21,6 +23,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "catalog:",
+    "@radix-ui/react-tooltip": "catalog:",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "lucide-react": "catalog:",

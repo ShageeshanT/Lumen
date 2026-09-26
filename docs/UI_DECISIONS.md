@@ -93,6 +93,40 @@ Each entry: date · page or component · decision · why · screenshot links.
   green). With the layers, `className="text-action text-success-text"` works as
   written. A Playwright test in `e2e/tests/theme.spec.ts` guards it.
 
+## Components (Phase 1, session 3)
+
+### 2026-09-26 · Buttons
+- **Primary:** transparent, 1 px full-ink frame, HUD brackets 6 px outside the
+  box that spread to 5 px on hover, accent-subtle fill and accent glow on hover,
+  optional → that nudges 3 px. Pressed moves down 1 px. One per view.
+- **Secondary:** hairline frame; **ghost:** no frame, secondary text;
+  **danger:** danger frame and text; **danger-solid** only in confirm dialogs.
+- **Sizes:** 28 / 32 / 36 px tall, 10 / 12 / 16 px horizontal padding, labels in
+  the `action` style (mono 11 / 500 / +0.08em, uppercase). Icons 12 in sm, 14
+  otherwise. Loading swaps the leading icon for the spinner and blocks clicks.
+- **Icon buttons:** 28 or 32 px square, always labelled, tooltip on hover and
+  focus.
+
+### 2026-09-26 · Status tags
+- `[ ■ ACTIVE ]`: 6 px square marker, word in the tone's `-text` color,
+  brackets dim. Failed ✕, crashed ⟳, sleeping ☾, queued …, skipped –,
+  cancelled ⊘, superseded and removed ↺ use glyph markers; stopped and offline
+  are hollow squares. Building and deploying blink (1.6 s, hard on/off) and stop
+  blinking under reduced motion.
+
+### 2026-09-26 · Icons
+- Lucide at 1.5 px non-scaling stroke with square caps and mitred joins, from
+  an 83-icon allowlist. Sizes 12, 14, 16, 20.
+
+### 2026-09-26 · Tooltip, keyboard hints, badges, avatars
+- Tooltip: sentence-case sans 12 on `surface-raised` with a strong hairline
+  frame, 400 ms delay, fades up 2 px in 120 ms, max 240 px wide.
+- Keyboard hints: mono keycaps with a heavier bottom edge; ⌘ on Apple
+  platforms and Ctrl elsewhere; sequences read "then".
+- Badges: framed mono caps, 20 px (sm 16 px), tinted per variant, counts cap at
+  99+. Avatars: circles for people, squares for workspaces, mono initials on a
+  stable per-name tint.
+
 ## Per-page decisions
 
 ### 2026-09-26 · Shell page (Phase 0)
