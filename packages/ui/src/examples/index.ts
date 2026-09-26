@@ -1,4 +1,18 @@
 import { buttonDoc, iconButtonDoc, spinnerDoc } from "../components/button.examples";
+import {
+  checkboxDoc,
+  comboboxDoc,
+  copyFieldDoc,
+  inputDoc,
+  keyValueDoc,
+  radioDoc,
+  segmentedDoc,
+  selectDoc,
+  skeletonDoc,
+  sliderDoc,
+  switchDoc,
+  textareaDoc,
+} from "../components/form.examples";
 import { avatarDoc, badgeDoc, kbdDoc, statusTagDoc } from "../components/status.examples";
 import { tooltipDoc } from "../components/tooltip.examples";
 import { iconsDoc } from "../icons/icons.examples";
@@ -13,7 +27,19 @@ export const COMPONENT_DOCS: readonly ComponentDoc[] = [
   buttonDoc,
   iconButtonDoc,
   spinnerDoc,
+  inputDoc,
+  textareaDoc,
+  selectDoc,
+  comboboxDoc,
+  switchDoc,
+  checkboxDoc,
+  radioDoc,
+  segmentedDoc,
+  sliderDoc,
+  keyValueDoc,
+  copyFieldDoc,
   tooltipDoc,
+  skeletonDoc,
   statusTagDoc,
   badgeDoc,
   avatarDoc,

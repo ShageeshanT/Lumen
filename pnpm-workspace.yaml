@@ -23,6 +23,14 @@ catalog:
   ulid: 3.0.2
   zod: 4.6.5
   # Styling and design system
+  "@radix-ui/react-checkbox": 1.3.11
+  "@radix-ui/react-popover": 1.1.23
+  "@radix-ui/react-radio-group": 1.4.7
+  "@radix-ui/react-select": 2.3.7
+  "@radix-ui/react-slider": 1.4.7
+  "@radix-ui/react-switch": 1.3.7
+  "@radix-ui/react-toggle-group": 1.1.19
+  cmdk: 1.1.1
   "@radix-ui/react-slot": 1.3.3
   "@radix-ui/react-tooltip": 1.2.16
   "@tailwindcss/postcss": 4.3.3

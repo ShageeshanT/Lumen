@@ -13,6 +13,8 @@ const config: NextConfig = {
   // Next would otherwise write AGENTS.md and CLAUDE.md into apps/web; the
   // repository root already carries the project context.
   agentRules: false,
+  // Keep screenshots and the gallery free of the framework's floating dev badge.
+  devIndicators: false,
 };
 
 export default config;

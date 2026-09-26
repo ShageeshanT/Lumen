@@ -142,7 +142,7 @@ export const buttonDoc: ComponentDoc = {
       id: "full-width-link",
       title: "Full width and as a link",
       render: () => (
-        <div className="flex w-[320px] flex-col gap-3">
+        <div className="flex w-full max-w-[320px] flex-col gap-3">
           <Button variant="primary" fullWidth arrow>
             Deploy your first app
           </Button>

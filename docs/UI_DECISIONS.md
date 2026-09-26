@@ -127,6 +127,43 @@ Each entry: date · page or component · decision · why · screenshot links.
   99+. Avatars: circles for people, squares for workspaces, mono initials on a
   stable per-name tint.
 
+## Form controls (Phase 1, session 4)
+
+### 2026-09-26 · Text entry
+- Inputs, textareas, select and combobox triggers share one look: 32 px (sm 28),
+  1 px border, radius 2, surface background, sans 14 (mono 13 for identifiers).
+  Focus: accent border, a 3 px accent-subtle halo and 5 px accent corner brackets
+  3 px outside the frame. Invalid: danger border and danger halo. Read-only: page
+  background and secondary text. Textareas grow to 12 rows, then scroll.
+- Labels are mono caps 11 (the `label` style), helpers sans 13 secondary, errors
+  sans 13 in danger text with a 14 px alert icon. Locked settings show a lock
+  with "Managed by lumen.toml — edit the file to change it".
+
+### 2026-09-26 · Choices
+- **Switch:** square hardware toggle, 32 × 18 (sm 26 × 14), square thumb that
+  slides in 120 ms; on is the accent fill with an ink thumb.
+- **Checkbox:** 16 px square, radius 2, accent fill with a 12 px check;
+  indeterminate shows an 8 × 2 bar. **Radio:** stays round because the shape means
+  "one of many"; cards variant frames the chosen card in the accent with brackets.
+- **Segmented control:** mono caps segments; the selected block is raised with a
+  1 px accent underline and slides in 200 ms.
+- **Select / combobox panels:** raised surface, strong hairline frame, 32 px rows,
+  accent check on the chosen row; the combobox adds search, mono caps group
+  headings, meta on the right, loading skeletons, "No repositories match for …",
+  "Add …" and a footer link.
+
+### 2026-09-26 · Values
+- **Slider with input:** thin 4 px rail, a 10 × 16 fader cap in accent (danger
+  when over capacity), marks as meta labels, a warning band beyond the server's
+  free capacity, and a numeric field with its unit; the field wraps under the
+  rail on narrow screens. Over the limit: "More than … Lower it or move to a
+  bigger server."
+- **Key-value editor:** mono names and values, "Already used" and naming errors
+  inline, sealed values show a lock and "Sealed", pasting a .env block fills rows.
+- **Copy field:** mono value, copy button turns into a green check for 1.5 s and
+  "Copied" is announced. **Secret field:** eight dots in the DOM until revealed,
+  masks itself again after 10 s; sealed values offer neither reveal nor copy.
+
 ## Per-page decisions
 
 ### 2026-09-26 · Shell page (Phase 0)

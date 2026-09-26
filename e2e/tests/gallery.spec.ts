@@ -4,6 +4,7 @@ import { expectNoA11yViolations } from "../lib/a11y";
 
 interface Registry {
   pages: string[];
+  modalPages: string[];
   examples: string[];
 }
 
@@ -32,7 +33,11 @@ test.describe("component gallery", () => {
     for (const slug of registry.pages) {
       await openStill(page, `/dev/components/${slug}`);
       await expect(page.locator("main h1").first()).toBeVisible();
-      await expectNoA11yViolations(page);
+      // A forced-open modal hides the rest of the page from assistive tech by design.
+      await expectNoA11yViolations(
+        page,
+        registry.modalPages.includes(slug) ? { disableRules: ["aria-hidden-focus"] } : {},
+      );
     }
   });
 

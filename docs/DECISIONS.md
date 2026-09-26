@@ -380,3 +380,36 @@ controls and decoration. The `[ ]` around status tags are CSS `::before` /
 group labels and the "then" in shortcuts use `text-secondary`.
 **Why:** axe flagged each of these; they carried meaning or were real text.
 
+## 0039 · 2026-09-26 · Form-control dependencies
+**Decision:** Radix `react-select` 2.3.7, `react-switch` 1.3.7, `react-checkbox`
+1.3.11, `react-radio-group` 1.4.7, `react-toggle-group` 1.1.19, `react-slider`
+1.4.7, `react-popover` 1.1.23 and `cmdk` 1.1.1, all MIT, pinned in the catalog.
+**Why:** Accessible patterns (listbox, switch, radiogroup, slider, combobox) with
+keyboard support, without re-implementing them.
+
+## 0040 · 2026-09-26 · Field context wires every control
+**Decision:** `<Field>` provides the control's id, `aria-describedby` (helper
+and error), invalid, disabled and required state through context; every control
+reads it with `useFieldProps` and explicit props win. `lockedBy="lumen.toml"`
+disables the control and shows a lock with a tooltip. Only errors that appear
+after mount use `role="alert"`.
+**Why:** One place to get labelling right; controls stay usable outside a Field.
+
+## 0041 · 2026-09-26 · Focus frame on a wrapper, not the input
+**Decision:** Text-entry controls sit in a frame element that draws accent HUD
+brackets when the control inside has focus (`has-[:focus-visible]`); the input
+itself shows an accent border and a 3 px accent-subtle halo instead of the
+global outline.
+**Why:** `<input>` cannot render `::after`, so the brackets cannot live on it.
+
+## 0042 · 2026-09-26 · Gallery accessibility rules
+**Decision:** Examples that force a modal open (`forcesModal`) relax only axe's
+`aria-hidden-focus` on that page, because an open modal hides the rest of the
+page by design. Everything else runs the full WCAG 2.2 AA tag set at three widths,
+including `target-size`: interactive targets are at least 24 × 24 px (the slider
+thumb is a 24 px hit area around a 10 × 16 cap; small links get a 24 px box).
+Stateful demos live in client-only `*.demos.tsx` files so the registry can be
+imported on the server. The gallery nav becomes a top bar under 768 px and
+examples use fluid widths. Next's dev badge is off so screenshots show only Lumen.
+**Why:** Each of these was found by axe or by the phone-width screenshots.
+

@@ -9,6 +9,12 @@ export interface Example {
   render: () => ReactNode;
   /** Wide examples span the full gallery width. */
   wide?: boolean;
+  /**
+   * The example forces a modal overlay open (an open Select). While a modal is
+   * open the rest of the page is aria-hidden on purpose, so the gallery axe
+   * pass skips the aria-hidden-focus rule on that page only.
+   */
+  forcesModal?: boolean;
 }
 
 export type ComponentGroup =

@@ -7,6 +7,9 @@ export function GET() {
   }
   return Response.json({
     pages: ["tokens", "typography", "signal", ...COMPONENT_DOCS.map((doc) => doc.slug)],
+    modalPages: COMPONENT_DOCS.filter((doc) =>
+      doc.examples.some((example) => example.forcesModal === true),
+    ).map((doc) => doc.slug),
     examples: COMPONENT_DOCS.flatMap((doc) =>
       doc.examples.map((example) => `${doc.slug}/${example.id}`),
     ),

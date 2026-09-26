@@ -3,7 +3,7 @@
 _Updated: 2026-09-26_
 
 ## Current phase
-Phase 1 — Design direction and design system. In progress (sessions 1–3 of 7
+Phase 1 — Design direction and design system. In progress (sessions 1–4 of 7
 done). **Direction chosen: D "Signal"** (owner's reference images, 2026-09-26),
 and its tokens, type, surfaces and motion are live in `@lumen/ui`. Phase 0
 awaits its cross-model review (SPEC H1).
@@ -30,6 +30,11 @@ awaits its cross-model review (SPEC H1).
   per component; registry.json; gallery spec with 156 element screenshots
   (26 examples × 6 projects), axe on every page, tooltip-on-focus and
   reduced-motion checks. 124 unit tests, 66 Playwright tests.
+- Session 4: Field, Input, Textarea, Select, Combobox, Switch, Checkbox,
+  RadioGroup, SegmentedControl, SliderWithInput, KeyValueEditor, CopyField,
+  SecretField, Skeleton. 143 unit tests; 282 screenshot baselines (47 examples
+  × 6 projects); axe clean on all 23 gallery pages at 390, 1024 and 1440 in both
+  themes, including WCAG 2.2 target size.
 
 ## Done
 - 2026-09-26 — Repository initialized. Spec saved as `docs/SPEC.md`. `CLAUDE.md`
@@ -67,9 +72,7 @@ awaits its cross-model review (SPEC H1).
 | Fresh clone → `db: ok` following README.md | 23 s (clone 5 s, install 9 s with a warm store, infra 2 s, API ready 5 s, web ready 2 s) | < 5 min |
 
 ## Next
-1. Phase 1 sessions 4–7 in the Signal language: form controls (input, select,
-   combobox, switch, checkbox, radio, segmented control, slider, key-value editor,
-   copy and secret fields, field), overlays (command palette, dropdown and
+1. Phase 1 sessions 5–7 in the Signal language: overlays (command palette, dropdown and
    context menus, popover, modal, confirm dialog, side panel, sheet, split
    button), navigation (tabs, breadcrumbs, environment and workspace switchers,
    rail, top bar), feedback (toast, alert, progress steps, skeleton, empty state,
