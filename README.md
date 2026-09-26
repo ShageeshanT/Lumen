@@ -1,34 +1,53 @@
 # Lumen
 
-Lumen is a self-hosted deployment platform. It deploys apps, databases and templates
-onto VMs you already own (Oracle, AWS, GCP, Azure, Hetzner, DigitalOcean, a home
-server) through a dashboard simple enough that a beginner goes from a fresh VM to
-an app live on HTTPS in under ten minutes.
+Lumen is a self-hosted deployment platform for servers you already own. Connect a
+VM from any cloud, push to GitHub, and get a live app on HTTPS with databases,
+variables, logs, metrics, domains, environments and previews, all from one
+dashboard.
 
 Feature and UX parity target: Railway. Visual identity: Lumen's own.
 
+## Requirements
+
+Node 24, pnpm 11, Go 1.26, Docker, and buf (`go install github.com/bufbuild/buf/cmd/buf@latest`).
+
+## Quick start
+
+```sh
+pnpm install
+pnpm dev:infra   # starts Postgres 16 in Docker and waits until it is healthy
+pnpm dev         # web on :3000, api on :4000
+```
+
+Open http://localhost:3000. The page shows "API: ok · db: ok" when everything is
+wired. If another Postgres already uses port 5432, copy `.env.example` to `.env`
+and set `PG_PORT` and `DATABASE_URL` to a free port.
+
+| Port | Service                                      |
+| ---- | -------------------------------------------- |
+| 3000 | Dashboard (Next.js)                          |
+| 4000 | Control-plane API (Hono); docs at `/v1/docs` |
+| 5432 | Postgres (Docker, development)               |
+
 ## Status
 
-Planning complete, implementation not started. The build is split into 19 phases.
-Start with [docs/phases/README.md](docs/phases/README.md).
+Phase 0 (foundations) is done. The build is split into 19 phases; start with
+[docs/phases/README.md](docs/phases/README.md).
 
 ## Repository
 
-| Path | Contents |
-|---|---|
-| `CLAUDE.md` | Permanent project context for the models building Lumen |
-| `docs/SPEC.md` | The complete build spec: the single source of truth |
-| `docs/phases/` | One detailed document per build phase, plus the template and index |
-| `docs/PROGRESS.md` | What is done, what is next, known gaps |
-| `docs/DECISIONS.md` | Architecture and tooling decisions, one entry each |
-| `docs/UI_DECISIONS.md` | Design decisions with screenshots |
+| Path                 | Contents                                                        |
+| -------------------- | --------------------------------------------------------------- |
+| `apps/web`           | Dashboard                                                       |
+| `apps/api`           | Control-plane API and workers                                   |
+| `apps/agent`         | Go agent that runs on every server                              |
+| `apps/cli`           | Go CLI                                                          |
+| `packages/protocol`  | Protobuf definitions and generated Go and TypeScript            |
+| `packages/db`        | Drizzle schema and migrations                                   |
+| `packages/shared`    | Error catalog, ids, shared types                                |
+| `packages/ui`        | Design system (Phase 1)                                         |
+| `packages/templates` | Built-in templates (Phase 13)                                   |
+| `e2e`                | Playwright suites                                               |
+| `docs/`              | `SPEC.md` (source of truth), phase docs, progress and decisions |
 
-The code layout (`apps/`, `packages/`, `deploy/`, `e2e/`) is created in Phase 0.
-
-## Working on a phase
-
-1. Start a fresh session and paste the session prompt from the phase file (section 12).
-2. Review the plan the model writes, then approve.
-3. The model implements, runs tests, takes screenshots, and reports with evidence.
-4. The other model reviews with the matching prompt from `docs/SPEC.md` Part H.
-5. Fix findings, update the docs, commit and push.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full command list and conventions.

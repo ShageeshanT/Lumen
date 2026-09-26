@@ -1,0 +1,17 @@
+{
+  "name": "@lumen/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lumen design system: tokens and components. Built in Phase 01.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

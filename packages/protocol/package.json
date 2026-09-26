@@ -1,0 +1,25 @@
+{
+  "name": "@lumen/protocol",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./agent/v1": "./gen/ts/lumen/agent/v1/agent_pb.ts"
+  },
+  "scripts": {
+    "gen": "buf generate",
+    "lint": "eslint .",
+    "lint:proto": "buf lint && buf format -d --exit-code",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

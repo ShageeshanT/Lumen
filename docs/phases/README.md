@@ -11,7 +11,7 @@ acceptance criteria, not polish to do later.
 
 | # | Phase | File | Owner model | Depends on | Status |
 |---|---|---|---|---|---|
-| 0 | Foundations | [PHASE-00-foundations.md](PHASE-00-foundations.md) | Opus 5.5 | — | Not started |
+| 0 | Foundations | [PHASE-00-foundations.md](PHASE-00-foundations.md) | Opus 5.5 | — | Done (2026-09-26) |
 | 1 | Design direction and design system | [PHASE-01-design-system.md](PHASE-01-design-system.md) | Opus 5.5 → Fable 5.1 review | 0 | Not started |
 | 2 | Agent core and server join | [PHASE-02-agent-core.md](PHASE-02-agent-core.md) | Fable 5.1 | 0 | Not started |
 | 3 | Deploy engine on the agent | [PHASE-03-deploy-engine.md](PHASE-03-deploy-engine.md) | Fable 5.1 | 2 | Not started |

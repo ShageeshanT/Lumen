@@ -1,0 +1,83 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "e2e"
+
+# Every dependency version is pinned here once and referenced as "catalog:" in
+# package.json files. Update versions here; record license and maintenance
+# checks in docs/DECISIONS.md.
+catalog:
+  # Runtime
+  "@bufbuild/protobuf": 2.15.0
+  "@hono/node-server": 2.1.1
+  "@hono/zod-openapi": 1.6.3
+  "@scalar/hono-api-reference": 0.12.6
+  drizzle-orm: 0.45.3
+  geist: 1.7.2
+  hono: 4.13.9
+  next: 16.3.6
+  pg: 8.23.0
+  pino: 10.3.1
+  react: 19.3.0
+  react-dom: 19.3.0
+  ulid: 3.0.2
+  zod: 4.6.5
+  # Styling
+  "@tailwindcss/postcss": 4.3.3
+  tailwindcss: 4.3.3
+  # Tooling
+  "@types/node": 24.19.0
+  "@types/pg": 8.23.1
+  "@types/react": 19.3.0
+  "@types/react-dom": 19.3.0
+  drizzle-kit: 0.31.11
+  tsup: 8.5.1
+  tsx: 4.23.15
+  turbo: 2.11.4
+  typescript: 5.9.3
+  # Lint and format
+  "@eslint-community/eslint-plugin-eslint-comments": 4.8.1
+  "@next/eslint-plugin-next": 16.3.6
+  eslint: 10.11.0
+  eslint-config-prettier: 10.1.8
+  eslint-plugin-import-x: 4.17.1
+  eslint-plugin-jsx-a11y: 6.10.2
+  eslint-plugin-react-hooks: 7.1.1
+  lint-staged: 17.6.0
+  prettier: 3.9.9
+  prettier-plugin-tailwindcss: 0.8.1
+  simple-git-hooks: 2.14.0
+  typescript-eslint: 8.70.1
+  # Tests
+  "@axe-core/playwright": 4.13.0
+  "@playwright/test": 1.63.0
+  "@testing-library/dom": 10.4.2
+  "@testing-library/jest-dom": 7.0.1
+  "@testing-library/react": 16.3.3
+  "@vitejs/plugin-react": 6.1.1
+  "@vitest/coverage-v8": 5.0.2
+  jsdom: 30.1.1
+  msw: 2.15.0
+  vitest: 5.0.2
+
+# pnpm refuses versions published very recently unless listed here (supply-chain
+# guard). These two were pinned on the day they were current.
+minimumReleaseAgeExclude:
+  - "@types/node@24.19.0"
+  - lint-staged@17.6.0
+
+# eslint-plugin-jsx-a11y works with ESLint 10 through its flat configs but its
+# peer range still stops at 9. Revisit when the plugin updates the range.
+peerDependencyRules:
+  allowedVersions:
+    "eslint-plugin-jsx-a11y>eslint": "10"
+
+# pnpm blocks postinstall scripts unless allowed here. Each entry is a package
+# whose build script is required for it to work at all.
+allowBuilds:
+  "@tailwindcss/oxide": true
+  esbuild: true
+  msw: true
+  sharp: true
+  simple-git-hooks: true
+  unrs-resolver: true

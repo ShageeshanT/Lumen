@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":pinAllExceptPeerDependencies",
+    "docker:pinDigests",
+    "group:allNonMajor"
+  ],
+  "schedule": ["before 6am on monday"],
+  "labels": ["deps"],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Reviewer: check the license and maintenance status of every new or upgraded dependency before merging (CLAUDE.md <never>). Renovate does not check licenses.",
+      "matchPackageNames": ["*"],
+      "prBodyNotes": [
+        "Check the license and maintenance status of each package before merging and record changes in docs/DECISIONS.md."
+      ]
+    }
+  ]
+}

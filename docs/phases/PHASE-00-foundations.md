@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Status** | Not started |
-| **Owner model** | Opus 5.5 → reviewed by Fable 5.1 |
+| **Status** | Done (2026-09-26); evidence in `docs/evidence/phase-00/` |
+| **Owner model** | Fable 5.1 (built) → review pending |
 | **Depends on** | Nothing (first phase) |
 | **Unblocks** | Every other phase; Phase 01 (design system) and Phase 02 (agent core) start immediately after |
 | **Spec sections** | SPEC 0.1–0.4, Part A (`CLAUDE.md`), B2, B5 (handshake messages only), B6 (`instance_settings` only), B14, C4 (font choice only), Part F "Phase 0", Part G (test tooling), J6 |

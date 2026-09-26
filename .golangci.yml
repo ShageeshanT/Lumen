@@ -1,0 +1,52 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - errorlint
+    - gosec
+    - bodyclose
+    - contextcheck
+    - noctx
+    - revive
+    - gocritic
+    - misspell
+  settings:
+    errcheck:
+      # Writes to stdout/stderr in a CLI have no useful recovery path.
+      exclude-functions:
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+    errorlint:
+      errorf: true
+      asserts: true
+      comparison: true
+    revive:
+      rules:
+        - name: exported
+        - name: context-as-argument
+        - name: error-return
+        - name: error-strings
+    misspell:
+      locale: US
+  exclusions:
+    rules:
+      # The CLI intentionally runs subprocesses (shell, tunnels); each call site is commented.
+      - path: apps/cli/
+        linters:
+          - gosec
+        text: "G204"
+
+formatters:
+  enable:
+    - gofmt
+    - goimports

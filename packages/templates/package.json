@@ -1,0 +1,7 @@
+{
+  "name": "@lumen/templates",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Built-in templates as JSON (SPEC J4). Filled in Phase 13."
+}

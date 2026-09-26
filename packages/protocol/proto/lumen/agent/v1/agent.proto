@@ -1,0 +1,72 @@
+// Lumen agent protocol, version 1.
+//
+// Every frame on the agent WebSocket is one Envelope. The control plane and the
+// agent both send Envelopes; `op_id` correlates a request with its Ack or
+// OpError and makes every operation idempotent (SPEC B3, B5).
+//
+// Field-number rule for Envelope.payload: numbers 1-9 are reserved for the
+// envelope's own fields; payload messages start at 10 and are only ever
+// appended. Never renumber or reuse a payload number. Phase 02 adds Heartbeat,
+// DesiredState and ActualState at 14+, Phase 03 adds BuildRequest, BuildEvent,
+// BuildResult, LogSubscribe, LogChunk and MetricsBatch after those.
+syntax = "proto3";
+
+package lumen.agent.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Sent by the agent right after the WebSocket opens (SPEC B5 handshake).
+message AgentHello {
+  string server_id = 1;
+  string agent_version = 2;
+  uint32 protocol_version = 3;
+  string os = 4;
+  string arch = 5;
+  uint32 cpu_cores = 6;
+  uint64 memory_bytes = 7;
+  uint64 disk_bytes = 8;
+  string docker_version = 9;
+  string public_ip = 10;
+}
+
+// Runtime configuration the control plane hands to the agent.
+message AgentConfig {
+  uint32 heartbeat_interval_s = 1;
+  uint32 metrics_interval_s = 2;
+  uint32 log_retention_days = 3;
+}
+
+// The control plane's answer to AgentHello.
+message ControlHello {
+  bool accepted = 1;
+  uint64 desired_state_version = 2;
+  AgentConfig config = 3;
+  // Set only when accepted is false; a code from the error catalog.
+  string reject_reason = 4;
+}
+
+// Acknowledges the operation identified by op_id.
+message Ack {
+  string op_id = 1;
+}
+
+// Reports that the operation identified by op_id failed.
+message OpError {
+  string op_id = 1;
+  // A code from the error catalog (SPEC J6).
+  string code = 2;
+  string message = 3;
+}
+
+// One frame on the wire.
+message Envelope {
+  string op_id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+
+  oneof payload {
+    AgentHello agent_hello = 10;
+    ControlHello control_hello = 11;
+    Ack ack = 12;
+    OpError op_error = 13;
+  }
+}

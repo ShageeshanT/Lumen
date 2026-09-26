@@ -1,0 +1,183 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DATABASE_URL: postgres://lumen:lumen@localhost:5432/lumen
+  # Same digest as docker-compose.dev.yml (docs/DECISIONS.md).
+  POSTGRES_IMAGE: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm turbo run lint
+      - run: pnpm format:check
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+      - name: Regenerate protocol code
+        run: pnpm gen
+      - name: Generated code must be committed
+        run: git diff --exit-code packages/protocol/gen
+      - run: pnpm typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
+        env:
+          POSTGRES_USER: lumen
+          POSTGRES_PASSWORD: lumen
+          POSTGRES_DB: lumen
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lumen -d lumen"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm turbo run test --filter=!e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: packages/*/coverage
+          if-no-files-found: ignore
+
+  build-web:
+    name: Build web
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: next build
+        run: pnpm --filter @lumen/web build 2>&1 | tee build.log
+      - name: Route sizes
+        run: |
+          {
+            echo '### Web build'
+            echo '```'
+            grep -E 'Route \(app\)|First Load JS|^[┌├└]' build.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  go:
+    name: Go
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/agent/go.mod
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.14
+          args: ./apps/agent/... ./apps/cli/... ./packages/protocol/...
+      - run: go test ./apps/agent/... ./apps/cli/... ./packages/protocol/...
+      - name: Build linux/amd64 and linux/arm64
+        run: bash scripts/build-go.sh
+      - name: Run amd64 binary
+        run: ./apps/agent/bin/lumen-agent-linux-amd64 --version
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Run arm64 binary under QEMU
+        timeout-minutes: 2
+        run: >-
+          docker run --rm --platform linux/arm64
+          -v "$PWD/apps/agent/bin:/b" debian:12-slim
+          /b/lumen-agent-linux-arm64 --version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: go-binaries
+          path: |
+            apps/agent/bin/*
+            apps/cli/bin/*
+
+  proto:
+    name: Protobuf
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+      - run: buf lint
+        working-directory: packages/protocol
+      - run: buf format -d --exit-code
+        working-directory: packages/protocol
+      - name: Breaking changes against main
+        # continue-on-error only until main carries the first proto (remove in the next commit).
+        continue-on-error: true
+        run: buf breaking --against "https://github.com/ShageeshanT/Lumen.git#branch=main,subdir=packages/protocol"
+        working-directory: packages/protocol
+
+  e2e-smoke:
+    name: E2E smoke
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
+        env:
+          POSTGRES_USER: lumen
+          POSTGRES_PASSWORD: lumen
+          POSTGRES_DB: lumen
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lumen -d lumen"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Install Chromium
+        run: pnpm --filter e2e exec playwright install --with-deps chromium
+      - name: Smoke test
+        # Screenshot baselines are generated on Windows for now; Linux baselines land in Phase 01.
+        run: pnpm --filter e2e test --project=desktop-dark --ignore-snapshots
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report
+
+  ci-ok:
+    name: CI OK
+    runs-on: ubuntu-24.04
+    needs: [lint, typecheck, test, build-web, go, proto, e2e-smoke]
+    if: always()
+    steps:
+      - name: Every job succeeded
+        run: |
+          echo '${{ toJSON(needs) }}'
+          if echo '${{ toJSON(needs) }}' | grep -Eq '"result": "(failure|cancelled)"'; then
+            exit 1
+          fi

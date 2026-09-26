@@ -1,0 +1,67 @@
+{
+  "name": "lumen",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted deployment platform for VMs you already own.",
+  "packageManager": "pnpm@11.14.0",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:infra": "docker compose -f docker-compose.dev.yml up -d --wait",
+    "build": "turbo run build",
+    "build:go": "bash scripts/build-go.sh",
+    "test": "turbo run test --filter=!e2e && pnpm test:go",
+    "test:go": "go test ./apps/agent/... ./apps/cli/... ./packages/protocol/...",
+    "lint": "turbo run lint && pnpm lint:go && pnpm lint:proto && pnpm format:check",
+    "lint:go": "golangci-lint run ./apps/agent/... ./apps/cli/... ./packages/protocol/...",
+    "lint:proto": "pnpm --filter @lumen/protocol lint:proto",
+    "typecheck": "turbo run typecheck",
+    "gen": "turbo run gen",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @lumen/db db:generate",
+    "db:migrate": "pnpm --filter @lumen/db db:migrate",
+    "db:studio": "pnpm --filter @lumen/db db:studio",
+    "prepare": "simple-git-hooks"
+  },
+  "devDependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "catalog:",
+    "@next/eslint-plugin-next": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-import-x": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
+    "simple-git-hooks": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vitest": "catalog:"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "eslint --fix --max-warnings=0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,css}": [
+      "prettier --write"
+    ],
+    "*.go": [
+      "bash scripts/lint-go-staged.sh"
+    ],
+    "*.proto": [
+      "buf format -w"
+    ]
+  }
+}
