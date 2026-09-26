@@ -683,10 +683,10 @@ Token names and values (SPEC C4 first; light-theme fill-ins and `-text` / `-fill
 | `--color-accent-fill` | `#14B8A6` | `#0F766E` | Primary button background |
 | `--color-accent-fill-hover` | `#2DD4BF` | `#115E59` | Primary button hover |
 | `--color-accent-ink` | `#0D0F12` | `#FFFFFF` | Text on `accent-fill` |
-| `--color-success` | `#22C55E` | `#16A34A` | Dots, icons, borders |
-| `--color-success-text` | `#22C55E` | `#15803D` | Text |
-| `--color-warning` | `#F59E0B` | `#D97706` | Dots, icons, limit lines |
-| `--color-warning-text` | `#F59E0B` | `#B45309` | Text |
+| `--color-success` | `#22C55E` | `#15803D` | Dots, icons, borders (one ramp step darker than first proposed so it holds 3:1 on `surface-hover`) |
+| `--color-success-text` | `#22C55E` | `#166534` | Text (one ramp step darker than first proposed so it holds 4.5:1 on `surface-hover`) |
+| `--color-warning` | `#F59E0B` | `#B45309` | Dots, icons, limit lines (one step darker: the first proposal was under 3:1 on `bg` and `surface-hover`) |
+| `--color-warning-text` | `#F59E0B` | `#92400E` | Text (same reason) |
 | `--color-danger` | `#EF4444` | `#DC2626` | Dots, icons, borders |
 | `--color-danger-text` | `#F87171` | `#B91C1C` | Text |
 | `--color-danger-fill` | `#DC2626` | `#DC2626` | Destructive button background |
@@ -723,18 +723,20 @@ Contrast verification (WCAG relative luminance, computed):
 | text-secondary on accent-subtle over surface | 5.89 | | | | pass |
 | border-strong #343A42 on surface | 1.57 | | | | borders are decorative; selection is also shown by the accent ring |
 
-| Pair (light) | on bg #F7F7F5 | on surface #FFFFFF | Verdict |
-|---|---|---|---|
-| text #16181B | 16.58 | 17.79 | pass |
-| text-secondary #5B626B | 5.75 | 6.17 | pass |
-| text-muted #7C838C | 3.57 | 3.83 | **fails 4.5:1** — placeholders and disabled only |
-| accent #0D9488 | 3.49 | 3.74 | **fails 4.5:1 for text**, passes 3:1 for icons/borders/focus ring → text uses accent-text #0F766E (5.10 / 5.47) |
-| accent-fill #0F766E with accent-ink #FFFFFF | 5.47 | | pass; hover #115E59 is darker, higher ratio |
-| success #16A34A | 3.07 | 3.30 | non-text only → success-text #15803D (4.68 / 5.02) |
-| warning #D97706 | 2.97 | 3.19 | non-text only (2.97 on bg is under 3:1: warning dots on the page background get a 1 px `border` ring in `warning-text`) → warning-text #B45309 (4.68 / 5.02) |
-| danger #DC2626 | 4.50 | 4.83 | pass; danger-text #B91C1C (6.03) used for text anyway for consistency |
-| info #2563EB | 4.82 | 5.17 | pass; info-text #1D4ED8 (6.25) |
-| sleeping #64748B | 4.44 | 4.76 | text uses sleeping-text #475569 (7.06) |
+| Pair (light) | on bg #F7F7F5 | on surface / raised #FFFFFF | on hover #F2F2EF | Verdict |
+|---|---|---|---|---|
+| text #16181B | 16.58 | 17.79 | 15.76 | pass |
+| text-secondary #5B626B | 5.75 | 6.17 | 5.50 | pass |
+| text-muted #7C838C | 3.57 | 3.83 | 3.42 | **fails 4.5:1** — placeholders and disabled only |
+| accent #0D9488 | 3.49 | 3.74 | 3.33 | **fails 4.5:1 for text**, passes 3:1 for icons/borders/focus ring → text uses accent-text #0F766E (5.10 / 5.47 / 4.88) |
+| accent-fill #0F766E with accent-ink #FFFFFF | 5.47 | | | pass; hover #115E59 is darker, higher ratio |
+| success #15803D | 4.68 | 5.02 | 4.47 | non-text (the first proposal #16A34A measured 2.94 on hover and was rejected) → success-text #166534 (6.65 / 7.13 / 6.36) |
+| warning #B45309 | 4.68 | 5.02 | 4.48 | non-text (the first proposal #D97706 measured 2.97 on bg and 2.84 on hover and was rejected; no ring workaround is needed) → warning-text #92400E (6.61 / 7.09 / 6.32) |
+| danger #DC2626 | 4.50 | 4.83 | 4.30 | non-text; danger-text #B91C1C (6.03 / 6.47 / 5.77) for text |
+| info #2563EB | 4.82 | 5.17 | 4.61 | pass; info-text #1D4ED8 (6.25 / 6.70 / 5.97) |
+| sleeping #64748B | 4.44 | 4.76 | 4.24 | text uses sleeping-text #475569 (7.06 / 7.58 / 6.76) |
+
+(Values recomputed by `packages/ui/src/lib/contrast.test.ts` from the token file; the earlier draft of this table had three light-theme ratios too low and omitted the hover column.)
 | danger-ink #FFFFFF on danger-fill #DC2626 | 4.83 | | pass |
 | text on accent-subtle over white (#E7F4F3) | 15.78 | | pass |
 | text-secondary on accent-subtle over white | 5.47 | | pass |

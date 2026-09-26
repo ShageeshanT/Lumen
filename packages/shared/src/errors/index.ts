@@ -1,13 +1,13 @@
-import { catalog } from "./catalog.js";
+import { catalog } from "./catalog";
 import {
   LUMEN_ERROR_CODES,
   type ErrorContext,
   type LumenError,
   type LumenErrorCode,
-} from "./types.js";
+} from "./types";
 
-export { catalog } from "./catalog.js";
-export * from "./types.js";
+export { catalog } from "./catalog";
+export * from "./types";
 
 /** Builds a user-facing error from the catalog. */
 export function makeError(code: LumenErrorCode, ctx: ErrorContext = {}): LumenError {

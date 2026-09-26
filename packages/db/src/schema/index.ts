@@ -1,1 +1,1 @@
-export * from "./instance_settings.js";
+export * from "./instance_settings";

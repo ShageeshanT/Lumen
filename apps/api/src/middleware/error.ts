@@ -10,9 +10,9 @@ import {
   type LumenErrorCode,
 } from "@lumen/shared";
 
-import type { Logger } from "../logger.js";
+import type { Logger } from "../logger";
 
-import type { RequestIdVariables } from "./request-id.js";
+import type { RequestIdVariables } from "./request-id";
 
 /** Every error response has exactly this body. */
 export interface ErrorBody {

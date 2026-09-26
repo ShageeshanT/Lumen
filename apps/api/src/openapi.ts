@@ -1,7 +1,7 @@
 import type { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 
-import type { AppEnv } from "./app.js";
+import type { AppEnv } from "./app";
 
 /** Registers the OpenAPI document and the interactive reference page. */
 export function registerOpenApi(app: OpenAPIHono<AppEnv>, version: string): void {

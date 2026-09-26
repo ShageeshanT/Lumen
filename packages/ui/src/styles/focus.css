@@ -1,0 +1,17 @@
+/*
+ * The one focus ring. Applied on :focus-visible only, never overridden per
+ * component, and shown instantly so keyboard users never wait. Inputs add a
+ * soft state on :focus in their own styles because a typed-in field always
+ * deserves a visible state.
+ */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: inherit;
+  transition: none;
+}
+
+/* Elements that manage their own visible focus state opt out with this class. */
+.focus-inset:focus-visible {
+  outline-offset: -2px;
+}

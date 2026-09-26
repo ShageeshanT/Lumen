@@ -1,0 +1,44 @@
+/*
+ * Additions on top of Tailwind's preflight. Kept tiny on purpose.
+ */
+html {
+  text-rendering: optimizeLegibility;
+  font-family: var(--font-sans);
+  font-size: var(--text-14);
+  line-height: var(--leading-normal);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Thin light-on-dark text benefits from antialiasing; dark-on-light does not. */
+[data-theme="dark"] {
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-theme="light"] {
+  -webkit-font-smoothing: auto;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+}
+
+/* Icons sit on the text x-height, not the line box. */
+.icon-inline {
+  vertical-align: middle;
+  transform: translateY(0.5px);
+}
+
+/* Visually hidden but available to assistive technology. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

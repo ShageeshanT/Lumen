@@ -1,2 +1,5 @@
-// Phase 01 adds the design tokens and every SPEC C5 component here.
-export {};
+export * from "./components/text";
+export * from "./lib/index";
+export * from "./styles/text-styles";
+export * from "./theme/index";
+export * from "./tokens/motion";

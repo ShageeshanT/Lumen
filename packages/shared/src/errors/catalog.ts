@@ -1,4 +1,4 @@
-import type { ErrorContext, LumenError, LumenErrorCode } from "./types.js";
+import type { ErrorContext, LumenError, LumenErrorCode } from "./types";
 
 type CatalogEntry = (ctx: ErrorContext) => Omit<LumenError, "code" | "raw" | "supportId">;
 

@@ -85,6 +85,7 @@ export default tseslint.config(
       "apps/api/src/logger.ts",
       "packages/db/src/migrate-cli.ts",
       "scripts/**",
+      "e2e/scripts/**",
     ],
     rules: { "no-console": "off" },
   },

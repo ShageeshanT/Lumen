@@ -9,7 +9,7 @@ const config: NextConfig = {
   outputFileTracingRoot: fileURLToPath(new URL("../../", import.meta.url)),
   typedRoutes: true,
   // Workspace packages are TypeScript source and compiled by Next.
-  transpilePackages: ["@lumen/shared"],
+  transpilePackages: ["@lumen/shared", "@lumen/ui"],
   // Next would otherwise write AGENTS.md and CLAUDE.md into apps/web; the
   // repository root already carries the project context.
   agentRules: false,

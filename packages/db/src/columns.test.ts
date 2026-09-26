@@ -2,7 +2,7 @@ import { getTableColumns } from "drizzle-orm";
 import { pgTable, text } from "drizzle-orm/pg-core";
 import { describe, expect, it } from "vitest";
 
-import { id, timestamps } from "./columns.js";
+import { id, timestamps } from "./columns";
 
 const sample = pgTable("sample", {
   id: id("prj"),

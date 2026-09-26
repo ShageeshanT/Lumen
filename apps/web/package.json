@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@lumen/shared": "workspace:*",
+    "@lumen/ui": "workspace:*",
     "geist": "catalog:",
     "next": "catalog:",
     "react": "catalog:",

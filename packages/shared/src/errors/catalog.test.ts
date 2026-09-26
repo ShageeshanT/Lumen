@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { catalog } from "./catalog.js";
-import { LUMEN_ERROR_CODES, type ErrorContext } from "./types.js";
+import { catalog } from "./catalog";
+import { LUMEN_ERROR_CODES, type ErrorContext } from "./types";
 
-import { ERROR_STATUS, LumenHttpError, isLumenError, makeError } from "./index.js";
+import { ERROR_STATUS, LumenHttpError, isLumenError, makeError } from "./index";
 
 // Buttons are verbs (SPEC C9). The list is deliberately short; add to it only
 // when a new action genuinely needs a new verb.

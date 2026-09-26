@@ -40,7 +40,7 @@ export function HealthLine() {
   }, []);
 
   return (
-    <p role="status" aria-live="polite" className="font-mono text-sm tabular-nums">
+    <p role="status" aria-live="polite" className="text-log tabular text-text-secondary">
       {describe(state)}
     </p>
   );

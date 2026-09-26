@@ -1,14 +1,33 @@
-import { notFound } from "next/navigation";
+import Link from "next/link";
 
-/** Component gallery route. Phase 01 fills it; until then it only proves the guard works. */
-export default function ComponentGalleryPage() {
-  if (process.env.NODE_ENV === "production" && process.env.LUMEN_ENABLE_GALLERY !== "true") {
-    notFound();
-  }
+import { Text } from "@lumen/ui";
+
+import { GALLERY_GROUPS } from "./_lib/nav";
+
+export default function GalleryIndexPage() {
   return (
-    <main className="p-6">
-      <h1 className="text-xl font-semibold tracking-tight">Component gallery</h1>
-      <p className="mt-2 font-mono text-sm">Phase 01 fills this page.</p>
-    </main>
+    <div className="flex max-w-[720px] flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <Text variant="page-title">Component gallery</Text>
+        <Text variant="body" className="text-text-secondary">
+          Every token, text style and component of the Lumen kit, in both themes. Pages are
+          assembled from these pieces and never invent a color, size or animation.
+        </Text>
+      </div>
+      {GALLERY_GROUPS.map((group) => (
+        <section key={group.label} className="flex flex-col gap-2">
+          <Text variant="section-title">{group.label}</Text>
+          <ul className="flex flex-col gap-1">
+            {group.entries.map((entry) => (
+              <li key={entry.slug}>
+                <Link href={`/dev/components/${entry.slug}`} className="text-accent-text text-body">
+                  {entry.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
   );
 }

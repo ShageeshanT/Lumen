@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createLogger } from "./logger.js";
+import { createLogger } from "./logger";
 
 function captureLogger(level = "info") {
   const lines: string[] = [];

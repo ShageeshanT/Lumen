@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import type pg from "pg";
 
-import { createDb } from "./client.js";
+import { createDb } from "./client";
 
 const migrationsFolder = fileURLToPath(new URL("../migrations", import.meta.url));
 const SCHEMA_NAME = /^[a-z_][a-z0-9_]*$/;

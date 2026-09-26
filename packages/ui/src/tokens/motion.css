@@ -1,0 +1,76 @@
+/*
+ * Motion tokens (SPEC C4). Nothing animates longer than 300 ms except progress
+ * indicators. Spring constants for the Motion library live in motion.ts.
+ */
+:root {
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 300ms;
+  --dur-exit-fast: 80ms;
+  --dur-exit-base: 120ms;
+
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-panel: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Progress indicators, exempt from the 300 ms rule. */
+  --dur-spinner: 800ms;
+  --dur-pulse: 1600ms;
+  --dur-shimmer: 1600ms;
+  --dur-indeterminate: 1200ms;
+}
+
+@keyframes lumen-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes lumen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lumen-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/*
+ * Reduced motion: the OS preference or the account preference
+ * (data-reduced-motion="true" on <html>, SPEC C7.21). Every transition becomes
+ * instant, opacity fades are capped at 80 ms, and only the spinner keeps
+ * rotating because it conveys ongoing work (WCAG 2.3.3 essential exception).
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --dur-exit-fast: 0ms;
+    --dur-exit-base: 0ms;
+    --dur-fade: 80ms;
+    --dur-pulse: 0ms;
+    --dur-shimmer: 0ms;
+  }
+}
+
+:root[data-reduced-motion="true"] {
+  --dur-fast: 0ms;
+  --dur-base: 0ms;
+  --dur-slow: 0ms;
+  --dur-exit-fast: 0ms;
+  --dur-exit-base: 0ms;
+  --dur-fade: 80ms;
+  --dur-pulse: 0ms;
+  --dur-shimmer: 0ms;
+}

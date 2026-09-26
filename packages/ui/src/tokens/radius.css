@@ -1,0 +1,8 @@
+/* Radius scale (SPEC C4): 6 controls, 10 cards, 14 panels, full for pills. */
+:root {
+  --radius-kbd: 4px;
+  --radius-control: 6px;
+  --radius-card: 10px;
+  --radius-panel: 14px;
+  --radius-full: 9999px;
+}

@@ -1,0 +1,14 @@
+/*
+ * Z-index scale. Nothing in the codebase sets a z-index outside these tokens;
+ * tooltips portal last so they sit above sibling popovers at the same layer.
+ */
+:root {
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-rail: 20;
+  --z-panel: 30;
+  --z-popover: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+  --z-palette: 70;
+}

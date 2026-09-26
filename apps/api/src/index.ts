@@ -4,10 +4,10 @@ import { createDb } from "@lumen/db";
 
 import pkg from "../package.json" with { type: "json" };
 
-import { createApp } from "./app.js";
-import { ConfigError, loadConfig, loadDotEnv, redactConnectionString } from "./config.js";
-import { createLogger } from "./logger.js";
-import { checkDb } from "./routes/health.js";
+import { createApp } from "./app";
+import { ConfigError, loadConfig, loadDotEnv, redactConnectionString } from "./config";
+import { createLogger } from "./logger";
+import { checkDb } from "./routes/health";
 
 loadDotEnv();
 

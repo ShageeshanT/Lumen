@@ -1,0 +1,129 @@
+/*
+ * Lumen color tokens.
+ *
+ * SPEC C4 values come first; the light-theme fill-ins and the -text / -fill /
+ * -ink tiers follow the contrast table in docs/phases/PHASE-01-design-system.md §5.
+ *
+ * Two tiers per semantic color:
+ *   --color-<name>       non-text use (dots, icons, borders, chart lines), held to 3:1
+ *   --color-<name>-text  text use, held to 4.5:1 on every surface
+ * Components never use a base status color for text.
+ *
+ * This is the only file in the codebase allowed to contain color literals.
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0d0f12;
+  --color-bg-canvas: #0b0d10;
+  --color-canvas-dot: #1a1e23;
+  --color-surface: #14171b;
+  --color-surface-raised: #1b1f24;
+  --color-surface-hover: #20252b;
+  --color-border: #262b31;
+  --color-border-strong: #343a42;
+
+  --color-text: #e8eaed;
+  --color-text-secondary: #9ba3ad;
+  --color-text-muted: #646c76;
+
+  --color-accent: #14b8a6;
+  --color-accent-hover: #2dd4bf;
+  --color-accent-subtle: rgba(20, 184, 166, 0.12);
+  --color-accent-text: #14b8a6;
+  --color-accent-fill: #14b8a6;
+  --color-accent-fill-hover: #2dd4bf;
+  --color-accent-ink: #0d0f12;
+
+  --color-success: #22c55e;
+  --color-success-text: #22c55e;
+  --color-success-subtle: rgba(34, 197, 94, 0.1);
+
+  --color-warning: #f59e0b;
+  --color-warning-text: #f59e0b;
+  --color-warning-subtle: rgba(245, 158, 11, 0.1);
+
+  --color-danger: #ef4444;
+  --color-danger-text: #f87171;
+  --color-danger-subtle: rgba(239, 68, 68, 0.1);
+  --color-danger-fill: #dc2626;
+  --color-danger-fill-hover: #b91c1c;
+  --color-danger-ink: #ffffff;
+
+  --color-info: #3b82f6;
+  --color-info-text: #60a5fa;
+  --color-info-subtle: rgba(59, 130, 246, 0.1);
+
+  --color-sleeping: #64748b;
+  --color-sleeping-text: #94a3b8;
+  --color-sleeping-subtle: rgba(100, 116, 139, 0.1);
+
+  --color-overlay: rgba(0, 0, 0, 0.55);
+
+  /* Terminals stay dark in both themes. */
+  --color-terminal-bg: #0b0d10;
+
+  /* Elevation: dark uses borders plus an inner highlight, never drop shadows. */
+  --shadow-raised: none;
+  --shadow-card: none;
+  --highlight-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --color-bg: #f7f7f5;
+  --color-bg-canvas: #f3f3f0;
+  --color-canvas-dot: #deddd8;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-hover: #f2f2ef;
+  --color-border: #e4e3df;
+  --color-border-strong: #c9c8c2;
+
+  --color-text: #16181b;
+  --color-text-secondary: #5b626b;
+  --color-text-muted: #7c838c;
+
+  --color-accent: #0d9488;
+  --color-accent-hover: #0f766e;
+  --color-accent-subtle: rgba(13, 148, 136, 0.1);
+  --color-accent-text: #0f766e;
+  --color-accent-fill: #0f766e;
+  --color-accent-fill-hover: #115e59;
+  --color-accent-ink: #ffffff;
+
+  --color-success: #15803d;
+  --color-success-text: #166534;
+  --color-success-subtle: rgba(21, 128, 61, 0.1);
+
+  --color-warning: #b45309;
+  --color-warning-text: #92400e;
+  --color-warning-subtle: rgba(180, 83, 9, 0.1);
+
+  --color-danger: #dc2626;
+  --color-danger-text: #b91c1c;
+  --color-danger-subtle: rgba(220, 38, 38, 0.1);
+  --color-danger-fill: #dc2626;
+  --color-danger-fill-hover: #b91c1c;
+  --color-danger-ink: #ffffff;
+
+  --color-info: #2563eb;
+  --color-info-text: #1d4ed8;
+  --color-info-subtle: rgba(37, 99, 235, 0.1);
+
+  --color-sleeping: #64748b;
+  --color-sleeping-text: #475569;
+  --color-sleeping-subtle: rgba(100, 116, 139, 0.1);
+
+  --color-overlay: rgba(22, 24, 27, 0.35);
+
+  --color-terminal-bg: #0b0d10;
+
+  /* Elevation: light uses soft shadows. */
+  --shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --highlight-inset: none;
+}

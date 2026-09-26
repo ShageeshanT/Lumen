@@ -2,10 +2,10 @@ import { afterAll, describe, expect, it } from "vitest";
 
 import { createDb } from "@lumen/db";
 
-import { createApp } from "../app.js";
-import { createLogger } from "../logger.js";
+import { createApp } from "../app";
+import { createLogger } from "../logger";
 
-import { HealthResponse, type Health } from "./health.js";
+import { HealthResponse, type Health } from "./health";
 
 const databaseUrl = process.env["DATABASE_URL"];
 const closers: (() => Promise<void>)[] = [];

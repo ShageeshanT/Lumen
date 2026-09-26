@@ -1,8 +1,8 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type pg from "pg";
 
-import type { AppEnv } from "../app.js";
-import { internalErrorResponse } from "../schemas/error.js";
+import type { AppEnv } from "../app";
+import { internalErrorResponse } from "../schemas/error";
 
 export const HealthResponse = z
   .object({

@@ -5,7 +5,7 @@ import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 
-import { AgentHelloSchema, EnvelopeSchema } from "../gen/ts/lumen/agent/v1/agent_pb.js";
+import { AgentHelloSchema, EnvelopeSchema } from "../gen/ts/lumen/agent/v1/agent_pb";
 
 // Written by packages/protocol/roundtrip_test.go with deterministic marshaling.
 const fixture = fileURLToPath(new URL("../testdata/agent_hello.bin", import.meta.url));

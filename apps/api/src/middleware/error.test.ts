@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { LumenHttpError } from "@lumen/shared";
 
-import { createLogger } from "../logger.js";
+import { createLogger } from "../logger";
 
-import { errorHandler, notFoundHandler, type ErrorBody } from "./error.js";
-import { requestId } from "./request-id.js";
+import { errorHandler, notFoundHandler, type ErrorBody } from "./error";
+import { requestId } from "./request-id";
 
 function buildApp() {
   const lines: string[] = [];

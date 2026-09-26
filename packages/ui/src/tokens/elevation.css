@@ -1,0 +1,13 @@
+/*
+ * Elevation. The shadow and highlight values live in colors.css because they
+ * differ per theme; these classes apply them consistently.
+ */
+.elevation-card {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.elevation-raised {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--highlight-inset), var(--shadow-raised);
+}

@@ -1,6 +1,6 @@
 // Entry for `pnpm db:migrate`. Reads DATABASE_URL (from the environment or the
 // repository's .env) and applies pending migrations.
-import { runMigrations } from "./migrate.js";
+import { runMigrations } from "./migrate";
 
 for (const candidate of [".env", "../../.env"]) {
   try {

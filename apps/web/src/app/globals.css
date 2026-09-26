@@ -1,34 +1,118 @@
 @import "tailwindcss";
 
-/* Only the font wiring lives here in Phase 00. Color tokens arrive in Phase 01. */
-@theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
-}
+/* Every design token and base style comes from the design system package. */
+@import "@lumen/ui/tokens.css";
+@import "@lumen/ui/styles.css";
 
-:root[data-theme="dark"] {
-  color-scheme: dark;
-}
+/*
+ * Tailwind reads the tokens through this inline mapping so utilities such as
+ * bg-surface, text-text-secondary, border-border, rounded-card and gap-4 exist,
+ * while the values themselves stay in packages/ui/src/tokens. Every default
+ * namespace is cleared first so a value off the system cannot be expressed.
+ */
+@theme inline {
+  --font-*: initial;
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 
-:root[data-theme="light"] {
-  color-scheme: light;
-}
+  --font-weight-*: initial;
+  --font-weight-regular: var(--font-weight-regular);
+  --font-weight-medium: var(--font-weight-medium);
+  --font-weight-semibold: var(--font-weight-semibold);
 
-html {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+  --text-*: initial;
+  --text-11: var(--text-11);
+  --text-12: var(--text-12);
+  --text-13: var(--text-13);
+  --text-14: var(--text-14);
+  --text-16: var(--text-16);
+  --text-20: var(--text-20);
+  --text-24: var(--text-24);
+  --text-32: var(--text-32);
 
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-}
+  --leading-*: initial;
+  --leading-none: var(--leading-none);
+  --leading-tight: var(--leading-tight);
+  --leading-normal: var(--leading-normal);
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  --tracking-*: initial;
+  --tracking-display: var(--tracking-display);
+  --tracking-title: var(--tracking-title);
+  --tracking-normal: var(--tracking-normal);
+  --tracking-eyebrow: var(--tracking-eyebrow);
+
+  --color-*: initial;
+  --color-bg: var(--color-bg);
+  --color-bg-canvas: var(--color-bg-canvas);
+  --color-canvas-dot: var(--color-canvas-dot);
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-text: var(--color-text);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-subtle: var(--color-accent-subtle);
+  --color-accent-text: var(--color-accent-text);
+  --color-accent-fill: var(--color-accent-fill);
+  --color-accent-fill-hover: var(--color-accent-fill-hover);
+  --color-accent-ink: var(--color-accent-ink);
+  --color-success: var(--color-success);
+  --color-success-text: var(--color-success-text);
+  --color-success-subtle: var(--color-success-subtle);
+  --color-warning: var(--color-warning);
+  --color-warning-text: var(--color-warning-text);
+  --color-warning-subtle: var(--color-warning-subtle);
+  --color-danger: var(--color-danger);
+  --color-danger-text: var(--color-danger-text);
+  --color-danger-subtle: var(--color-danger-subtle);
+  --color-danger-fill: var(--color-danger-fill);
+  --color-danger-fill-hover: var(--color-danger-fill-hover);
+  --color-danger-ink: var(--color-danger-ink);
+  --color-info: var(--color-info);
+  --color-info-text: var(--color-info-text);
+  --color-info-subtle: var(--color-info-subtle);
+  --color-sleeping: var(--color-sleeping);
+  --color-sleeping-text: var(--color-sleeping-text);
+  --color-sleeping-subtle: var(--color-sleeping-subtle);
+  --color-overlay: var(--color-overlay);
+  --color-terminal-bg: var(--color-terminal-bg);
+
+  --spacing-*: initial;
+  --spacing-0: 0px;
+  --spacing-px: 1px;
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+
+  --radius-*: initial;
+  --radius-kbd: var(--radius-kbd);
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-panel: var(--radius-panel);
+  --radius-full: var(--radius-full);
+
+  --shadow-*: initial;
+  --shadow-raised: var(--shadow-raised);
+  --shadow-card: var(--shadow-card);
+
+  --ease-*: initial;
+  --ease-out: var(--ease-out);
+  --ease-panel: var(--ease-panel);
+  --ease-in: var(--ease-in);
+
+  --breakpoint-*: initial;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
 }

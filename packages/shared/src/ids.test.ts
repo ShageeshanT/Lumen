@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ID_PREFIXES, isId, newId, parseId } from "./ids.js";
+import { ID_PREFIXES, isId, newId, parseId } from "./ids";
 
 describe("newId", () => {
   it("produces a prefixed lowercase ULID for every prefix", () => {

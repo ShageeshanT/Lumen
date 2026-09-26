@@ -239,3 +239,60 @@ them adds noise without safety.
 **Decision:** `agentRules: false` in `next.config.ts`.
 **Why:** Next 16 otherwise writes `AGENTS.md` and `CLAUDE.md` into `apps/web` on
 every dev run; the repository root already carries the project context.
+
+## 0025 · 2026-09-26 · Phase 1 dependencies and licenses (foundation)
+**Decision:** Added to `@lumen/ui`, licenses read from the installed packages.
+
+| Package | Version | License | Role |
+|---|---|---|---|
+| lucide-react | 1.48.0 | ISC | UI icons (SPEC C4) |
+| clsx | 2.1.1 | MIT | Class name joining |
+| tailwind-merge | 3.7.0 | MIT | Conflicting utility resolution in `cn()` |
+| class-variance-authority | 0.7.1 | Apache-2.0 | Component variants |
+
+`motion` 13.4.4 (MIT) is pinned in the catalog for the components that need
+springs but is not installed until the first one lands. Radix primitives and
+`cmdk` are added one at a time with the components that use them.
+
+## 0026 · 2026-09-26 · Tokens as CSS variables, Tailwind maps to them inline
+**Decision:** Every design token is a CSS custom property in
+`packages/ui/src/tokens/*.css` under `:root, [data-theme="dark"]` and
+`[data-theme="light"]`. The web app's `globals.css` clears every Tailwind theme
+namespace (`--color-*: initial` and so on) and re-declares only Lumen's tokens in
+an `@theme inline` block that references the variables, so utilities such as
+`bg-surface`, `text-text-secondary`, `rounded-card` and `gap-4` exist and nothing
+off the system can be expressed.
+**Why:** One source for the values (the token files), inspectable in DevTools,
+themeable by attribute; the inline mapping keeps the Tailwind layer from
+double-defining them. Verified by the Playwright theme spec, which reads computed
+values from rendered utilities.
+**Rejected:** defining tokens inside `@theme` (Tailwind becomes the source and the
+static direction pages and Go/agent surfaces could not share it); `color-mix()`
+for tints (values stop being inspectable).
+
+## 0027 · 2026-09-26 · Two-tier semantic colors
+**Decision:** `--color-<status>` is for non-text use (dots, icons, borders, chart
+lines; 3:1) and `--color-<status>-text` for text (4.5:1 on every surface, including
+`surface-hover`). Components never use the base status color for text.
+**Why:** SPEC C4's single values cannot meet C11's 4.5:1 for text in the light
+theme (accent `#0D9488` is 3.74:1 on white). See `docs/UI_DECISIONS.md` for the
+two light tokens that moved a ramp step to hold the rule on hover surfaces.
+
+## 0028 · 2026-09-26 · Theme preference defaults to "system"
+**Decision:** `localStorage["lumen.theme"]` holds `dark`, `light` or `system`
+(default `system`); an inline `<head>` script resolves it before first paint and
+sets `data-theme` and `color-scheme` on `<html>`; `ThemeProvider` follows the OS
+live, persists changes and syncs tabs through the `storage` event and a same-tab
+`lumen:theme` event. The server renders `data-theme="dark"` as the pre-script
+default because dark is the product's default look (SPEC C4).
+**Why:** SPEC C7.21 lists system / dark / light; no flash at any CPU speed is a
+Phase 1 acceptance criterion (Playwright verifies at 6× throttle).
+
+## 0029 · 2026-09-26 · Focus ring policy and z-index scale
+**Decision:** One focus ring, `2px solid var(--color-accent)` with `2px` offset on
+`:focus-visible` only, applied globally in `packages/ui/src/styles/focus.css` and
+never overridden per component; inputs add a soft `:focus` state of their own.
+Z-index comes only from `--z-base/sticky/rail/panel/popover/modal/toast/palette`
+(0/10/20/30/40/50/60/70).
+**Why:** Keyboard users get the same ring everywhere and instantly; a fixed layer
+order prevents the "z-index: 9999" escalation that breaks overlays later.

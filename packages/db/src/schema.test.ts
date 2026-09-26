@@ -1,9 +1,9 @@
 import pg from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { createDb, type DbHandle } from "./client.js";
-import { runMigrations } from "./migrate.js";
-import { instanceSettings } from "./schema/index.js";
+import { createDb, type DbHandle } from "./client";
+import { runMigrations } from "./migrate";
+import { instanceSettings } from "./schema/index";
 
 const databaseUrl = process.env["DATABASE_URL"];
 const schemaName = `test_${Date.now().toString(36)}_${process.pid.toString(36)}`;

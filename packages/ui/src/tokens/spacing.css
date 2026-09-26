@@ -1,0 +1,30 @@
+/*
+ * Spacing on a 4 px grid (SPEC C4): 4, 8, 12, 16, 20, 24, 32, 48, 64.
+ * Tailwind's numeric spacing is replaced by exactly these steps in the app's
+ * @theme block, so a value off the grid cannot be expressed.
+ */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Fixed dimensions shared by several components. */
+  --size-control-sm: 28px;
+  --size-control-md: 32px;
+  --size-control-lg: 36px;
+  --size-rail-collapsed: 56px;
+  --size-rail-expanded: 220px;
+  --size-top-bar: 48px;
+  --size-inspector-min: 480px;
+  --size-inspector-default: 560px;
+  --size-inspector-max: 880px;
+  --size-node-width: 260px;
+  --size-node-height: 120px;
+  --size-page-max: 1200px;
+}

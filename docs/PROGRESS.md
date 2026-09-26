@@ -3,8 +3,29 @@
 _Updated: 2026-09-26_
 
 ## Current phase
-Phase 1 — Design direction and design system. Not started. Phase 0 is done and
-awaits its cross-model review (SPEC H1).
+Phase 1 — Design direction and design system. In progress (sessions 1–2 of 7
+done: three directions produced; tokens, theme, typography, helpers and the
+gallery foundations built). **Blocked on the owner's direction pick** (see
+`docs/design/directions/README.md`). Phase 0 awaits its cross-model review
+(SPEC H1).
+
+### Phase 1 so far (2026-09-26)
+- Three direction pages with screenshots in both themes:
+  `docs/design/directions/{a-instrument,b-studio,c-console}.html`.
+- `@lumen/ui`: color tokens for both themes with the `-text` / `-fill` / `-ink`
+  tiers, typography, spacing, radius, elevation, z-index and motion tokens; the
+  no-flash theme script, `ThemeProvider` and `useTheme` (system / dark / light,
+  OS-follow, cross-tab sync); named text styles with a test that checks
+  `text.css` against the usage table; `cn`, format, truncation and contrast
+  helpers; the `Text` component. 84 unit tests.
+- A contrast test parses `colors.css` and enforces 4.5:1 for every text token on
+  every surface and 3:1 for non-text status colors; it caught two light tokens the
+  phase document had wrong (recorded in `docs/UI_DECISIONS.md`).
+- The web app now imports tokens and styles from `@lumen/ui` with a Tailwind
+  `@theme inline` mapping; the gallery has a nav, theme toggle, a live Tokens page
+  (contrast table computed from the CSS variables) and a Typography page.
+- Playwright `theme.spec.ts`: no flash at 6× CPU throttle for stored dark/light,
+  live OS-follow in system mode, and utilities resolving to token values.
 
 ## Done
 - 2026-09-26 — Repository initialized. Spec saved as `docs/SPEC.md`. `CLAUDE.md`
@@ -42,11 +63,14 @@ awaits its cross-model review (SPEC H1).
 | Fresh clone → `db: ok` following README.md | 23 s (clone 5 s, install 9 s with a warm store, infra 2 s, API ready 5 s, web ready 2 s) | < 5 min |
 
 ## Next
-1. Cross-model review of Phase 0 with SPEC H1 (the six probes in
-   `docs/phases/PHASE-00-foundations.md` §9); fix findings.
-2. Decide `docs/DECISIONS.md` 0003 (visual tokens) and skim `docs/SPEC_QUESTIONS.md`.
-3. Phase 1 — Design system: paste the session prompt from
-   `docs/phases/PHASE-01-design-system.md` §12 into a fresh session.
+1. **Owner:** pick a direction (A, B, C, or a combination) from
+   `docs/design/directions/`; record it in `docs/UI_DECISIONS.md` (Phase 1 §4.2)
+   and confirm or replace the §5 proposals against it.
+2. Phase 1 sessions 3–7: icons, then components group by group (buttons, form
+   controls, overlays, navigation, feedback, status, data display, specialized),
+   the gallery registry and the screenshot / axe / keyboard specs.
+3. Cross-model review of Phase 0 with SPEC H1 and of Phase 1 with SPEC H2.
+4. Decide `docs/DECISIONS.md` 0003 (accent palette) alongside the direction pick.
 
 ## Known gaps
 - Screenshot baselines exist for Windows only; CI runs the smoke test with

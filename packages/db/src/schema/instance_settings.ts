@@ -1,6 +1,6 @@
 import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../columns.js";
+import { timestamps } from "../columns";
 
 /**
  * Instance-wide settings (SPEC B6): base domain, SMTP, registration mode,

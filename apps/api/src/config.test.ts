@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ConfigError, loadConfig, redactConnectionString } from "./config.js";
+import { ConfigError, loadConfig, redactConnectionString } from "./config";
 
 describe("loadConfig", () => {
   it("applies defaults", () => {

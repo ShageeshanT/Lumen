@@ -5,12 +5,12 @@ import type pg from "pg";
 
 import { makeError } from "@lumen/shared";
 
-import type { Config } from "./config.js";
-import type { Logger } from "./logger.js";
-import { errorHandler, notFoundHandler, type ErrorBody } from "./middleware/error.js";
-import { requestId, type RequestIdVariables } from "./middleware/request-id.js";
-import { registerOpenApi } from "./openapi.js";
-import { healthRoutes } from "./routes/health.js";
+import type { Config } from "./config";
+import type { Logger } from "./logger";
+import { errorHandler, notFoundHandler, type ErrorBody } from "./middleware/error";
+import { requestId, type RequestIdVariables } from "./middleware/request-id";
+import { registerOpenApi } from "./openapi";
+import { healthRoutes } from "./routes/health";
 
 export interface AppEnv {
   Variables: RequestIdVariables;
