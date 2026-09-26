@@ -12,6 +12,7 @@
  */
 @theme inline {
   --font-*: initial;
+  --font-display: var(--font-display);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 
@@ -32,19 +33,24 @@
 
   --leading-*: initial;
   --leading-none: var(--leading-none);
+  --leading-display: var(--leading-display);
   --leading-tight: var(--leading-tight);
   --leading-normal: var(--leading-normal);
 
   --tracking-*: initial;
-  --tracking-display: var(--tracking-display);
-  --tracking-title: var(--tracking-title);
   --tracking-normal: var(--tracking-normal);
-  --tracking-eyebrow: var(--tracking-eyebrow);
+  --tracking-display: var(--tracking-display);
+  --tracking-caps: var(--tracking-caps);
 
   --color-*: initial;
   --color-bg: var(--color-bg);
   --color-bg-canvas: var(--color-bg-canvas);
   --color-canvas-dot: var(--color-canvas-dot);
+  --color-grid: var(--color-grid);
+  --color-grid-major: var(--color-grid-major);
+  --color-glow-a: var(--color-glow-a);
+  --color-glow-b: var(--color-glow-b);
+  --color-vignette: var(--color-vignette);
   --color-surface: var(--color-surface);
   --color-surface-raised: var(--color-surface-raised);
   --color-surface-hover: var(--color-surface-hover);
@@ -104,6 +110,7 @@
   --shadow-*: initial;
   --shadow-raised: var(--shadow-raised);
   --shadow-card: var(--shadow-card);
+  --shadow-glow: var(--shadow-glow);
 
   --ease-*: initial;
   --ease-out: var(--ease-out);

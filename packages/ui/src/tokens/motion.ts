@@ -11,6 +11,15 @@ export const durations = {
   spinner: 800,
   pulse: 1600,
   shimmer: 1600,
+  /** Entrance per element; elements stagger by `stagger`. */
+  reveal: 240,
+  stagger: 45,
+  /** Leader lines and connectors. */
+  draw: 300,
+  /** Once-per-page decode of a display title. */
+  decode: 360,
+  flow: 1400,
+  breathe: 9000,
 } as const;
 
 export const easings = {

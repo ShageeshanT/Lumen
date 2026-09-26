@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction D · Signal</title><style>
+@font-face{font-family:"Geist";src:url("../../../apps/web/node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2") format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url("../../../apps/web/node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2") format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Geist Pixel";src:url("../../../apps/web/node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Square.woff2") format("woff2");font-display:swap}
+
+:root,[data-theme="dark"]{color-scheme:dark;
+  --bg:#050608;--bg-canvas:#040506;--grid:#0f1318;--grid-major:#161b22;--surface:#0a0c10;--raised:#0f1217;--hover:#151920;
+  --border:#1e232b;--border-strong:#353c47;--text:#e9ecf2;--text-2:#8c94a3;--text-3:#545b67;
+  --accent:#5b7cff;--accent-hover:#8298ff;--accent-subtle:rgba(91,124,255,.12);--accent-text:#7b93ff;--accent-fill:#3d5afe;--accent-ink:#fff;
+  --glow-a:#3d5afe;--glow-b:#8b5cf6;
+  --success:#2bd97c;--success-text:#2bd97c;--warning:#f5b83d;--warning-text:#f5b83d;--danger:#ff4d5e;--danger-text:#ff6b78;--sleeping:#6b7280;
+  --vignette:rgba(0,0,0,.65);--shadow:0 0 0 1px rgba(0,0,0,.4);
+}
+[data-theme="light"]{color-scheme:light;
+  --bg:#f3f4f6;--bg-canvas:#eef0f3;--grid:#e3e6eb;--grid-major:#d6dae1;--surface:#fff;--raised:#fff;--hover:#eef0f3;
+  --border:#dcdfe5;--border-strong:#b5bbc6;--text:#07090d;--text-2:#4e5663;--text-3:#858c98;
+  --accent:#3d5afe;--accent-hover:#2a44d6;--accent-subtle:rgba(61,90,254,.08);--accent-text:#2a44d6;--accent-fill:#3d5afe;--accent-ink:#fff;
+  --glow-a:#3d5afe;--glow-b:#8b5cf6;
+  --success:#15803d;--success-text:#166534;--warning:#b45309;--warning-text:#92400e;--danger:#dc2626;--danger-text:#b91c1c;--sleeping:#64748b;
+  --vignette:rgba(243,244,246,.7);--shadow:0 1px 2px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-family:"Geist",system-ui,sans-serif;font-size:13px;line-height:1.5;color:var(--text);background:var(--bg);text-rendering:optimizeLegibility}
+[data-theme="dark"]{-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.mono{font-family:"Geist Mono",ui-monospace,monospace}
+.px{font-family:"Geist Pixel","Geist Mono",monospace;font-weight:400}
+.cap{font-family:"Geist Mono",ui-monospace,monospace;text-transform:uppercase;letter-spacing:.08em;font-size:11px;font-weight:500}
+.tab{font-variant-numeric:tabular-nums}
+.ic{display:inline-block;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;vertical-align:middle}
+
+/* HUD corner brackets: four L-marks drawn with gradients, no extra DOM. */
+.hud{--b:var(--border-strong);--l:8px;--o:0px;position:relative}
+.hud::after{content:"";position:absolute;inset:calc(var(--o) * -1);pointer-events:none;
+  background:
+    linear-gradient(var(--b),var(--b)) top left/var(--l) 1px no-repeat,linear-gradient(var(--b),var(--b)) top left/1px var(--l) no-repeat,
+    linear-gradient(var(--b),var(--b)) top right/var(--l) 1px no-repeat,linear-gradient(var(--b),var(--b)) top right/1px var(--l) no-repeat,
+    linear-gradient(var(--b),var(--b)) bottom left/var(--l) 1px no-repeat,linear-gradient(var(--b),var(--b)) bottom left/1px var(--l) no-repeat,
+    linear-gradient(var(--b),var(--b)) bottom right/var(--l) 1px no-repeat,linear-gradient(var(--b),var(--b)) bottom right/1px var(--l) no-repeat;
+  transition:inset .12s cubic-bezier(0,0,.2,1)}
+.hud:hover::after{--o:3px}
+
+.app{display:grid;grid-template-columns:56px 1fr;grid-template-rows:48px 1fr;height:100vh;min-height:900px;overflow:hidden}
+
+/* rail */
+.rail{grid-row:1/3;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0;background:var(--bg);border-right:1px solid var(--border)}
+.mark{width:32px;height:32px;display:grid;place-items:center;margin-bottom:10px;color:var(--text)}
+.rail a{position:relative;width:40px;height:40px;display:grid;place-items:center;color:var(--text-2)}
+.rail a:hover{color:var(--text);background:var(--hover)}
+.rail a.active{color:var(--text)}
+.rail a.active::before{content:"";position:absolute;left:-8px;top:12px;width:2px;height:16px;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+.rail .spacer{flex:1}
+.rail .me{width:28px;height:28px;border:1px solid var(--border-strong);display:grid;place-items:center;font-family:"Geist Mono";font-size:10px;letter-spacing:.06em;color:var(--text-2)}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:20px;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--border)}
+.crumbs{display:flex;align-items:center;gap:10px;color:var(--text-2)}
+.crumbs .sep{color:var(--text-3)}
+.crumbs .cur{color:var(--text)}
+.env{display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 10px;border:1px solid var(--border);color:var(--text)}
+.env:hover{border-color:var(--border-strong)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:22px}
+.top .link{color:var(--text-2);display:inline-flex;align-items:center;gap:8px}
+.top .link:hover{color:var(--text)}
+.top .link .br{color:var(--text-3)}
+.top .link .n{color:var(--text)}
+.sq{width:6px;height:6px;display:inline-block;flex:none}
+.sq.s{background:var(--success)}.sq.w{background:var(--warning)}.sq.d{background:var(--danger)}.sq.m{background:var(--text-3)}
+.blink{animation:blink 1.6s steps(1,end) infinite}
+@keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.25}}
+
+/* canvas */
+.main{display:grid;grid-template-columns:1fr 480px;min-height:0}
+.canvas{position:relative;overflow:hidden;background-color:var(--bg-canvas);
+  background-image:linear-gradient(var(--grid-major) 1px,transparent 1px),linear-gradient(90deg,var(--grid-major) 1px,transparent 1px),
+    linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:96px 96px,96px 96px,8px 8px,8px 8px;background-position:-1px -1px}
+.canvas::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 45%,var(--vignette) 100%);z-index:0}
+.glow{position:absolute;left:260px;top:40px;width:520px;height:480px;pointer-events:none;z-index:0;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--glow-a) 22%,transparent),transparent 70%),radial-gradient(closest-side at 70% 60%,color-mix(in srgb,var(--glow-b) 16%,transparent),transparent 70%);
+  filter:blur(8px);opacity:.9;animation:breathe 9s ease-in-out infinite}
+[data-theme="light"] .glow{opacity:.35}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:.7}}
+.vp{position:absolute;z-index:3;color:var(--text-3);pointer-events:none}
+.vp.tl{left:20px;top:64px}.vp.bl{left:20px;bottom:84px}.vp.tr{right:20px;top:20px;text-align:right}
+.vp b{color:var(--text-2);font-weight:500}
+
+.node{position:absolute;z-index:2;width:248px;height:118px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(2px);
+  border:1px solid var(--border);padding:12px 14px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.node:hover{border-color:var(--border-strong)}
+.node.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 32px -6px var(--accent)}
+.node.sel.hud{--b:var(--accent)}
+.node .h{display:flex;align-items:center;gap:8px;min-width:0}
+.node .idx{color:var(--text-3)}
+.node .name{font-family:"Geist Mono";font-weight:500;font-size:13px;letter-spacing:.02em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;gap:6px;height:20px;padding:0 6px;font-family:"Geist Mono";font-size:10.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.tag .br{color:var(--text-3)}
+.tag.s{color:var(--success-text)}.tag.w{color:var(--warning-text)}.tag.d{color:var(--danger-text)}.tag.m{color:var(--text-2)}
+.node .url,.node .meta{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:6px;min-width:0}
+.node .url span,.node .meta span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.node .url{font-family:"Geist Mono";font-size:11.5px}
+.node .chips{display:flex;gap:6px;margin-top:auto}
+.chip{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 6px;border:1px solid var(--border);font-family:"Geist Mono";font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2)}
+.vol{position:absolute;z-index:2;width:248px;height:34px;background:var(--surface);border:1px dashed var(--border-strong);padding:0 12px;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text-2)}
+.vol::before{content:"";position:absolute;top:-9px;left:22px;width:1px;height:8px;background:var(--border-strong)}
+.vol .path{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:"Geist Mono"}
+.meter{display:inline-flex;gap:2px}.meter i{width:4px;height:8px;background:var(--border-strong)}.meter i.on{background:var(--accent)}
+.group{position:absolute;z-index:1;border:1px dashed var(--border-strong)}
+.group .lbl{position:absolute;top:-10px;left:14px;padding:0 8px;background:var(--bg-canvas);color:var(--text-2)}
+.group .lbl .sq{background:var(--accent);margin-right:6px;vertical-align:1px}
+.edges{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:visible}
+.edges path{fill:none;stroke:var(--border-strong);stroke-width:1;stroke-dasharray:3 3}
+.edges .flow{stroke:var(--accent);stroke-dasharray:2 14;stroke-width:1.5;animation:flow 1.4s linear infinite;opacity:.8}
+@keyframes flow{to{stroke-dashoffset:-16}}
+.edges text{font:10px "Geist Mono";letter-spacing:.08em;fill:var(--text-3)}
+.leader{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:visible}
+.leader path{fill:none;stroke:var(--accent);stroke-width:1}
+.leader circle{fill:var(--accent)}
+.leader .pt{fill:var(--bg);stroke:var(--accent)}
+
+.tools{position:absolute;z-index:3;left:20px;top:20px;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border:1px solid var(--border);color:var(--text);
+  font-family:"Geist Mono";font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;background:transparent;
+  transition:border-color .12s,background-color .12s,box-shadow .12s}
+.btn:hover{border-color:var(--border-strong);background:var(--hover)}
+.btn .arr{transition:transform .12s cubic-bezier(0,0,.2,1)}
+.btn:hover .arr{transform:translateX(3px)}
+.btn.primary{border-color:var(--text);color:var(--text);background:color-mix(in srgb,var(--text) 4%,transparent)}
+.btn.primary:hover{box-shadow:0 0 0 1px var(--text),0 0 28px -4px var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.btn.primary.hud{--b:var(--text);--l:6px;--o:3px}
+.btn.ghost{border-color:transparent}
+.btn.icon{width:30px;padding:0;justify-content:center}
+.kbd{font-family:"Geist Mono";font-size:10px;color:var(--text-3);letter-spacing:.04em}
+.zoom{position:absolute;z-index:3;right:20px;bottom:84px;display:flex;flex-direction:column;border:1px solid var(--border);background:var(--surface)}
+.zoom button{width:30px;height:30px;display:grid;place-items:center;color:var(--text-2)}
+.zoom button+button{border-top:1px solid var(--border)}
+.zoom button:hover{color:var(--text);background:var(--hover)}
+.staged{position:absolute;z-index:5;left:0;right:0;margin:0 auto;width:max-content;bottom:24px;height:44px;padding:0 8px 0 16px;display:flex;align-items:center;gap:16px;
+  background:color-mix(in srgb,var(--raised) 92%,transparent);backdrop-filter:blur(6px);border:1px solid var(--border-strong);white-space:nowrap}
+.staged .n{color:var(--accent-text)}
+
+/* inspector */
+.insp{position:relative;background:var(--bg);border-left:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.hd{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:10px}
+.hd .row{display:flex;align-items:center;gap:10px}
+.hd .eyebrow{color:var(--text-3)}
+.hd .title{font-size:28px;line-height:1;letter-spacing:.02em}
+.hd .acts{margin-left:auto;display:flex;align-items:center;gap:6px}
+.urlrow{display:flex;align-items:center;gap:8px;color:var(--text-2);font-family:"Geist Mono";font-size:11.5px;min-width:0}
+.urlrow span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.urlrow button{color:var(--text-3)}.urlrow button:hover{color:var(--text)}
+.tabs{display:flex;height:38px;border-bottom:1px solid var(--border);padding:0 12px;position:relative}
+.tabs button{position:relative;padding:0 10px;color:var(--text-2);display:inline-flex;align-items:center;gap:6px}
+.tabs button:hover{color:var(--text)}
+.tabs button.on{color:var(--text)}
+.tabs .ul{position:absolute;bottom:-1px;height:1px;background:var(--accent);box-shadow:0 0 10px var(--accent);transition:left .2s cubic-bezier(.2,.8,.2,1),width .2s cubic-bezier(.2,.8,.2,1)}
+.tabs .c{color:var(--text-3)}
+.body{padding:18px 20px;display:flex;flex-direction:column;gap:22px;overflow:auto}
+.sec{display:flex;flex-direction:column;gap:10px}
+.sh{display:flex;align-items:baseline;gap:10px;color:var(--text-2)}
+.sh .num{color:var(--text-3)}
+.sh .line{flex:1;height:1px;background:var(--border);align-self:center}
+.card{padding:14px;border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.card.hud{--b:var(--accent);--l:10px}
+.card .l1{display:flex;align-items:center;gap:10px;min-width:0}
+.card .msg{font-size:14px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .sha{font-family:"Geist Mono";font-size:11.5px;color:var(--text-2)}
+.card .l2{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2);flex-wrap:wrap}
+.card .l2 .sep{color:var(--text-3)}
+.card .l3{display:flex;gap:8px}
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.steps i{height:3px;background:var(--success);opacity:.85}
+.steps-l{display:flex;justify-content:space-between;color:var(--text-3)}
+.rows{display:flex;flex-direction:column;border-top:1px solid var(--border)}
+.r{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 4px;border-bottom:1px solid var(--border);position:relative}
+.r:hover{background:var(--hover)}
+.r::before{content:"";position:absolute;left:-1px;top:0;bottom:0;width:1px;background:transparent}
+.r:hover::before{background:var(--accent)}
+.r .st{width:128px;flex:none}
+.r .c{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.r .msg{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.r .m2{display:flex;gap:6px;color:var(--text-2);font-size:12px;white-space:nowrap}
+.r .m2 .sep{color:var(--text-3)}
+.r .sha{font-family:"Geist Mono";font-size:11px;color:var(--text-3)}
+.r .more{color:var(--text-3);width:24px;display:grid;place-items:center}
+.caption{position:absolute;right:20px;bottom:12px;color:var(--text-3);z-index:6;font-size:10px}
+
+/* boot-in choreography: each element ≤ 240 ms, staggered; disabled for reduced motion */
+.boot{opacity:0;transform:translateY(6px);clip-path:inset(0 0 100% 0)}
+.booted .boot{animation:reveal .24s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i,0) * 45ms)}
+@keyframes reveal{to{opacity:1;transform:none;clip-path:inset(-48px -48px -48px -48px)}}
+.draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.booted .draw{animation:draw .3s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:.5s}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){
+  .boot{opacity:1;transform:none;clip-path:none}.booted .boot{animation:none}
+  .draw{stroke-dashoffset:0}.booted .draw{animation:none}
+  .glow,.blink,.edges .flow{animation:none}
+  .hud::after,.btn,.btn .arr,.tabs .ul{transition:none}
+}</style></head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol><symbol id="i-layout-grid" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></symbol><symbol id="i-server" viewBox="0 0 24 24"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></symbol><symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol><symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></symbol><symbol id="i-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></symbol><symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol><symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol><symbol id="i-chevrons-up-down" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol><symbol id="i-external-link" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol><symbol id="i-rotate-cw" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></symbol><symbol id="i-ellipsis" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol><symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol><symbol id="i-hard-drive" viewBox="0 0 24 24"><path d="M10 16h.01"/><path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><path d="M21.946 12.013H2.054"/><path d="M6 16h.01"/></symbol><symbol id="i-git-branch" viewBox="0 0 24 24"><path d="M15 6a9 9 0 0 0-9 9V3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/></symbol><symbol id="i-git-commit-horizontal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="3" x2="9" y1="12" y2="12"/><line x1="15" x2="21" y1="12" y2="12"/></symbol><symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol><symbol id="i-cpu" viewBox="0 0 24 24"><path d="M12 20v2"/><path d="M12 2v2"/><path d="M17 20v2"/><path d="M17 2v2"/><path d="M2 12h2"/><path d="M2 17h2"/><path d="M2 7h2"/><path d="M20 12h2"/><path d="M20 17h2"/><path d="M20 7h2"/><path d="M7 20v2"/><path d="M7 2v2"/><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol><symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></symbol><symbol id="i-circle-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol><symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol><symbol id="i-command" viewBox="0 0 24 24"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></symbol><symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol><symbol id="i-terminal" viewBox="0 0 24 24"><path d="M12 19h8"/><path d="m4 17 6-6-6-6"/></symbol><symbol id="i-circle-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol><symbol id="i-square" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/></symbol><symbol id="i-moon-star" viewBox="0 0 24 24"><path d="M18 5h4"/><path d="M20 3v4"/><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol><symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol><symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol><symbol id="i-file-text" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol><symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></symbol><symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></symbol><symbol id="i-arrow-down-to-line" viewBox="0 0 24 24"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-key-round" viewBox="0 0 24 24"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></symbol><symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></symbol><symbol id="i-loader-circle" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></symbol></svg>
+<div class="app" id="app">
+  <nav class="rail" aria-label="Main">
+    <div class="mark boot" style="--i:0" title="Lumen"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" fill="none" stroke="currentColor"/><rect x="12" y="5" width="7" height="7" fill="var(--accent)"/></svg></div>
+    <a href="#" title="Home"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-house"/></svg></a>
+    <a href="#" class="active" title="Projects"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-layout-grid"/></svg></a>
+    <a href="#" title="Servers"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-server"/></svg></a>
+    <a href="#" title="Templates"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-layers"/></svg></a>
+    <a href="#" title="Observability"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-activity"/></svg></a>
+    <a href="#" title="Settings"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-settings"/></svg></a>
+    <div class="spacer"></div>
+    <a href="#" title="Help"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-circle-help"/></svg></a>
+    <div class="me">SH</div>
+  </nav>
+  <header class="top">
+    <div class="crumbs cap boot" style="--i:1"><span>Acme</span><span class="sep">/</span><span>Shop</span><span class="sep">/</span><span class="cur" data-decode>API</span></div>
+    <button class="env cap boot" style="--i:1" aria-label="Environment: production"><i class="sq s"></i>Production <svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+    <div class="right cap boot" style="--i:2">
+      <button class="link"><svg class="ic" width="13" height="13" aria-hidden="true"><use href="#i-search"/></svg>Search <span class="kbd">⌘K</span></button>
+      <button class="link"><i class="sq w blink"></i>Deploying <span class="br">[</span> <span class="n tab">2</span> <span class="br">]</span></button>
+      <button class="link">Alerts <span class="br">[</span> <span class="n tab">0</span> <span class="br">]</span></button>
+      <button class="link" id="theme" aria-label="Toggle theme"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-sun"/></svg></button>
+    </div>
+  </header>
+  <div class="main">
+    <section class="canvas" aria-label="Project canvas">
+      <div class="glow"></div>
+      <div class="tools boot" style="--i:2"><button class="btn"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-plus"/></svg>Add service <span class="kbd">⌘J</span></button></div>
+      <div class="vp tr cap boot" style="--i:2">Production<br><b>5 services</b> · 1 building</div>
+      <div class="vp bl cap">X <b class="tab">0240</b> &nbsp;Y <b class="tab">0120</b> &nbsp;·&nbsp; Zoom <b class="tab">100%</b></div>
+      <div class="group boot" style="left:312px;top:88px;width:296px;height:370px;--i:3"><span class="lbl cap"><i class="sq"></i>Backend · 02</span></div>
+      <svg class="edges" width="100%" height="100%">
+        <path d="M584 187 H632"/><path class="flow" d="M584 187 H632"/>
+        <path d="M584 203 C 608 203, 608 371, 632 371"/><path class="flow" d="M584 203 C 608 203, 608 371, 632 371"/>
+      </svg>
+      
+<div class="node hud boot" style="left:32px;top:128px;--i:3" role="group" aria-label="web, Active">
+  <div class="h"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-box"/></svg><span class="name">web</span><span class="tag s"><span class="br">[</span><i class="sq s"></i>Active<span class="br">]</span></span></div>
+  <div class="url"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-globe"/></svg><span>web-production-k3n8.apps.example.com</span></div>
+  <div class="meta"><span>2 min ago · feat: checkout redesign</span></div>
+  <div class="chips"><span class="cap" style="color:var(--text-3)">01</span><span class="chip"><svg class="ic" width="11" height="11" aria-hidden="true"><use href="#i-server"/></svg>oracle-1</span></div>
+</div>
+<div class="node hud boot sel" style="left:336px;top:128px;--i:4" role="group" aria-label="api, Active">
+  <div class="h"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-box"/></svg><span class="name">api</span><span class="tag s"><span class="br">[</span><i class="sq s"></i>Active<span class="br">]</span></span></div>
+  <div class="url"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-globe"/></svg><span>api-production-x2p4.apps.example.com</span></div>
+  <div class="meta"><span>3 min ago · fix: retry on 502</span></div>
+  <div class="chips"><span class="cap" style="color:var(--text-3)">02</span><span class="chip">×2</span><span class="chip"><svg class="ic" width="11" height="11" aria-hidden="true"><use href="#i-server"/></svg>oracle-1</span></div>
+</div>
+<div class="node hud boot" style="left:336px;top:312px;--i:5" role="group" aria-label="worker, Building">
+  <div class="h"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-cpu"/></svg><span class="name">worker</span><span class="tag w"><span class="br">[</span><i class="sq w blink"></i>Building<span class="br">]</span></span></div>
+  <div class="url"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-lock"/></svg><span>no public url</span></div>
+  <div class="meta"><span>3 min ago · fix: retry on 502</span></div>
+  <div class="chips"><span class="cap" style="color:var(--text-3)">03</span><span class="chip"><svg class="ic" width="11" height="11" aria-hidden="true"><use href="#i-server"/></svg>oracle-1</span></div>
+</div>
+<div class="node hud boot" style="left:632px;top:128px;--i:6" role="group" aria-label="postgres, Active">
+  <div class="h"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-database"/></svg><span class="name">postgres</span><span class="tag s"><span class="br">[</span><i class="sq s"></i>Active<span class="br">]</span></span></div>
+  <div class="url"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-lock"/></svg><span>private only</span></div>
+  <div class="meta"><span>12 d ago · postgres:16</span></div>
+  <div class="chips"><span class="cap" style="color:var(--text-3)">04</span><span class="chip"><svg class="ic" width="11" height="11" aria-hidden="true"><use href="#i-server"/></svg>oracle-1</span></div>
+</div>
+<div class="node hud boot" style="left:632px;top:312px;--i:7" role="group" aria-label="redis, Active">
+  <div class="h"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-database"/></svg><span class="name">redis</span><span class="tag s"><span class="br">[</span><i class="sq s"></i>Active<span class="br">]</span></span></div>
+  <div class="url"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-lock"/></svg><span>private only</span></div>
+  <div class="meta"><span>12 d ago · redis:7</span></div>
+  <div class="chips"><span class="cap" style="color:var(--text-3)">05</span><span class="chip"><svg class="ic" width="11" height="11" aria-hidden="true"><use href="#i-server"/></svg>oracle-1</span></div>
+</div>
+      <div class="vol boot" style="left:632px;top:254px;--i:9" role="button" aria-label="Volume data at /var/lib/postgresql/data, 1.2 of 5 gigabytes used"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-hard-drive"/></svg><span class="path">/var/lib/postgresql/data</span><span class="tab">1.2/5 GB</span><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+      <svg class="leader" width="100%" height="100%" aria-hidden="true">
+        <circle class="pt" cx="460" cy="128" r="3"/>
+        <path class="draw" style="--len:520" d="M460 125 V 60 H 904"/>
+      </svg>
+      <div class="zoom"><button aria-label="Fit"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-square"/></svg></button><button aria-label="Zoom in"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-plus"/></svg></button><button aria-label="Zoom out"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></div>
+      <div class="staged hud boot" style="--i:10"><span class="cap"><span class="n tab">02</span> changes · 1 service</span><button class="btn ghost">Discard</button><button class="btn primary hud">Review &amp; deploy <span class="kbd" style="color:inherit;opacity:.6">⇧⏎</span> <span class="arr">→</span></button></div>
+    </section>
+    <aside class="insp" aria-label="Service inspector">
+      <div class="hd boot" style="--i:4">
+        <div class="row"><span class="eyebrow cap">Service · 02</span><div class="acts"><button class="btn icon" aria-label="More"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-ellipsis"/></svg></button><button class="btn icon" aria-label="Close"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-x"/></svg></button></div></div>
+        <div class="row"><span class="title px" data-decode>API</span><span class="tag s"><span class="br">[</span><i class="sq s"></i>Active<span class="br">]</span></span><div class="acts"><button class="btn primary hud"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-rotate-cw"/></svg>Redeploy <span class="arr">→</span></button><button class="btn icon" aria-label="More deploy options"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></div></div>
+        <div class="urlrow"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-globe"/></svg><span>api-production-x2p4.apps.example.com</span><button aria-label="Copy URL"><svg class="ic" width="13" height="13" aria-hidden="true"><use href="#i-copy"/></svg></button><button aria-label="Open URL"><svg class="ic" width="13" height="13" aria-hidden="true"><use href="#i-external-link"/></svg></button></div>
+      </div>
+      <div class="tabs cap boot" style="--i:5" id="tabs"><button class="on">Deployments <span class="c tab">[12]</span></button><button>Variables</button><button>Metrics</button><button>Logs</button><button>Settings</button><i class="ul"></i></div>
+      <div class="body">
+        <div class="sec boot" style="--i:6"><div class="sh cap"><span class="num">01</span><span>Active deployment</span><span class="line"></span></div>
+          <div class="card hud">
+            <div class="l1"><span class="tag s"><span class="br">[</span><i class="sq s"></i>Live<span class="br">]</span></span><span class="msg">fix: retry on 502</span><span class="sha">a1b2c3d</span></div>
+            <div class="l2"><span>Shagee</span><span class="sep">·</span><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-git-branch"/></svg><span>main</span><span class="sep">·</span><span>Pushed to main</span><span class="sep">·</span><span class="tab">42s</span><span class="sep">·</span><span>oracle-1 ×2</span></div>
+            <div class="steps" aria-label="Queued, building, pre-deploy, deploying, health check and live all done"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="steps-l cap" style="font-size:9.5px"><span>Queue</span><span>Build</span><span>Pre</span><span>Deploy</span><span>Health</span><span>Live</span></div>
+            <div class="l3"><button class="btn"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-file-text"/></svg>View logs</button><button class="btn ghost"><svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-terminal"/></svg>Open shell</button></div>
+          </div>
+        </div>
+        <div class="sec boot" style="--i:7"><div class="sh cap"><span class="num">02</span><span>History</span><span class="line"></span><span class="tab">12</span></div>
+          <div class="rows">
+            <div class="r"><span class="st"><span class="tag s"><span class="br">[</span><i class="sq s"></i>Active<span class="br">]</span></span></span><span class="c"><span class="msg">fix: retry on 502</span><span class="m2"><span class="sha">a1b2c3d</span><span class="sep">·</span><span>Pushed to main</span><span class="sep">·</span><span class="tab">3 min ago</span><span class="sep">·</span><span class="tab">42s</span></span></span><span class="more"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-ellipsis"/></svg></span></div><div class="r"><span class="st"><span class="tag m"><span class="br">[</span><i class="sq m"></i>Superseded<span class="br">]</span></span></span><span class="c"><span class="msg">chore: bump dependencies</span><span class="m2"><span class="sha">9f8e7d6</span><span class="sep">·</span><span>Pushed to main</span><span class="sep">·</span><span class="tab">2 h ago</span><span class="sep">·</span><span class="tab">51s</span></span></span><span class="more"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-ellipsis"/></svg></span></div><div class="r"><span class="st"><span class="tag d"><span class="br">[</span><i class="sq d"></i>Failed<span class="br">]</span></span></span><span class="c"><span class="msg">feat: rate limits</span><span class="m2"><span class="sha">c4d5e6f</span><span class="sep">·</span><span>Pushed to main</span><span class="sep">·</span><span class="tab">5 h ago</span><span class="sep">·</span><span class="tab">1m 12s</span></span></span><span class="more"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-ellipsis"/></svg></span></div><div class="r"><span class="st"><span class="tag m"><span class="br">[</span><i class="sq m"></i>Superseded<span class="br">]</span></span></span><span class="c"><span class="msg">fix: typo in README</span><span class="m2"><span class="sha">1a2b3c4</span><span class="sep">·</span><span>Redeployed</span><span class="sep">·</span><span class="tab">1 d ago</span><span class="sep">·</span><span class="tab">39s</span></span></span><span class="more"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-ellipsis"/></svg></span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="caption cap">D · Signal · sun icon switches theme · reload to replay the boot-in</div>
+<script>
+(function(){
+  var h=document.documentElement,app=document.getElementById("app");
+  var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById("theme").addEventListener("click",function(){h.dataset.theme=h.dataset.theme==="dark"?"light":"dark"});
+  // Tab underline follows the active tab.
+  var tabs=document.getElementById("tabs"),ul=tabs.querySelector(".ul");
+  function place(b){ul.style.left=b.offsetLeft+10+"px";ul.style.width=b.offsetWidth-20+"px"}
+  tabs.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){tabs.querySelector(".on").classList.remove("on");b.classList.add("on");place(b)})});
+  // Decode: characters resolve left to right from glyph noise (≤ 360 ms, once).
+  function decode(el){var t=el.textContent,g="#%&*/<>=+?01ABCDEFXYZ",n=0,steps=9;
+    var id=setInterval(function(){n++;el.textContent=t.split("").map(function(c,i){return i<Math.floor(n/steps*t.length)||c===" "?c:g[Math.floor(Math.random()*g.length)]}).join("");if(n>=steps){clearInterval(id);el.textContent=t}},40)}
+  document.fonts.ready.then(function(){
+    place(tabs.querySelector(".on"));
+    if(reduce){app.classList.add("booted");return}
+    requestAnimationFrame(function(){app.classList.add("booted");document.querySelectorAll("[data-decode]").forEach(decode)});
+  });
+})();
+</script>
+</body></html>

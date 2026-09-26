@@ -4,28 +4,26 @@ _Updated: 2026-09-26_
 
 ## Current phase
 Phase 1 — Design direction and design system. In progress (sessions 1–2 of 7
-done: three directions produced; tokens, theme, typography, helpers and the
-gallery foundations built). **Blocked on the owner's direction pick** (see
-`docs/design/directions/README.md`). Phase 0 awaits its cross-model review
-(SPEC H1).
+done). **Direction chosen: D "Signal"** (owner's reference images, 2026-09-26),
+and its tokens, type, surfaces and motion are live in `@lumen/ui`. Phase 0
+awaits its cross-model review (SPEC H1).
 
 ### Phase 1 so far (2026-09-26)
-- Three direction pages with screenshots in both themes:
-  `docs/design/directions/{a-instrument,b-studio,c-console}.html`.
-- `@lumen/ui`: color tokens for both themes with the `-text` / `-fill` / `-ink`
-  tiers, typography, spacing, radius, elevation, z-index and motion tokens; the
-  no-flash theme script, `ThemeProvider` and `useTheme` (system / dark / light,
-  OS-follow, cross-tab sync); named text styles with a test that checks
-  `text.css` against the usage table; `cn`, format, truncation and contrast
-  helpers; the `Text` component. 84 unit tests.
-- A contrast test parses `colors.css` and enforces 4.5:1 for every text token on
-  every surface and 3:1 for non-text status colors; it caught two light tokens the
-  phase document had wrong (recorded in `docs/UI_DECISIONS.md`).
-- The web app now imports tokens and styles from `@lumen/ui` with a Tailwind
-  `@theme inline` mapping; the gallery has a nav, theme toggle, a live Tokens page
-  (contrast table computed from the CSS variables) and a Typography page.
-- Playwright `theme.spec.ts`: no flash at 6× CPU throttle for stored dark/light,
-  live OS-follow in system mode, and utilities resolving to token values.
+- Four direction pages in `docs/design/directions/`; D "Signal" chosen, with
+  screenshots in both themes and a motion capture (`d-signal-motion.webm`).
+- `@lumen/ui` carries the Direction D palette (both themes, `-text` / `-fill` /
+  `-ink` tiers, glow and grid tokens), Geist Pixel display type, uppercase mono
+  chrome styles, square radii, entrance/draw/flow/breathe/blink keyframes with
+  full reduced-motion support, and the surface utilities `.hud`, `.bg-grid`,
+  `.bg-vignette`, `.glow-field`, `.boot`, `.blink`.
+- Theme script, `ThemeProvider` and `useTheme` (system / dark / light, OS-follow,
+  cross-tab sync); named text styles checked against the usage table; `cn`,
+  format, truncation and contrast helpers; the `Text` component. 88 unit tests.
+- Contrast test parses `colors.css`: every text token 4.5:1 and every status
+  color 3:1 on all four surfaces in both themes.
+- Gallery: Tokens (live contrast table), Typography, Signal surfaces pages.
+- Playwright: smoke + theme specs, 42 runs across 6 projects, including no-flash
+  at 6× CPU throttle and a guard that color utilities override text styles.
 
 ## Done
 - 2026-09-26 — Repository initialized. Spec saved as `docs/SPEC.md`. `CLAUDE.md`
@@ -63,14 +61,15 @@ gallery foundations built). **Blocked on the owner's direction pick** (see
 | Fresh clone → `db: ok` following README.md | 23 s (clone 5 s, install 9 s with a warm store, infra 2 s, API ready 5 s, web ready 2 s) | < 5 min |
 
 ## Next
-1. **Owner:** pick a direction (A, B, C, or a combination) from
-   `docs/design/directions/`; record it in `docs/UI_DECISIONS.md` (Phase 1 §4.2)
-   and confirm or replace the §5 proposals against it.
-2. Phase 1 sessions 3–7: icons, then components group by group (buttons, form
-   controls, overlays, navigation, feedback, status, data display, specialized),
-   the gallery registry and the screenshot / axe / keyboard specs.
-3. Cross-model review of Phase 0 with SPEC H1 and of Phase 1 with SPEC H2.
-4. Decide `docs/DECISIONS.md` 0003 (accent palette) alongside the direction pick.
+1. Update SPEC C4 to the Direction D values (SPEC_QUESTIONS 40–41) so the spec
+   stays the source of truth before Phase 5.
+2. Phase 1 sessions 3–7 in the Signal language: icons (Lucide at stroke 1.5 with
+   square caps, status markers), then components group by group (buttons with
+   HUD brackets, form controls, overlays, navigation, feedback, status tags,
+   data display, canvas node / edge / group with leader lines and edge flow), the
+   `Decode` title component, the gallery registry and the screenshot / axe /
+   keyboard specs.
+3. Cross-model review of Phase 0 (SPEC H1) and Phase 1 (SPEC H2).
 
 ## Known gaps
 - Screenshot baselines exist for Windows only; CI runs the smoke test with

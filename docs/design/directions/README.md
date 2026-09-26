@@ -1,5 +1,9 @@
 # Design directions (Phase 1, step 1)
 
+**Chosen: Direction D · Signal** (`d-signal.html`), built from the owner's reference
+images. A, B and C below are kept for reference only. Open `d-signal.html` and
+reload to replay the boot-in; `screenshots/d-signal-motion.webm` records the motion.
+
 Three static pages of the same screen, the project canvas with the service
 inspector open on `api`, built from the SPEC C4 tokens and differing on purpose.
 Open each file in Chrome straight from disk; the sun icon in the top bar toggles
@@ -9,6 +13,7 @@ dark and light. Screenshots at 1440 × 900 in both themes are in `screenshots/`.
 |---|---|---|---|
 | A · Instrument | `a-instrument.html` | Dense, precise, quiet | 13 px base in lists, hairline borders, accent only on the primary button and focus, Geist Mono for every identifier (service names, URLs, hashes), radius 6 everywhere, 32 px history rows |
 | B · Studio | `b-studio.html` | Comfortable, warm | 14 px base, radius 10 on nodes and 14 on the floating inspector, accent tints the selected node and the active deployment card, sans for identifiers with mono reserved for hashes, 24 px gutters, 16 px card padding, 44 px rows |
+| D · Signal (chosen) | `d-signal.html` | Instrument panel, live | Near-black with a fine grid, electric-blue signal and violet glow, Geist Pixel titles, uppercase mono chrome, square corners, HUD brackets, bracket notation, leader line to the inspector, boot-in, decode, edge flow, LED blink |
 | C · Console | `c-console.html` | Dark-first, mechanical | Nodes on `surface-raised`, status carried by 8 px dots and left bars instead of pills, secondary text one step lighter, mono for meta rows and the whole inspector header, 36 px rows |
 
 Content is identical in all three: five services (`web`, `api`, `worker`,

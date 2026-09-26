@@ -11,7 +11,7 @@ const dir = resolve(root, "docs/design/directions");
 const outDir = resolve(dir, "screenshots");
 mkdirSync(outDir, { recursive: true });
 
-const pages = ["a-instrument", "b-studio", "c-console"];
+const pages = ["a-instrument", "b-studio", "c-console", "d-signal"];
 const browser = await chromium.launch();
 const context = await browser.newContext({
   viewport: { width: 1440, height: 900 },
@@ -26,7 +26,7 @@ for (const name of pages) {
     await page.evaluate((t) => {
       document.documentElement.dataset.theme = t;
     }, theme);
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(1200);
     const file = resolve(outDir, `${name}-${theme}.png`);
     await page.screenshot({ path: file, fullPage: false, animations: "disabled" });
     console.log("wrote", file);

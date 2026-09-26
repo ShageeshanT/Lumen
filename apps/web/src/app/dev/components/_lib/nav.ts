@@ -15,6 +15,7 @@ export const GALLERY_GROUPS: readonly GalleryGroup[] = [
     entries: [
       { slug: "tokens", label: "Tokens" },
       { slug: "typography", label: "Typography" },
+      { slug: "signal", label: "Signal surfaces" },
     ],
   },
 ];

@@ -1,13 +1,24 @@
 /*
- * Elevation. The shadow and highlight values live in colors.css because they
- * differ per theme; these classes apply them consistently.
+ * Elevation. Dark theme: borders and glow only. Light theme: soft shadows.
+ * The values live in colors.css because they differ per theme.
  */
-.elevation-card {
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-card);
-}
+/* Layered so Tailwind utilities (a later layer) can override these styles. */
+@layer components {
+  .elevation-card {
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+  }
 
-.elevation-raised {
-  border: 1px solid var(--color-border);
-  box-shadow: var(--highlight-inset), var(--shadow-raised);
+  .elevation-raised {
+    border: 1px solid var(--color-border);
+    box-shadow: var(--highlight-inset), var(--shadow-raised);
+  }
+
+  /* The selected object: accent border plus a halo. One per view. */
+  .elevation-selected {
+    border: 1px solid var(--color-accent);
+    box-shadow:
+      0 0 0 1px var(--color-accent),
+      var(--shadow-glow);
+  }
 }

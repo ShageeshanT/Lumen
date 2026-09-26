@@ -4,14 +4,17 @@
  * soft state on :focus in their own styles because a typed-in field always
  * deserves a visible state.
  */
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-  border-radius: inherit;
-  transition: none;
-}
+/* Layered so Tailwind utilities (a later layer) can override these styles. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: inherit;
+    transition: none;
+  }
 
-/* Elements that manage their own visible focus state opt out with this class. */
-.focus-inset:focus-visible {
-  outline-offset: -2px;
+  /* Elements that manage their own visible focus state opt out with this class. */
+  .focus-inset:focus-visible {
+    outline-offset: -2px;
+  }
 }

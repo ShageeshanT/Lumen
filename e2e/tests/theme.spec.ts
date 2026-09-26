@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const DARK_BG = "rgb(13, 15, 18)";
-const LIGHT_BG = "rgb(247, 247, 245)";
+const DARK_BG = "rgb(5, 6, 8)";
+const LIGHT_BG = "rgb(243, 244, 246)";
 
 async function storedPreference(page: Page, value: string | null) {
   await page.addInitScript((stored) => {
@@ -40,7 +40,7 @@ test.describe("theme", () => {
     expect(state.theme).toBe("dark");
     expect(state.colorScheme).toBe("dark");
     expect(state.bodyBackground).toBe(DARK_BG);
-    expect(state.bgToken).toBe("#0d0f12");
+    expect(state.bgToken).toBe("#050608");
   });
 
   test("stored light renders light on the first painted frame", async ({ page }) => {
@@ -50,7 +50,7 @@ test.describe("theme", () => {
     const state = await firstPaintState(page);
     expect(state.theme).toBe("light");
     expect(state.bodyBackground).toBe(LIGHT_BG);
-    expect(state.bgToken).toBe("#f7f7f5");
+    expect(state.bgToken).toBe("#f3f4f6");
   });
 
   test("system follows the OS and updates live without a reload", async ({ page }) => {
@@ -79,7 +79,16 @@ test.describe("theme", () => {
     const swatch = page.locator('[data-gallery-page="tokens"] li').first().locator("span").first();
     await expect(swatch).toHaveCSS("background-color", DARK_BG);
     const surface = page.locator('[data-gallery-page="tokens"] li').first();
-    await expect(surface).toHaveCSS("background-color", "rgb(20, 23, 27)");
-    await expect(surface).toHaveCSS("border-top-left-radius", "10px");
+    await expect(surface).toHaveCSS("background-color", "rgb(10, 12, 16)");
+    await expect(surface).toHaveCSS("border-top-left-radius", "2px");
+  });
+
+  test("color utilities override the named text styles (cascade layers)", async ({ page }) => {
+    await storedPreference(page, "dark");
+    await page.goto("/dev/components/signal");
+    // `.text-action` sets color: var(--color-text); `text-success-text` must win over it.
+    const active = page.locator(".text-action.text-success-text", { hasText: "Active" });
+    await expect(active).toHaveCSS("color", "rgb(43, 217, 124)");
+    await expect(active).toHaveCSS("text-transform", "uppercase");
   });
 });

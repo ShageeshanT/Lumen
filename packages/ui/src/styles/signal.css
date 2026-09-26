@@ -1,0 +1,132 @@
+/*
+ * Direction D "Signal" surface utilities: HUD corner brackets, the instrument
+ * grid, the glow field, and the boot-in entrance. Components compose these;
+ * pages never re-create them.
+ */
+/* Layered so Tailwind utilities (a later layer) can override these styles. */
+@layer components {
+  /*
+   * HUD corner brackets: four L-marks drawn with gradients on ::after, so any
+   * element can wear them without extra markup. Tune with:
+   *   --hud-color  bracket color (default border-strong)
+   *   --hud-size   arm length (default 8px)
+   *   --hud-offset distance outside the box (default 0; grows on hover)
+   */
+  .hud {
+    --hud-color: var(--color-border-strong);
+    --hud-size: 8px;
+    --hud-offset: 0px;
+    position: relative;
+  }
+
+  .hud::after {
+    content: "";
+    position: absolute;
+    inset: calc(var(--hud-offset) * -1);
+    pointer-events: none;
+    background:
+      linear-gradient(var(--hud-color), var(--hud-color)) top left / var(--hud-size) 1px no-repeat,
+      linear-gradient(var(--hud-color), var(--hud-color)) top left / 1px var(--hud-size) no-repeat,
+      linear-gradient(var(--hud-color), var(--hud-color)) top right / var(--hud-size) 1px no-repeat,
+      linear-gradient(var(--hud-color), var(--hud-color)) top right / 1px var(--hud-size) no-repeat,
+      linear-gradient(var(--hud-color), var(--hud-color)) bottom left / var(--hud-size) 1px
+        no-repeat,
+      linear-gradient(var(--hud-color), var(--hud-color)) bottom left / 1px var(--hud-size)
+        no-repeat,
+      linear-gradient(var(--hud-color), var(--hud-color)) bottom right / var(--hud-size) 1px
+        no-repeat,
+      linear-gradient(var(--hud-color), var(--hud-color)) bottom right / 1px var(--hud-size)
+        no-repeat;
+    transition: inset var(--dur-fast) var(--ease-out);
+  }
+
+  .hud-hover:hover::after,
+  .hud-hover:focus-visible::after {
+    --hud-offset: 3px;
+  }
+
+  .hud-accent {
+    --hud-color: var(--color-accent);
+  }
+
+  /* Instrument grid for canvases and hero surfaces. */
+  .bg-grid {
+    background-color: var(--color-bg-canvas);
+    background-image:
+      linear-gradient(var(--color-grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid-major) 1px, transparent 1px),
+      linear-gradient(var(--color-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    background-size:
+      96px 96px,
+      96px 96px,
+      8px 8px,
+      8px 8px;
+    background-position: -1px -1px;
+  }
+
+  /* Soft edge darkening so the grid falls away toward the corners. */
+  .bg-vignette {
+    position: relative;
+  }
+
+  .bg-vignette::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 45%, transparent 45%, var(--color-vignette) 100%);
+  }
+
+  /* A breathing light field behind the focal object. Decorative, aria-hidden. */
+  .glow-field {
+    pointer-events: none;
+    background:
+      radial-gradient(closest-side, var(--color-glow-a), transparent 70%),
+      radial-gradient(closest-side at 70% 60%, var(--color-glow-b), transparent 70%);
+    filter: blur(8px);
+    animation: lumen-breathe var(--dur-breathe) ease-in-out infinite;
+  }
+
+  /*
+   * Boot-in entrance. Put .boot on each element and --i (0, 1, 2…) for its
+   * order; add .booted to an ancestor once fonts are ready.
+   */
+  .boot {
+    opacity: 0;
+  }
+
+  .booted .boot {
+    animation: lumen-reveal var(--dur-reveal) var(--ease-panel) forwards;
+    animation-delay: calc(var(--i, 0) * var(--stagger));
+  }
+
+  /* Hard blink for building and deploying markers. */
+  .blink {
+    animation: lumen-blink var(--dur-pulse) steps(1, end) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .boot,
+    .booted .boot {
+      opacity: 1;
+      animation: none;
+    }
+
+    .glow-field,
+    .blink {
+      animation: none;
+    }
+  }
+
+  :root[data-reduced-motion="true"] .boot,
+  :root[data-reduced-motion="true"] .booted .boot {
+    opacity: 1;
+    animation: none;
+  }
+
+  :root[data-reduced-motion="true"] .glow-field,
+  :root[data-reduced-motion="true"] .blink {
+    animation: none;
+  }
+}

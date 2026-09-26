@@ -1,16 +1,17 @@
 import { Text, TEXT_STYLES } from "@lumen/ui";
 
 const SAMPLES: Record<string, string> = {
-  display: "You're ready. Deploy your first app",
+  display: "Deploy your first app",
   "page-title": "Projects",
   "section-title": "Recent deploys",
-  "card-title": "api",
+  "card-title": "api-production",
   subsection: "Networking",
   body: "Your app ran out of memory (512 MB). Give it 1 GB?",
   "body-secondary": "Sleep after 10 minutes without requests. The first request wakes it.",
   label: "Start command",
+  action: "Redeploy →",
   meta: "Deployed 3 min ago · 42s · oracle-1",
-  eyebrow: "Recent",
+  eyebrow: "01 · Active deployment",
   code: "DATABASE_URL",
   log: '12:04:07.318 INF listening on :3000 {"port":3000}',
   kbd: "⌘K",
@@ -22,8 +23,9 @@ export default function TypographyPage() {
       <div className="flex flex-col gap-2">
         <Text variant="page-title">Typography</Text>
         <Text variant="body" className="text-text-secondary">
-          Geist Sans for the interface, Geist Mono for identifiers, values, paths, commands and
-          logs. Every style below is a named class; pages never set a raw size.
+          Three voices: Geist Pixel for titles, Geist Mono in uppercase for chrome and as-is for
+          identifiers and logs, Geist Sans for anything read as a sentence. Every style below is a
+          named class; pages never set a raw size.
         </Text>
       </div>
       <ul className="flex flex-col">

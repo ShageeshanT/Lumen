@@ -23,7 +23,7 @@ with") in commits, pull requests or files.
 **Why:** Owner's instruction.
 **Rejected:** default tool attribution trailers.
 
-## 0003 · 2026-09-26 · Parity target and visual identity — **OPEN**
+## 0003 · 2026-09-26 · Parity target and visual identity — **RESOLVED (see 0030)**
 **Decision (default):** Railway is the feature and UX parity target: its feature set
 and interaction structure are replicated (canvas + inspector, staged changes, ⌘K,
 environments, PR environments, templates, observability, CLI, MCP). Visual tokens
@@ -296,3 +296,43 @@ Z-index comes only from `--z-base/sticky/rail/panel/popover/modal/toast/palette`
 (0/10/20/30/40/50/60/70).
 **Why:** Keyboard users get the same ring everywhere and instantly; a fixed layer
 order prevents the "z-index: 9999" escalation that breaks overlays later.
+
+## 0030 · 2026-09-26 · Visual direction D "Signal" replaces the SPEC C4 look
+**Decision:** The owner chose a HUD / instrument-panel direction from two
+reference images: near-black with a fine grid, electric-blue accent with a
+blue-violet glow, Geist Pixel display type, uppercase Geist Mono chrome, square
+corners, corner brackets, bracket notation, leader lines, and live motion
+(boot-in, decode, edge flow, blink). Full value table in
+`docs/UI_DECISIONS.md`. Railway stays the feature and interaction-structure
+parity target; the look is Lumen's own and copies nothing from the reference
+site. Resolves 0003 (accent: electric blue, not teal).
+**Why:** Owner's instruction ("this is the kind of ui and animation theme that
+was in my head"). Tokens made the swap a token-file change plus tests.
+**Kept from the spec:** WCAG AA contrast on every surface, sentence-case sans for
+readable text, one strong element per view, full reduced-motion support, a light
+theme.
+**Rejected:** directions A, B and C.
+
+## 0031 · 2026-09-26 · Geist Pixel Square as the display face
+**Decision:** Page, section and display titles use Geist Pixel Square
+(`geist/font/pixel`, weight 500), loaded by `next/font` next to Geist Sans and
+Mono. Same package and license (SIL OFL 1.1) as 0005, so no new dependency.
+**Why:** Closest match to the reference lettering among the five Pixel variants
+(Square, Grid, Circle, Triangle, Line were compared side by side).
+
+## 0032 · 2026-09-26 · Entrance choreography exception to the 300 ms rule
+**Decision:** Interaction feedback stays at or under 300 ms. First-load entrance
+may reveal each element in 240 ms with a 45 ms stagger (screen assembled in under
+700 ms), a display title may decode once per page in under 360 ms, and three
+slow ambient loops are allowed (edge flow 1.4 s, glow breathe 9 s, status blink
+1.6 s). All of them stop under `prefers-reduced-motion` and the account
+reduced-motion preference.
+**Why:** The direction's "live system" character depends on assembly and flow;
+limiting them to entrance and ambient layers keeps interactions instant.
+
+## 0033 · 2026-09-26 · Design-system CSS in cascade layers
+**Decision:** `@lumen/ui` base styles are in `@layer base` and its named text,
+surface and elevation classes in `@layer components`, so Tailwind utilities
+always override them.
+**Why:** Unlayered styles beat layered utilities; a color utility on a text-styled
+element was being ignored. Guarded by a Playwright test.

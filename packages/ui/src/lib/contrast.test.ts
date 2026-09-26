@@ -43,38 +43,36 @@ describe("contrast math", () => {
   });
 });
 
-describe("the documented contrast table (PHASE-01 §5)", () => {
+describe("the Direction D contrast table (docs/UI_DECISIONS.md)", () => {
   const dark = tokens("dark");
   const light = tokens("light");
 
   it.each([
-    ["text", "bg", 15.92],
-    ["text", "surface", 14.92],
-    ["text-secondary", "bg", 7.53],
-    ["text-secondary", "surface-hover", 6.05],
-    ["text-muted", "surface", 3.38],
-    ["accent", "bg", 7.71],
-    ["danger", "surface-hover", 4.1],
-    ["danger-text", "surface-hover", 5.58],
-    ["info-text", "surface-hover", 6.07],
-    ["sleeping-text", "surface", 7.01],
+    ["text", "bg", 17.13],
+    ["text", "surface-hover", 14.89],
+    ["text-secondary", "bg", 6.64],
+    ["text-secondary", "surface-hover", 5.77],
+    ["text-muted", "surface", 2.86],
+    ["accent", "surface-hover", 4.84],
+    ["accent-text", "surface-hover", 6.26],
+    ["danger-text", "surface-hover", 6.4],
+    ["info-text", "surface-hover", 7.96],
+    ["sleeping", "surface-hover", 3.64],
+    ["sleeping-text", "surface", 7.69],
   ])("dark: %s on %s is %d", (fg, bg, expected) => {
     expect(contrast(dark[fg] ?? "", dark[bg] ?? "")).toBeCloseTo(expected, 1);
   });
 
   it.each([
-    ["text", "bg", 16.58],
-    ["text-secondary", "surface", 6.17],
-    ["accent", "surface", 3.74],
-    ["accent-text", "surface", 5.47],
-    ["accent-text", "surface-hover", 4.88],
-    ["success", "surface-hover", 4.47],
-    ["success-text", "surface", 7.13],
-    ["success-text", "surface-hover", 6.36],
-    ["warning", "bg", 4.68],
-    ["warning", "surface-hover", 4.48],
-    ["warning-text", "surface", 7.09],
-    ["warning-text", "surface-hover", 6.32],
+    ["text", "bg", 18.11],
+    ["text-secondary", "surface", 7.41],
+    ["text-secondary", "surface-hover", 6.49],
+    ["accent", "surface-hover", 4.49],
+    ["accent-text", "surface-hover", 6.35],
+    ["success", "surface-hover", 4.39],
+    ["success-text", "surface-hover", 6.25],
+    ["warning", "surface-hover", 4.4],
+    ["warning-text", "surface-hover", 6.21],
     ["danger-text", "surface", 6.47],
     ["info-text", "surface", 6.7],
     ["sleeping-text", "surface", 7.58],

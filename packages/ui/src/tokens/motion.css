@@ -1,6 +1,12 @@
 /*
- * Motion tokens (SPEC C4). Nothing animates longer than 300 ms except progress
- * indicators. Spring constants for the Motion library live in motion.ts.
+ * Motion tokens · Direction D "Signal".
+ *
+ * Interaction feedback (hover, press, toggle, panels) stays at or under 300 ms.
+ * Entrance choreography is the one exception: on first load each element
+ * reveals in --dur-reveal with a --stagger step, so a screen assembles in
+ * under 700 ms, and a page title may decode once in under 360 ms. Ambient loops
+ * (glow breathe, edge flow, status blink) are slow and low-contrast.
+ * Spring constants for the Motion library live in motion.ts.
  */
 :root {
   --dur-fast: 120ms;
@@ -8,16 +14,21 @@
   --dur-slow: 300ms;
   --dur-exit-fast: 80ms;
   --dur-exit-base: 120ms;
+  --dur-reveal: 240ms;
+  --dur-draw: 300ms;
+  --stagger: 45ms;
 
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-panel: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
 
-  /* Progress indicators, exempt from the 300 ms rule. */
+  /* Progress and ambient loops, exempt from the 300 ms rule. */
   --dur-spinner: 800ms;
   --dur-pulse: 1600ms;
   --dur-shimmer: 1600ms;
   --dur-indeterminate: 1200ms;
+  --dur-flow: 1400ms;
+  --dur-breathe: 9000ms;
 }
 
 @keyframes lumen-pulse {
@@ -27,6 +38,18 @@
   }
   50% {
     opacity: 0.45;
+  }
+}
+
+/* Hard on/off blink for building and deploying markers (HUD style). */
+@keyframes lumen-blink {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  61%,
+  100% {
+    opacity: 0.25;
   }
 }
 
@@ -45,11 +68,55 @@
   }
 }
 
+/* Entrance: wipe down from the top edge while rising 6 px. */
+@keyframes lumen-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(-48px -48px -48px -48px);
+  }
+}
+
+/* Leader lines and connectors draw from their origin. Set --len to the path length. */
+@keyframes lumen-draw {
+  from {
+    stroke-dashoffset: var(--len, 400);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Data moving along an edge: dashes travel toward the target. */
+@keyframes lumen-flow {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+@keyframes lumen-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.7;
+  }
+}
+
 /*
  * Reduced motion: the OS preference or the account preference
  * (data-reduced-motion="true" on <html>, SPEC C7.21). Every transition becomes
- * instant, opacity fades are capped at 80 ms, and only the spinner keeps
- * rotating because it conveys ongoing work (WCAG 2.3.3 essential exception).
+ * instant, entrances and ambient loops stop, opacity fades are capped at 80 ms,
+ * and only the spinner keeps rotating because it conveys ongoing work (WCAG
+ * 2.3.3 essential exception).
  */
 @media (prefers-reduced-motion: reduce) {
   :root {
@@ -58,9 +125,14 @@
     --dur-slow: 0ms;
     --dur-exit-fast: 0ms;
     --dur-exit-base: 0ms;
+    --dur-reveal: 0ms;
+    --dur-draw: 0ms;
+    --stagger: 0ms;
     --dur-fade: 80ms;
     --dur-pulse: 0ms;
     --dur-shimmer: 0ms;
+    --dur-flow: 0ms;
+    --dur-breathe: 0ms;
   }
 }
 
@@ -70,7 +142,12 @@
   --dur-slow: 0ms;
   --dur-exit-fast: 0ms;
   --dur-exit-base: 0ms;
+  --dur-reveal: 0ms;
+  --dur-draw: 0ms;
+  --stagger: 0ms;
   --dur-fade: 80ms;
   --dur-pulse: 0ms;
   --dur-shimmer: 0ms;
+  --dur-flow: 0ms;
+  --dur-breathe: 0ms;
 }

@@ -1,16 +1,23 @@
 /*
- * Typography tokens (SPEC C4): Geist Sans for UI, Geist Mono for identifiers,
- * values, paths, commands and logs. The fonts themselves are loaded by the app
- * through next/font, which sets --font-geist-sans and --font-geist-mono.
+ * Typography tokens · Direction D "Signal".
+ *   Geist Pixel Square  display: page titles, the wordmark, big numbers
+ *   Geist Mono          identifiers, values, commands, logs, and uppercase
+ *                       chrome (labels, buttons, tags, nav)
+ *   Geist Sans          readable text: messages, descriptions, helper copy
+ * The fonts are loaded by the app through next/font, which sets the
+ * --font-geist-* variables.
  */
 :root {
+  --font-display:
+    var(--font-geist-pixel-square, "Geist Pixel"), var(--font-geist-mono, "Geist Mono"),
+    ui-monospace, monospace;
   --font-sans:
     var(--font-geist-sans, "Geist"), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     sans-serif;
   --font-mono:
     var(--font-geist-mono, "Geist Mono"), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  /* Scale: 12 / 13 / 14 (base) / 16 / 20 / 24 / 32, plus 11 for eyebrows and kbd. */
+  /* Scale: 12 / 13 / 14 (base) / 16 / 20 / 24 / 32, plus 11 for uppercase chrome. */
   --text-11: 11px;
   --text-12: 12px;
   --text-13: 13px;
@@ -20,20 +27,19 @@
   --text-24: 24px;
   --text-32: 32px;
 
-  /* Weights: 400 / 500 / 600. 700 is never loaded. */
+  /* Weights: 400 / 500 / 600. Geist Pixel ships a single 500 cut. */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
 
-  /* Line heights: 1.5 body, 1.25 headings, 1 for single-line controls. */
   --leading-none: 1;
+  --leading-display: 1.1;
   --leading-tight: 1.25;
   --leading-normal: 1.5;
   --leading-log: 20px;
 
-  /* Letter spacing: negative only at 20 px and above; positive for small caps. */
-  --tracking-display: -0.02em;
-  --tracking-title: -0.01em;
+  /* Pixel display type and identifiers open up slightly; uppercase chrome wide. */
   --tracking-normal: 0;
-  --tracking-eyebrow: 0.04em;
+  --tracking-display: 0.02em;
+  --tracking-caps: 0.08em;
 }

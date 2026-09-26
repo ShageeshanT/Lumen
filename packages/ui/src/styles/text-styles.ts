@@ -1,7 +1,12 @@
 /**
- * The typography usage table (docs/phases/PHASE-01-design-system.md §5). This
- * is the single source for the `.text-*` classes in text.css, the gallery
- * "Typography" page and the test that checks the rendered styles.
+ * The typography usage table · Direction D "Signal" (docs/UI_DECISIONS.md).
+ * This is the single source for the `.text-*` classes in text.css, the
+ * gallery "Typography" page and the test that checks the rendered styles.
+ *
+ * Three voices:
+ *   display (Geist Pixel)  page titles and big numbers
+ *   mono caps (Geist Mono) chrome: labels, eyebrows, buttons, tags
+ *   sans (Geist Sans)      anything a person reads as a sentence
  */
 export const TEXT_VARIANTS = [
   "display",
@@ -12,6 +17,7 @@ export const TEXT_VARIANTS = [
   "body",
   "body-secondary",
   "label",
+  "action",
   "meta",
   "eyebrow",
   "code",
@@ -29,10 +35,10 @@ export interface TextStyle {
   size: 11 | 12 | 13 | 14 | 16 | 20 | 24 | 32;
   weight: 400 | 500 | 600;
   /** Unitless line-height, or a pixel value for the log line. */
-  lineHeight: 1 | 1.25 | 1.4 | 1.5 | "20px";
+  lineHeight: 1 | 1.1 | 1.25 | 1.5 | "20px";
   /** Letter spacing in em; 0 means none. */
-  tracking: -0.02 | -0.01 | 0 | 0.04;
-  family: "sans" | "mono";
+  tracking: 0 | 0.02 | 0.08;
+  family: "display" | "sans" | "mono";
   color: "text" | "text-secondary";
   tabular?: boolean;
   uppercase?: boolean;
@@ -43,45 +49,48 @@ export interface TextStyle {
 export const TEXT_STYLES: readonly TextStyle[] = [
   {
     name: "display",
-    use: "Wizard finish, hero empty state",
+    use: "Wizard finish, hero empty state, big metric values",
     size: 32,
-    weight: 600,
-    lineHeight: 1.25,
-    tracking: -0.02,
-    family: "sans",
+    weight: 500,
+    lineHeight: 1.1,
+    tracking: 0.02,
+    family: "display",
     color: "text",
+    uppercase: true,
     element: "h1",
   },
   {
     name: "page-title",
-    use: "Page title (h1)",
+    use: "Page title (h1), inspector service name",
     size: 24,
-    weight: 600,
-    lineHeight: 1.25,
-    tracking: -0.01,
-    family: "sans",
+    weight: 500,
+    lineHeight: 1.1,
+    tracking: 0.02,
+    family: "display",
     color: "text",
+    uppercase: true,
     element: "h1",
   },
   {
     name: "section-title",
     use: "Section title (h2)",
     size: 20,
-    weight: 600,
-    lineHeight: 1.25,
-    tracking: -0.01,
-    family: "sans",
+    weight: 500,
+    lineHeight: 1.1,
+    tracking: 0.02,
+    family: "display",
     color: "text",
+    uppercase: true,
     element: "h2",
   },
   {
     name: "card-title",
-    use: "Card and inspector title (h3)",
-    size: 16,
-    weight: 600,
+    use: "Card title, service and node names (h3)",
+    size: 14,
+    weight: 500,
     lineHeight: 1.25,
-    tracking: 0,
-    family: "sans",
+    tracking: 0.02,
+    family: "mono",
     color: "text",
     element: "h3",
   },
@@ -98,7 +107,7 @@ export const TEXT_STYLES: readonly TextStyle[] = [
   },
   {
     name: "body",
-    use: "Body",
+    use: "Body, commit messages, descriptions",
     size: 14,
     weight: 400,
     lineHeight: 1.5,
@@ -120,13 +129,26 @@ export const TEXT_STYLES: readonly TextStyle[] = [
   },
   {
     name: "label",
-    use: "Form label",
-    size: 13,
+    use: "Form labels, tab labels, nav items",
+    size: 11,
     weight: 500,
     lineHeight: 1.5,
-    tracking: 0,
-    family: "sans",
+    tracking: 0.08,
+    family: "mono",
     color: "text",
+    uppercase: true,
+    element: "span",
+  },
+  {
+    name: "action",
+    use: "Button and tag labels",
+    size: 11,
+    weight: 500,
+    lineHeight: 1,
+    tracking: 0.08,
+    family: "mono",
+    color: "text",
+    uppercase: true,
     element: "span",
   },
   {
@@ -143,19 +165,19 @@ export const TEXT_STYLES: readonly TextStyle[] = [
   },
   {
     name: "eyebrow",
-    use: "Menu group headers",
+    use: "Section numbers and group headers (01 · History)",
     size: 11,
     weight: 500,
     lineHeight: 1.5,
-    tracking: 0.04,
-    family: "sans",
+    tracking: 0.08,
+    family: "mono",
     color: "text-secondary",
     uppercase: true,
     element: "span",
   },
   {
     name: "code",
-    use: "Inline code, variable key",
+    use: "Inline code, variable key, identifiers",
     size: 13,
     weight: 400,
     lineHeight: 1.5,

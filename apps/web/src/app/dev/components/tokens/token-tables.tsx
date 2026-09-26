@@ -9,7 +9,8 @@ import { useTheme } from "@lumen/ui/theme";
 const COLOR_TOKENS = [
   "bg",
   "bg-canvas",
-  "canvas-dot",
+  "grid",
+  "grid-major",
   "surface",
   "surface-raised",
   "surface-hover",
@@ -43,6 +44,8 @@ const COLOR_TOKENS = [
   "sleeping",
   "sleeping-text",
   "sleeping-subtle",
+  "glow-a",
+  "glow-b",
   "overlay",
 ] as const;
 
@@ -79,6 +82,9 @@ const OTHER_TOKENS = [
   "--dur-fast",
   "--dur-base",
   "--dur-slow",
+  "--dur-reveal",
+  "--stagger",
+  "--dur-draw",
   "--ease-out",
   "--ease-panel",
   "--ease-in",
@@ -91,6 +97,7 @@ const OTHER_TOKENS = [
   "--z-palette",
   "--shadow-raised",
   "--shadow-card",
+  "--shadow-glow",
 ] as const;
 
 type TokenMap = Record<string, string>;
