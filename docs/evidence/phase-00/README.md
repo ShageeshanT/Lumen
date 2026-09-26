@@ -10,7 +10,7 @@ from the repository root unless noted.
 |---|---|
 | `pnpm dev` starts web + api | Web on :3000, API on :4000, both hot-reload (`GET / 200`, `/v1/health` 200) |
 | `pnpm test` green | Vitest: shared 13, protocol 3, db 6, api 18, web 5 tests; `go test`: 5 packages ok |
-| CI green | Workflow committed; first run on `main` linked from PROGRESS.md once it completes |
+| CI green | Run 36250769849 on `main`, all eight jobs green: https://github.com/ShageeshanT/Lumen/actions/runs/36250769849 (the first run, 36250472086, failed only its E2E job because Playwright did not wait for the API; fixed in `e71b9aa`) |
 | Agent builds for both architectures; arm64 prints its version under QEMU | See "Go binaries" below |
 | `/v1/health` 200 with `db: "ok"`, 503 when Postgres is down | 200 live; 503 verified by the api test against a closed port (under 3 s) |
 | `/v1/openapi.json` passes Redocly lint with zero errors | "Your API description is valid" · 0 errors · 2 warnings (`info-license`, `operation-4xx-response`) |

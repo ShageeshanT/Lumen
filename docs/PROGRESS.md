@@ -37,6 +37,7 @@ awaits its cross-model review (SPEC H1).
 | Cold `pnpm install` | 93 s | < 90 s (three seconds over; postinstall builds dominate) |
 | Second `pnpm build` | 103 ms, FULL TURBO | cache hit |
 | Playwright smoke, 6 projects | 5.7 s, all passing | green |
+| CI on `main` (lint, typecheck, test, build web, Go with QEMU arm64, protobuf, E2E smoke) | green in 1.2 min: https://github.com/ShageeshanT/Lumen/actions/runs/36250769849 | green, under 10 min |
 | arm64 agent under QEMU | `lumen-agent 0.0.0-dev (455ae03, …, linux/arm64)` | prints version |
 | Fresh clone → `db: ok` following README.md | 23 s (clone 5 s, install 9 s with a warm store, infra 2 s, API ready 5 s, web ready 2 s) | < 5 min |
 
