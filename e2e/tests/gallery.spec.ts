@@ -1,45 +1,10 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-import { expectNoA11yViolations } from "../lib/a11y";
-
-interface Registry {
-  pages: string[];
-  modalPages: string[];
-  examples: string[];
-}
-
-async function loadRegistry(page: Page): Promise<Registry> {
-  const response = await page.request.get("/dev/components/registry.json");
-  expect(response.ok()).toBe(true);
-  return (await response.json()) as Registry;
-}
-
-async function openStill(page: Page, path: string) {
-  // Freeze time so blinking markers and spinners screenshot at a fixed frame.
-  await page.clock.install({ time: new Date("2026-09-26T12:00:00Z") });
-  await page.goto(path);
-  await page.evaluate(() => document.fonts.ready);
-  // Let queued frames run so boot-in entrances start, then let them finish.
-  await page.clock.runFor(1000);
-  await page.waitForTimeout(800);
-}
+import { loadRegistry, openStill } from "../lib/gallery";
 
 test.describe("component gallery", () => {
-  // Two tests walk every gallery page; give them room under parallel load.
+  // The screenshot test walks every gallery page; give it room under parallel load.
   test.describe.configure({ timeout: 600_000 });
-
-  test("every page is axe-clean", async ({ page }) => {
-    const registry = await loadRegistry(page);
-    for (const slug of registry.pages) {
-      await openStill(page, `/dev/components/${slug}`);
-      await expect(page.locator("main h1").first()).toBeVisible();
-      // A forced-open modal hides the rest of the page from assistive tech by design.
-      await expectNoA11yViolations(
-        page,
-        registry.modalPages.includes(slug) ? { disableRules: ["aria-hidden-focus"] } : {},
-      );
-    }
-  });
 
   test("every example matches its screenshot", async ({ page }, testInfo) => {
     const registry = await loadRegistry(page);

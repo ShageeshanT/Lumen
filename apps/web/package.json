@@ -14,6 +14,7 @@
   "dependencies": {
     "@lumen/shared": "workspace:*",
     "@lumen/ui": "workspace:*",
+    "axe-core": "catalog:",
     "geist": "catalog:",
     "next": "catalog:",
     "react": "catalog:",

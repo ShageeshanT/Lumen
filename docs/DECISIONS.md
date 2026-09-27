@@ -413,3 +413,330 @@ imported on the server. The gallery nav becomes a top bar under 768 px and
 examples use fluid widths. Next's dev badge is off so screenshots show only Lumen.
 **Why:** Each of these was found by axe or by the phone-width screenshots.
 
+## 0043 · 2026-09-27 · Overlay and navigation dependencies
+**Decision:** Radix `react-dialog` 1.1.23, `react-dropdown-menu` 2.1.24,
+`react-context-menu` 2.3.7 and `react-tabs` 1.1.21, all MIT, pinned in the
+catalog. Versions checked with `npm view` on 2026-09-27 (latest, last published
+2026-07-31, same release train as the Radix packages already in use). Dialog
+1.1.23 is the version cmdk already pulled in, so no second copy is installed.
+**Why:** Focus trapping and restore, Escape layering, typeahead, submenus,
+roving focus and collision handling without re-implementing them (SPEC tech
+stack; 0034).
+
+## 0044 · 2026-09-27 · Overlays render into a container for gallery previews
+**Decision:** Modal, ConfirmDialog, CommandPalette, Sheet, SidePanel and the rail
+drawer take `container?: HTMLElement`. With it they portal into that element,
+position `absolute` inside it, are non-modal (no focus trap, no `aria-hidden`
+on the page) and do not take focus when they mount already open
+(`useSkipMountFocus`; the flag clears once the overlay has been closed, because
+Strict Mode mounts focus scopes twice). Forced-open menus and popovers use
+`modal={false}`, `avoidCollisions={false}`, `max-h-none` and prevent open/close
+auto-focus. The real app renders overlays against the viewport; every modal
+sets `aria-modal="true"`.
+**Why:** A gallery page shows up to seven dialogs at once. As real modals they
+would fight over focus, hide the page from axe and cover each other; as
+collision-aware poppers they flipped depending on scroll position, which made
+screenshots unstable. `forcesModal` is therefore not needed on these pages.
+
+## 0045 · 2026-09-27 · Focus returns to whatever opened an overlay
+**Decision:** Modal, ConfirmDialog, CommandPalette, Sheet and SidePanel record
+`document.activeElement` in `onOpenAutoFocus` and restore it in
+`onCloseAutoFocus`. Initial focus: Modal the first control in the body (else
+Close), destructive ConfirmDialog the name field, simple ConfirmDialog Cancel,
+CommandPalette the search field, Sheet the sheet itself (no phone keyboard pops
+up), SidePanel its title (`tabIndex=-1`).
+**Why:** Radix only restores focus to its own `Trigger`; the palette (⌘K), the
+inspector (canvas click) and confirmations opened from menus have none.
+
+## 0046 · 2026-09-27 · The inspector is a region when docked, a dialog below 1280
+**Decision:** SidePanel picks its mode from the viewport: docked at 1280 px and
+up (`role="complementary"`, `aria-label="Service inspector"`, no trap, outside
+clicks and focus do not close it), overlay 1024–1279 (modal dialog, 20 % scrim),
+full width 768–1023 (modal dialog), and a full-screen Sheet under 768. `mode`
+overrides it. Width: `localStorage["lumen.panel.width"]` via `useStoredState`
+(synced across tabs), clamped 480–880, default 560; the separator handle is
+`role="separator"` with `aria-valuenow` in px, arrows ±16, Home/End to min/max,
+and the width is written on pointer release, not on every move.
+**Why:** SPEC C7.7/C12 require the canvas to stay operable beside the panel
+while §4.9 also asks for a focus trap; the trap only makes sense where the panel
+covers the canvas.
+
+## 0047 · 2026-09-27 · Rail expansion by clip, not width
+**Decision:** The rail's panel is always 220 px wide; collapsed, a `clip-path`
+hides all but 56 px and the right hairline is translated to the visible edge.
+Hover expands after 150 ms and collapses 300 ms after leave (mouse only); the
+slot in the page stays 56 px so hover never reflows the page. Pinning makes the
+slot 220 px and is stored in `localStorage["lumen.rail.pinned"]`. Under 1024 px
+the rail is hidden and a Radix Dialog drawer (opened by the top bar's menu
+button) shows it expanded; phones use `MobileTabBar`. Tooltips switch off when
+expanded through the new `Tooltip disabled` prop, so a focused link is never
+remounted.
+**Why:** §5 Motion allows only opacity and transform; animating width would
+reflow the canvas on every hover.
+
+## 0048 · 2026-09-27 · Scroll regions and empty listboxes stay accessible
+**Decision:** A Modal body joins the tab order only while it overflows
+(ResizeObserver); the environment list is focusable when it scrolls (more than
+eight); the palette's result listbox is `display: none` while loading or when
+nothing matches, with "No matches for …" outside it.
+**Why:** axe `scrollable-region-focusable` and `aria-required-children`
+(WCAG 2.1.1, 1.3.1) flagged each of these.
+
+## 0049 · 2026-09-27 · Context menu long-press at 500 ms and Shift+F10
+**Decision:** `ContextMenuTrigger` dispatches the browser's own `contextmenu`
+event after a 500 ms touch press (Radix waits 700 ms) and on `Shift+F10` or the
+ContextMenu key, positioned under the focused element.
+**Why:** SPEC C5 timings; browsers disagree on where a keyboard-triggered
+context menu lands.
+
+## 0050 · 2026-09-27 · Registry test ignores SCREAMING_CASE exports
+**Decision:** The gallery-coverage test treats exports matching `^[A-Z][a-z]`
+as components. Constants such as `PANEL_WIDTH_KEY`, `RAIL_PINNED_KEY`,
+`LONG_PRESS_MS` and `BREADCRUMB_MAX_CHARS` are exported for the shell (Phase 5)
+and tests.
+**Why:** Constants are not components and have no gallery page.
+
+## 0051 · 2026-09-27 · Data-display dependencies and licenses
+**Decision:** Added to `@lumen/ui`, pinned in the catalog; licenses read from
+the installed packages.
+
+| Package | Version | License | Role |
+|---|---|---|---|
+| @tanstack/react-table | 9.2.4 | MIT | Sorting and selection state for `DataTable` |
+| @tanstack/react-virtual | 3.14.13 | MIT | Row virtualization (5,000 rows at 60 fps) |
+| uplot | 1.6.32 | MIT | Canvas time-series charts |
+| @radix-ui/react-dropdown-menu | 2.1.24 | MIT | Row actions menu in `DataTable` |
+| motion | 13.4.4 | MIT | Toast enter, exit and stack re-flow (already pinned in 0025) |
+
+`@lumen/shared` (workspace) is now a dependency of `@lumen/ui` so the error
+card takes the real `LumenError` type.
+**Maintenance:** TanStack Table 9 shipped 2026-08-04 (9.2.4 on 2026-08-28) and
+is the maintained major; 8.x has had no release since 2025-04. TanStack Virtual
+released 2026-09-14. uPlot's last release is 2025-03-14; it is stable,
+dependency-free and 50 kB, and the API surface Lumen uses (options, hooks,
+`setCursor`, `setSeries`, `valToPos`, cursor sync) has not changed in years.
+Radix DropdownMenu released 2026-07-31.
+**Rejected:** a diff library (the viewer compares settings field by field, not
+text); `@radix-ui/react-toast` (its region uses `aria-live="off"` with its own
+announcer, which contradicts the spec's polite region with `role="alert"` for
+danger toasts, and it has no "max three" stack).
+
+## 0052 · 2026-09-27 · DataTable hides TanStack's types behind plain columns
+**Decision:** Callers describe columns as `{ id, header, value?, cell?, size,
+align, sortable, mono, tabular, hideInCards }` with plain functions;
+`DataTable` converts them to TanStack Table 9 column definitions internally
+(with its own comparator, so no sort-function registry is needed). Sorting and
+selection can be controlled (`sorting` / `selectedKeys`) or left to the table.
+The table stays a real `<table>`; virtualization renders only the rows in view
+between two spacer rows, so native table semantics, `aria-rowcount` /
+`aria-rowindex` and the sticky header keep working.
+**Why:** Table 9's feature-typed generics are heavy for page code and change
+between majors; one adapter keeps every page on a small, stable API.
+
+## 0053 · 2026-09-27 · Toasts come from a module store, not a context
+**Decision:** `toast({...})` writes to a tiny module-level store read by
+`<Toaster>` with `useSyncExternalStore`; `toast.dismiss(id?)` and
+`activeToasts()` complete the API. The Toaster keeps three, removes the oldest
+from the store when a fourth arrives, pauses a toast's JavaScript timer on
+hover, keyboard focus and window blur, handles F8 (focus newest, remembering
+where focus was) and Escape (close focused, focus returns). Closing toasts are
+marked `data-state="closing"` and `aria-hidden` while their exit plays.
+**Why:** Mutations and event handlers need to toast without threading a
+context; JavaScript timers (not CSS animation end) make Playwright's fake clock
+and Vitest fake timers able to test dismissal.
+
+## 0054 · 2026-09-27 · Chart colors are read from tokens at draw time
+**Decision:** `Chart` reads `--color-*` and `--font-mono` with
+`getComputedStyle` when it builds the uPlot instance and rebuilds on a
+`data-theme` change. Area fills convert the token hex to `rgba()` at 12 %
+at runtime. Only uPlot's structural CSS is vendored, restyled with tokens, in
+`packages/ui/src/styles/chart.css`; uPlot's legend is off and the legend,
+limit line, markers and tooltip are HTML overlays styled with utilities.
+y ticks are round steps (0 / 200 / 400 / 600) and x ticks are round minutes
+strictly inside the range so edge labels never collide.
+**Why:** Canvas cannot use CSS variables; this keeps "tokens only" true and
+both themes correct.
+
+## 0055 · 2026-09-27 · Terminals scope themselves to the dark tokens
+**Decision:** `TerminalFrame` puts `data-theme="dark"` on its inner screen, so
+every token inside resolves to the dark palette in both themes; the outer
+1 px `border-strong` frame stays in the page's theme.
+**Why:** SPEC wants terminals dark in both themes without new color tokens or
+literals.
+
+## 0056 · 2026-09-27 · Status gaps closed with the Signal components
+**Decision:** §4.12's `StatusDot` / `StatusPill` are not built; the Signal
+`StatusMarker` / `StatusTag` (0030, session 3) replace them. The one missing
+piece, `AvatarStack`, is added (max 4 then "+N", 2 px surface ring, hover lifts
+within an isolated stacking context, `role="group"` with "Members: …").
+`LiveRegion` is added as the shared polite announcer used by progress steps
+and chart keyboard moves.
+
+## 0057 · 2026-09-27 · Gallery specs split, with room to run
+**Decision:** The axe walk moved out of `gallery.spec.ts` into
+`gallery-a11y.spec.ts`, split into four parallel shards (5 minutes each). The
+screenshot walk stays one test with a 10-minute limit.
+**Why:** With 60+ pages, one test that ran axe and another that took every
+screenshot came close to their limits at the phone width. Shards finish sooner
+and a failure names a smaller set of pages.
+
+## 0058 · 2026-09-27 · Canvas and virtualization dependencies
+**Decision:** `@xyflow/react` 12.12.0 (MIT) for the canvas and
+`@tanstack/react-virtual` 3.14.13 (MIT) for the log viewer, pinned in the
+catalog and added to `@lumen/ui`. Transitive: `@xyflow/system` 0.0.83 (MIT),
+`zustand` 4.5.7 (MIT), `classcat` 5.0.5 (MIT), `d3-zoom` / `d3-selection` /
+`d3-drag` / `d3-interpolate` 3.x (ISC), `@tanstack/virtual-core` 3.17.11 (MIT).
+Licenses read with `npm view`; both packages had releases within the last three
+weeks (actively maintained). Only React Flow's structural `base.css` is loaded
+(imported in `packages/ui/src/styles/canvas.css`, `@layer base`); every visible
+part is a Lumen component, and its internal z-indexes stay inside the
+`.react-flow` stacking context.
+**Why:** SPEC tech stack names React Flow for the canvas; TanStack Virtual is
+headless, small, and handles fixed and measured rows in one API.
+**Rejected:** `react-window` (no dynamic row measurement without a second
+package); hiding the React Flow attribution (the maintainers ask that only Pro
+subscribers do so; it stays, restyled to tokens, 24 px target).
+
+## 0059 · 2026-09-27 · Devicon marks vendored, provider marks stay monograms
+**Decision:** Framework and database marks are Devicon 2.17.0 (MIT) "plain"
+SVGs (Rust, Deno and MySQL only ship a single-shape "original"), normalised to
+`fill="currentColor"` and vendored under `packages/ui/src/icons/vendor/` with
+generated path data (`devicon-paths.ts`) so they render inline with no request.
+`scripts/vendor-devicons.mjs` regenerates them from the pinned release;
+`vendor/LICENSES.md` lists source, license and mark owner per file (including the
+Go gopher CC BY 4.0 and Ruby logo CC BY-SA 2.5 attributions). Marks are
+monochrome everywhere, including node headers; a `color` prop exists but no
+brand tint is shipped. Provider marks are not vendored: `ProviderMark` draws
+monogram tiles (`OC AWS GCP AZ HZ DO ?`), widening for three letters rather than
+shrinking the type below 11 px.
+**Why:** Phase 1 §5 chose Devicon; Signal allows one accent per view, and brand
+colors in node headers would compete with it and need color literals outside
+the token file. Provider marks require a recorded brand-guideline review first;
+none was done, so the §5 fallback applies.
+**Open:** owner decides whether to review provider guidelines and whether node
+headers should carry brand tints (would add tokens to `colors.css`).
+
+## 0060 · 2026-09-27 · Log viewer semantics: a list plus a separate live region
+**Decision:** The scrollable log is `role="list"` (one tab stop, roving focus on
+`role="listitem"` rows through arrow keys) and a visually hidden `role="log"`
+region announces only the newest line, at most once a second, only while
+`live`. Timestamps and `DBG` tags use `text-secondary`, not `text-muted`.
+**Why:** `role="log"` cannot own list items (axe `aria-required-parent`), and a
+live list of 50,000 lines must not be announced wholesale. Timestamps carry
+information, so 0038 (muted text is never informative) wins over the §4.14
+proposal.
+
+## 0061 · 2026-09-27 · Log viewer follow mode
+**Decision:** Following pins the list to the newest line. Scrolling more than
+two rows up (or ArrowUp, Home, Space) pauses it, records where new output starts
+(a 1 px accent boundary above that line) and shows "Jump to live" ("Jump to end"
+when not live) only while lines exist below the viewport. End, the pill, or
+scrolling to within half a row of the end resumes. `followOutput` can be
+controlled; `defaultFollowOutput` and `newSinceIndex` set the initial state.
+Copy feedback is an inline "Line copied" chip plus a polite announcement.
+**Why:** SPEC C7 logs behaviour; the half-row threshold absorbs fractional
+scroll offsets on high-density screens (found by the phone e2e run).
+**Seam:** the "Line copied" chip stands in for the Toast component being built
+in the feedback worktree; swap when it lands.
+
+## 0062 · 2026-09-27 · ANSI colors map to token text tiers; backgrounds dropped
+**Decision:** `parseAnsi` handles SGR 0–4, 22–24, 30–37, 39, 90–97, 38;5;n and
+38;2;r;g;b and maps every foreground to one of six token classes
+(`danger-text`, `success-text`, `warning-text`, `info-text`, `accent-text` for
+magenta and cyan, `text-secondary` for black, white and greys). Backgrounds are
+parsed and ignored; other CSI and OSC sequences (cursor moves, hyperlinks) are
+stripped, and a sequence cut off at the end of a line never leaks an ESC
+character. Output is plain segments rendered as spans, never HTML.
+**Why:** every text color then holds 4.5:1 in both themes; background colors
+from build tools would break contrast and the calm panel.
+
+## 0063 · 2026-09-27 · Canvas opens at 100 % and pauses edge flow while moving
+**Decision:** `CanvasFlow` centres the scene at exactly 100 % on first render
+(`fitViewOptions` min and max zoom 1), mounts only elements in view, hides the
+8 px grid below 60 % zoom, and pauses the Signal edge flow (`.edge-flow`) while
+the viewport pans or zooms (`data-moving` toggled on the DOM from React Flow's
+move events, no re-render). Nodes are never draggable or selectable in Phase 1.
+**Why:** at fitted zoom levels under 100 % node links and group labels shrink
+below the 24 px WCAG 2.5.8 target (axe failed the gallery); measured on a
+production build, 30+ animated dashes repainting over a moving layer cost
+frames while panning (57 → 60 fps with the pause), and the dense 8 px pattern
+is noise when zoomed out.
+**Seam:** Phase 05 wires selection, dragging, the node context menu (the
+component exposes `onContextMenu` for Shift+F10 / right click) and keyboard
+nudging.
+
+## 0064 · 2026-09-27 · Decode title
+**Decision:** `DecodeText` resolves a display title left to right from glyph
+noise in 9 steps over 324 ms (hard cap 360 ms, DECISIONS 0032), once per mount
+or `replayKey` change. The server renders the final text; during the decode the
+final text is the accessible name (sr-only) and an invisible copy sizes the box
+so layout never moves. Reduced motion (OS or `data-reduced-motion="true"`)
+shows the text immediately. Every gallery component page title uses it.
+**Why:** Signal's "the system is live" arrival, without layout shift or an
+unreadable accessible name.
+
+## 0065 · 2026-09-27 · Specialized gallery pages and performance evidence
+**Decision:** The gallery gains pages for Log viewer, Canvas, Canvas node,
+Volume chip, Canvas group, Canvas edge, Stepper, DNS record card, Port check
+card and Decode title, plus two bespoke performance pages, `logs-perf` (50,000
+lines streaming five per second) and `canvas-perf` (10 × 10 services, 90
+references), both in `registry.json` so axe covers them. Fixture data lives in
+`@lumen/ui/fixtures` (not the main barrel). `e2e/scripts/perf-logs.mjs` and
+`perf-canvas.mjs` record every animation frame (and optionally a Chrome trace)
+into `docs/evidence/phase-01/perf/`.
+**Why:** Phase 1 §5 Performance and §8 evidence require fps readouts at the
+stated sizes.
+
+## 0066 · 2026-09-27 · Token-only styling enforced by lint and a test
+**Decision:** An inline ESLint rule (`lumen/design-tokens-only`) rejects any
+string in `packages/ui/src` or `apps/web/src` (tests and `src/tokens` excepted)
+that contains a hex color, a Tailwind arbitrary font size (`text-[13px]`) or a
+raw z-index (`z-10`, `z-[5]`). `styles/design-guard.test.ts` applies the same
+three checks to every stylesheet outside `src/tokens`.
+**Why:** Phase 1 §6 asks for proof that no value escapes the token layer.
+Tailwind arbitrary values are where a page would invent its own. An esquery
+`no-restricted-syntax` selector was tried first; its regex parsing silently
+missed bracketed values, so the rule uses plain JavaScript regexes.
+**Rejected:** a Stylelint setup (one more tool for three patterns).
+
+## 0067 · 2026-09-27 · React hooks rules apply to the design system
+**Decision:** The React hooks rules (including the compiler-era purity,
+refs-in-render and set-state-in-effect checks) now run on `packages/ui`, not
+only `apps/web`. Browser state is read through `useSyncExternalStore` (theme
+preference and OS scheme, density, a shared `useNow` clock); props copied into
+state are adopted during render; `Date.now()` is never called during render.
+The two TanStack Virtual call sites carry a described disable for
+`incompatible-library`, which is informational.
+**Why:** Turning the rules on found stale captures in the chart and relative
+times that never ticked. The theme provider still renders dark on the server
+and keeps a choice in memory when storage is blocked.
+
+## 0068 · 2026-09-27 · Density is a global preference
+**Decision:** `data-density="compact"` on `<html>`, stored under
+`localStorage["lumen.density"]` and restored by the head script before first
+paint. `useDensity()` reads it live; the `density-compact:` Tailwind variant
+serves CSS-only pieces (menu rows 32 → 28 px). Tables default to it; an explicit
+`dense` prop still wins. Resolves the Phase 1 §10 open question with its default;
+Phase 15 adds the account setting that writes the same key.
+**Why:** A per-table setting would make every table remember its own choice.
+
+## 0069 · 2026-09-27 · axe-core in the gallery's Run axe button
+**Decision:** `axe-core` 4.13.0 (MPL-2.0, maintained by Deque, released
+2026-09-23) is a dependency of `@lumen/web`, loaded with a dynamic `import()`
+only by the dev gallery's "Run axe" button. It runs the same tags as the CI spec
+plus best practices on `<main>` and lists violations in a popover.
+**Why:** Phase 1 §4.15. The version matches the one `@axe-core/playwright`
+already installs, so there is one copy. MPL-2.0 is file-level copyleft and the
+files are used unmodified; the chunk never loads outside `/dev/components`,
+which production builds exclude.
+
+## 0070 · 2026-09-27 · Merged kits wired together; stand-ins that stay
+**Decision:** After the three Phase 1 branches merged: table row actions use
+the shared `DropdownMenu`; the top bar's offline banner is a wrapping `Alert`;
+the stepper's state type is `WizardStepState` (progress steps own `StepState`).
+Two stand-ins stay on purpose: the port-check card's one-line `$ command` with
+its own copy button (a different pattern from the multi-line `CodeBlock`), and
+the log viewer's "Copied" button label (the kit's inline copy feedback, as in
+`CopyField`).
+**Why:** One menu, one banner and one copy-feedback pattern across the kit.
+

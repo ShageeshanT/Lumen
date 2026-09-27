@@ -175,3 +175,75 @@ Each entry: date · page or component · decision · why · screenshot links.
 - **Decision:** `apps/web/src/app/icon.svg` and the rail mark are a square frame
   with a blue signal block in the top-right corner. `icon.svg`, the token file
   and the direction pages are the only files holding color literals.
+
+## Phase 1 sessions 5–7: confirmed and replaced values
+
+### 2026-09-27 · Overlays and navigation
+
+| Area | Phase 1 proposal | Value shipped | Why |
+|---|---|---|---|
+| Menus | radius card, item 32 px, 13/400, icon 16, separator 1 px with 4 px margins, min-width 200 | confirmed; radius 2 (Signal), strong hairline frame, eyebrow labels in mono caps, radio choice shown as a 6 px accent square (checks for rows that lead with an avatar or marker) | Signal marker language |
+| Menu / popover motion | scale 0.96 → 1 + opacity, `--dur-base`, exit 120 ms | confirmed (`lumen-pop-in/out`, `--ease-panel` in, `--ease-in` out) | — |
+| Popover | padding 12, max-width 360, no arrow, title 14/600 | confirmed | — |
+| Modal | 400/560/720, padding 24, title 16/600, close 12 px inset, overlay no blur, sheet under 640 | confirmed; radius 4 (`--radius-panel`), footer on a hairline, buttons in Signal action style | — |
+| Confirm dialog | danger primary disabled until exact match; consequences with warning triangles | confirmed; destructive confirm uses `danger-solid`; errors show inline and the confirm button reads "Try again" | retry without a second button |
+| Command palette | 640 × 480 max, top 15 %, 44 px input, 36 px rows, meta 12 right, full screen < 640 | confirmed; nested page chip in mono caps ("DEPLOY ›"); fuzzy matches in `accent-text`; a 32 px footer with Move / Run / Close hints (hidden on phones) | discoverable keys |
+| Side panel | 480–880, default 560, 6 px handle with 2 × 24 grip, header 56, tabs 36, padding 20/24 | confirmed; grip turns accent while resizing or focused; title in Geist Pixel (section-title) with a mono eyebrow | Signal inspector header |
+| Sheet | handle 36 × 4 at 8 px, header 48, padding 16, snap 50 % / 90 % | confirmed; release snaps with a `--dur-base` `--ease-panel` transform transition (no Motion dependency yet) | only Radix could be added this session |
+| Tabs | 13/500 sans, `Badge` count, 2 px underline | mono caps 11 (label style), count as bracket notation `[12]` with dim brackets, 2 px accent underline sliding by transform (translateX + scaleX) | Signal chrome voice; transform-only motion |
+| Breadcrumbs | sans 13, current 13/500 | mono caps 11, `/` in text-muted (decorative), current in `text`; phones and narrow top bars (container < 384 px) show only the current item | Signal chrome voice |
+| Environment switcher | 8 px round dot | 6 px square marker (production green, staging blue, preview amber, custom accent), pulses once after a switch; list scrolls after 8 | Signal status shape |
+| Workspace switcher | tile 32, initial 16/600, menu 240 | confirmed; initial in mono on the workspace's stable tint | — |
+| Rail | 56 / 220, item 40, icon 20, 2 px accent bar, labels 13/500 | confirmed; labels mono caps 11; the active bar glows (`0 0 12px accent`) as on the direction page | Signal |
+| Top bar | 48, bg, 1 px bottom border, padding 0 16, gap 8 | confirmed; deploy activity reads "DEPLOYING [ 2 ]" with a blinking marker; reconnecting shows a 2 px warning sweep (1.2 s, static under reduced motion) | Signal bracket notation |
+
+### 2026-09-27 · Feedback, status and data display
+
+| Area | Phase 1 proposal | Value built | Why |
+|---|---|---|---|
+| Toast | 360 × ≥48, padding 12/16, radius card, raised, 16 px variant icon, title 14/500, body 13, 2 px timer bar | Confirmed; radius is Signal's 2 px; frame `border-strong`; close button shown on hover/focus (always on touch); full width minus 16 px gutters under 640 | — |
+| Toast motion | spring from +8 px; exit −8 px in 120 ms | Confirmed (`springToast`, exit 120 ms); reduced motion: opacity only, 80 ms, no layout re-flow | — |
+| Alert | tint 8 %, border 40 %, icons info / alert-triangle / alert-circle | Tint uses the existing single 10 % `-subtle` token; border 40 %; compact 36 px; global banner square with no side borders; action wraps below when the text needs the width | One subtle tint per status (UI decision 2026-09-26) |
+| Progress steps | 24 px circles; done check in `accent-ink`; active pulsing dot | 20 px squares (radius 2), active = warning frame with an 8 px blinking square; done/failed fills with the glyph in `bg` ink (dark check on bright green reads better than white); labels mono caps 11; duration meta tabular; after a failure only the shapes dim (text keeps 4.5:1); under 640 px the bar keeps its markers and one caption line names the current step | Round only for avatars; axe contrast |
+| Empty state | 40 px icon in a 64 px raised circle; title 16/600; max 420 (hero 560) | Icon in a 64 px (hero 80 px) raised square with HUD brackets; title sans 16/600 (hero: pixel page title); max 420, or 560 when it carries three or more tiles; tiles mono caps title + sans line | Square instrument corners |
+| Error card | 20 px alert-circle, title 16/600, fix with sparkles, primary action, raw in CodeBlock ≤200 px | Confirmed; the catalog code shows as a mono eyebrow at the top right (hidden under 640); support id as mono meta | Code helps support without a click |
+| Data table | header 36, 12/500 secondary; rows 40 / dense 32; selected accent-subtle; actions 40 px at 40 % opacity | Header in the mono-caps `eyebrow` style; rows 40 / 32; actions column 48 px, 28 px trigger at 40 % opacity, 100 % on row hover/focus; sort icon `chevrons-up-down` → `chevron-down` (rotated for ascending); checkbox 16 px with a 24 px hit area; dense also from an ancestor `data-density="compact"` | Signal chrome voice; no new icon needed |
+| Chart | 32 px y axis, 20 px x axis, 11 px tabular labels, grid 60 %, 1.5 px lines, 12 % area, dashed warning limit, deploy ticks with 6 px triangle, 8 px OOM dots | Confirmed except the y axis is 36 px (mono labels such as "600" and "100%" need it) and labels are Geist Mono (tabular by construction) | Fit |
+| Code block | light background `#F3F3F0`; comments `text-muted` | Page `bg` token in both themes; comments `text-secondary` (text-muted fails 4.5:1 and comments are real text); line numbers are CSS counters (never selected, copied or read) | Tokens only; contrast |
+| Terminal frame | `#0B0D10` background | `--color-terminal-bg` via a dark-scoped subtree; dock resize grip on the top edge (a bottom dock grows upward) | No literals; direction of resize |
+| Diff viewer | rows 32; field 40 % mono; removed/added at 8 % tint | Rows 32; tints use the 10 % `-subtle` tokens; side-by-side becomes inline under 640 px | Values wrapped into slivers at 390 px |
+| Avatar stack | overlap −6 / −8, 2 px surface ring, +N tile | Confirmed | — |
+
+Screenshots: `e2e/__screenshots__/gallery.spec.ts/{toast,alert,progress-steps,empty-state,error-card,avatar-stack,data-table,chart,code-block,terminal-frame,diff-viewer}--*.png`
+(50 examples × 6 projects = 300 files).
+
+### 2026-09-27 · Specialized components, icons and the decode title
+
+| Area | Phase 1 proposal | Specialized value | Why |
+|---|---|---|---|
+| Log line | Mono 13 / 20 px; dense 12 / 18 | confirmed | — |
+| Log timestamp | 88 px, `text-muted`, `HH:mm:ss.SSS` | 88 px, `text-secondary`, same format | 0038: informative text is never muted |
+| Level tag | 40 px; ERR danger-text, WRN warning-text, INF text-secondary, DBG text-muted | same, DBG `text-secondary`; tags in mono caps tracking | 0038 |
+| stderr marker | 2 px danger bar at 60 % | confirmed | — |
+| JSON toggle | 14 px chevron-right, keys accent-text, 16 px indent, "Copy JSON" | confirmed; the chevron is pointer-only, Enter on the focused line toggles | Rows are 20 px; separate buttons would fail the 24 px target |
+| Search highlight | warning 30 % background | warning 30 % with primary text on the mark; current-match line tinted warning-subtle | danger text on the amber mark measured 3.15:1 |
+| Jump to live | secondary sm, arrow-down-to-line, surface-raised, 16 px from bottom, fades in `--dur-fast` | confirmed; only shown when lines exist below | — |
+| New-lines boundary | 1 px accent line | confirmed | — |
+| Offline banner | "Server offline — showing logs up to 14:02" | confirmed; warning-subtle band with a warning icon | — |
+| Canvas node | 260 × 120, radius card, hover border-strong, selected 2 px accent ring + accent-subtle | 260 × 120, radius 2 (Signal), HUD brackets that spread 3 px on hover, selected = accent frame + 1 px ring + glow + accent-subtle tint; multi-select without glow | Signal direction |
+| Node header | 20 px icon, name 14/600, status pill | 20 px mark, name mono 14/500 (`card-title`), `[ ■ STATUS ]` tag sm | Signal type and status notation |
+| Node URL / meta | 12 secondary, external-link on hover; "No public URL"; "Private only" for databases; schedule for cron | confirmed; URL in mono; database rows show a lock | — |
+| Node chips | replica ×N and server badges, outline | confirmed (mono caps badges); long server names truncate | — |
+| Server offline | 2 px warning ring + 14 px alert-triangle with tooltip | confirmed; the triangle is a 24 px focusable target | tooltip must be keyboard reachable |
+| Dragging | opacity 0.9 + shadow-raised | confirmed (dark theme has no drop shadows, so only opacity shows) | — |
+| Volume chip | 260 × 36, dashed border, 16 px hard-drive, mono 12 middle-truncated path, "1.2 / 5 GB", 40 × 3 bar (accent / warning > 80 % / danger > 95 %), 2 × 8 stem | confirmed; dashed border-strong | — |
+| Canvas group | radius 14, border-strong 60 %, 4 % fill, 28 px label pill with dot | radius 2, dashed border-strong 60 % (solid 100 % selected), 4 % fill (8 % as drop target), 28 px label tab on the top edge with an 8 px square marker, mono caps label and a zero-padded count | Signal (square corners, HUD tab from the direction page) |
+| Canvas edge | 1.5 px dashed 4 4, text-muted, smooth-step 12 px corners, 6 px arrow, accent solid on hover/selected, label chip, dimmed 40 %, no dash animation | same, plus the Signal edge flow (accent 2 / 14 dashes moving in 1.4 s) that stops under reduced motion and while the canvas moves | UI_DECISIONS Signal table replaces "no dash animation" |
+| Fan-in | 12 px per edge | confirmed | — |
+| Canvas grid | 24 px dots | 8 px lines above 60 % zoom + 96 px major lines | Signal grid; dense pattern hidden when zoomed out |
+| Stepper | 24 px numbered circles, 2 px rails, label 13/500 | 24 px square markers (radius 2), mono 12 numbers, labels in mono caps (`label`), current accent-fill, done success check on success-subtle, rails turn success when done | Signal: round only for avatars |
+| Stepper mobile | "Step 3 of 6" + 2 px bar | confirmed below 640 px (`collapse="auto"`) | — |
+| DNS record card | surface, padding 16, three CopyFields sm with 12 px labels, status row | confirmed; labels in mono caps; status sentence takes its own line on phones | 390 px screenshot |
+| Port check card | 40 px rows, port mono 13, status icons, fix disclosure, numbered steps with CodeBlocks | confirmed; phones stack the label under the port; commands wrap | 390 px screenshot |
+| Provider mark | 20 × 20 rounded tile | 20 / 24 / 32 square tiles (radius 2), mono caps; three-letter monograms widen the tile | never below 11 px type |
+| Decode title | < 360 ms, once per page (DECISIONS 0032) | 9 steps × 36 ms = 324 ms | — |
