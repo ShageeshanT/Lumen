@@ -11,6 +11,11 @@ const schemes = ["dark", "light"] as const;
 
 const isCi = process.env["CI"] !== undefined;
 
+// Overridable so several checkouts (git worktrees) can run suites side by side
+// without reusing each other's servers.
+const webPort = process.env["E2E_WEB_PORT"] ?? "3000";
+const apiPort = process.env["E2E_API_PORT"] ?? "4000";
+
 export default defineConfig({
   testDir: "./tests",
   snapshotPathTemplate: "{testDir}/../__screenshots__/{testFileName}/{arg}-{projectName}{ext}",
@@ -19,7 +24,7 @@ export default defineConfig({
   retries: isCi ? 1 : 0,
   reporter: isCi ? [["html", { open: "never" }], ["github"]] : "list",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: `http://localhost:${webPort}`,
     trace: "on-first-retry",
   },
   expect: {
@@ -32,16 +37,18 @@ export default defineConfig({
     {
       command: "pnpm --filter @lumen/api dev",
       cwd: "..",
-      url: "http://localhost:4000/v1/health",
+      env: { API_PORT: apiPort, WEB_ORIGIN: `http://localhost:${webPort}` },
+      url: `http://localhost:${apiPort}/v1/health`,
       reuseExistingServer: !isCi,
       timeout: 180_000,
       stdout: "pipe",
       stderr: "pipe",
     },
     {
-      command: "pnpm --filter @lumen/web dev",
+      command: `pnpm --filter @lumen/web exec next dev --port ${webPort}`,
       cwd: "..",
-      url: "http://localhost:3000",
+      env: { NEXT_PUBLIC_API_URL: `http://localhost:${apiPort}` },
+      url: `http://localhost:${webPort}`,
       reuseExistingServer: !isCi,
       timeout: 180_000,
       stderr: "pipe",
