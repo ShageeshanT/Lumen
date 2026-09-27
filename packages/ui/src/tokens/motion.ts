@@ -51,5 +51,10 @@ export function prefersReducedMotion(): boolean {
   if (document.documentElement.dataset["reducedMotion"] === "true") {
     return true;
   }
+  // jsdom and very old engines have no matchMedia: animate.
+  const matchMedia: unknown = (window as Partial<Window>).matchMedia;
+  if (typeof matchMedia !== "function") {
+    return false;
+  }
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }

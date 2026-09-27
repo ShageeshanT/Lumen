@@ -1,6 +1,6 @@
 "use client";
 
-import { Text } from "@lumen/ui";
+import { DecodeText, Text } from "@lumen/ui";
 import { COMPONENT_DOCS } from "@lumen/ui/examples";
 
 /** Renders one registry page: title, summary, and every example in its own frame. */
@@ -13,7 +13,7 @@ export function ComponentPage({ slug }: { slug: string }) {
     <div className="flex max-w-[1100px] flex-col gap-8" data-gallery-page={doc.slug}>
       <div className="flex flex-col gap-2">
         <Text variant="eyebrow">{doc.group}</Text>
-        <Text variant="page-title">{doc.name}</Text>
+        <DecodeText text={doc.name} replayKey={doc.slug} />
         <Text variant="body" className="text-text-secondary max-w-[720px]">
           {doc.summary}
         </Text>

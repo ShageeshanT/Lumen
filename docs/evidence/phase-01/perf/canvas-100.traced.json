@@ -1,0 +1,35 @@
+{
+  "page": "/dev/components/canvas-perf",
+  "baseUrl": "http://localhost:3204",
+  "viewport": "1440x900",
+  "tracing": true,
+  "mountAll": false,
+  "reducedMotion": false,
+  "scenario": "4 drag pans of 60 pointer moves each, then 12 wheel zoom steps",
+  "pan": {
+    "frames": 267,
+    "durationMs": 4566.6,
+    "averageFps": 58.47,
+    "medianFrameMs": 16.7,
+    "p95FrameMs": 16.7,
+    "p99FrameMs": 33.3,
+    "maxFrameMs": 100.1,
+    "droppedFrames": 3
+  },
+  "zoom": {
+    "frames": 45,
+    "durationMs": 800.1,
+    "averageFps": 56.24,
+    "medianFrameMs": 16.7,
+    "p95FrameMs": 33.3,
+    "p99FrameMs": 33.3,
+    "maxFrameMs": 33.3,
+    "droppedFrames": 3
+  },
+  "nodesInScene": 100,
+  "nodesMounted": 25,
+  "edgesMounted": 30,
+  "zoomAfterRun": 0.756846,
+  "measuredAt": "2026-09-27T05:24:32.067Z",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+}

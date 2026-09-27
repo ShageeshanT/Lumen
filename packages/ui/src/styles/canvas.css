@@ -1,0 +1,59 @@
+/*
+ * The project canvas runs on React Flow (@xyflow/react, MIT). Only its
+ * structural base stylesheet is loaded (positioning, panes, handles); every
+ * visible part is a Lumen component. The z-index values inside base.css are
+ * local to the `.react-flow` container, which is its own stacking context, so
+ * they never compete with the Lumen z-index scale.
+ */
+@import "@xyflow/react/dist/base.css" layer(base);
+
+@layer components {
+  .react-flow.lumen-canvas {
+    --xy-background-color: var(--color-bg-canvas);
+    --xy-edge-stroke: var(--color-text-muted);
+    --xy-edge-stroke-selected: var(--color-accent);
+    --xy-handle-background-color: transparent;
+    --xy-handle-border-color: transparent;
+    background: var(--color-bg-canvas);
+  }
+
+  /* Handles only anchor edges; the canvas never shows connection dots in Phase 1. */
+  .lumen-canvas .react-flow__handle {
+    width: 1px;
+    height: 1px;
+    min-width: 0;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    opacity: 0;
+  }
+
+  /*
+   * React Flow's attribution stays visible: the maintainers ask that it is only
+   * hidden by React Flow Pro subscribers. Restyled to the token palette.
+   */
+  .lumen-canvas .react-flow__attribution {
+    margin: 0;
+    padding: 0 8px;
+    background: var(--color-bg-canvas);
+    font-family: var(--font-mono);
+    font-size: var(--text-11);
+  }
+
+  .lumen-canvas .react-flow__attribution a {
+    display: inline-block;
+    min-height: 24px;
+    line-height: 24px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Flowing edge dashes hold still while the canvas pans or zooms. */
+  [data-moving] .edge-flow {
+    animation-play-state: paused;
+  }
+
+  /* Group regions sit under services; React Flow's wrapper adds no chrome. */
+  .lumen-canvas .react-flow__node {
+    cursor: default;
+  }
+}

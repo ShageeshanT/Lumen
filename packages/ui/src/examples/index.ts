@@ -1,11 +1,19 @@
 import { buttonDoc, iconButtonDoc, spinnerDoc } from "../components/button.examples";
 import {
+  canvasEdgeDoc,
+  canvasFlowDoc,
+  canvasGroupDoc,
+  canvasNodeDoc,
+  volumeChipDoc,
+} from "../components/canvas.examples";
+import {
   chartDoc,
   codeBlockDoc,
   dataTableDoc,
   diffViewerDoc,
   terminalFrameDoc,
 } from "../components/data.examples";
+import { decodeTextDoc } from "../components/decode-text.examples";
 import {
   alertDoc,
   emptyStateDoc,
@@ -27,6 +35,7 @@ import {
   switchDoc,
   textareaDoc,
 } from "../components/form.examples";
+import { logViewerDoc } from "../components/log-viewer.examples";
 import {
   breadcrumbsDoc,
   environmentSwitcherDoc,
@@ -46,6 +55,7 @@ import {
   sheetDoc,
   sidePanelDoc,
 } from "../components/overlays.examples";
+import { dnsRecordDoc, portCheckDoc, stepperDoc } from "../components/setup.examples";
 import {
   avatarDoc,
   avatarStackDoc,
@@ -63,6 +73,7 @@ export type { ComponentDoc, ComponentGroup, Example } from "./types";
 /** Every gallery page, in navigation order. The registry test checks coverage. */
 export const COMPONENT_DOCS: readonly ComponentDoc[] = [
   iconsDoc,
+  decodeTextDoc,
   buttonDoc,
   iconButtonDoc,
   spinnerDoc,
@@ -109,4 +120,14 @@ export const COMPONENT_DOCS: readonly ComponentDoc[] = [
   codeBlockDoc,
   terminalFrameDoc,
   diffViewerDoc,
+  // Specialized
+  logViewerDoc,
+  canvasFlowDoc,
+  canvasNodeDoc,
+  volumeChipDoc,
+  canvasGroupDoc,
+  canvasEdgeDoc,
+  stepperDoc,
+  dnsRecordDoc,
+  portCheckDoc,
 ];
