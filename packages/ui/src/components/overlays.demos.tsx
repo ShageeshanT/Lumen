@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { Icon } from "../icons/icon";
+import { Icon, type IconName } from "../icons/icon";
 import { cn } from "../lib/cn";
 
 import { Button } from "./button";
@@ -20,6 +20,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "./context-menu";
+import { EmptyState } from "./empty-state";
 import { Modal, type ModalProps } from "./modal";
 import { Sheet, type SheetProps } from "./sheet";
 import { SidePanel, type SidePanelProps } from "./side-panel";
@@ -27,6 +28,43 @@ import { StatusTag } from "./status-tag";
 import { SearchButton } from "./top-bar";
 
 /** Stateful gallery demos. Client-only so the registry can be imported on the server. */
+
+const SERVICE_TAB_EMPTY: Record<string, { icon: IconName; title: string; description: string }> = {
+  deployments: {
+    icon: "history",
+    title: "No deployments yet",
+    description: "Push to the connected branch and each deploy shows up here with its logs.",
+  },
+  variables: {
+    icon: "key-round",
+    title: "No variables yet",
+    description: "Add the values api reads at runtime, like DATABASE_URL.",
+  },
+  metrics: {
+    icon: "chart",
+    title: "No metrics yet",
+    description: "CPU, memory and network appear about a minute after the first deploy.",
+  },
+  logs: {
+    icon: "file-text",
+    title: "No logs yet",
+    description: "api hasn't printed anything since this deploy started.",
+  },
+  settings: {
+    icon: "settings",
+    title: "Running on the defaults",
+    description: "Build, start command and resources you change for api are listed here.",
+  },
+};
+
+/** What an empty service tab really shows: the EmptyState for that tab, not a stand-in line. */
+function ServiceTabEmpty({ tab }: { tab: string }) {
+  const copy = SERVICE_TAB_EMPTY[tab] ?? SERVICE_TAB_EMPTY["deployments"];
+  if (copy === undefined) {
+    return null;
+  }
+  return <EmptyState icon={copy.icon} title={copy.title} description={copy.description} />;
+}
 
 /**
  * A framed stand-in for the page behind an overlay. Overlays rendered into it
@@ -455,6 +493,7 @@ export function ModalNested() {
             title="Discard unsaved settings?"
             description="You changed 2 settings. They are lost if you close now."
             confirmLabel="Discard"
+            confirmTone="danger"
             cancelLabel="Keep editing"
             onConfirm={() => undefined}
           />
@@ -556,12 +595,12 @@ const HISTORY = [
   { status: "failed" as const, message: "feat: rate limits", meta: "c4d5e6f · 5 h ago · 1m 12s" },
 ];
 
-function InspectorBody({ tab }: { tab: string }) {
+export function InspectorBody({ tab }: { tab: string }) {
   if (tab !== "deployments") {
     return (
-      <p className="text-body-secondary">
-        {INSPECTOR_TABS.find((item) => item.value === tab)?.label} for api show here.
-      </p>
+      <div className="py-6">
+        <ServiceTabEmpty tab={tab} />
+      </div>
     );
   }
   return (
@@ -665,24 +704,32 @@ export function SidePanelPreview({
 
 function DeployActions() {
   return (
-    <ul className="flex flex-col gap-2">
-      <li>
-        <Button size="lg" fullWidth leadingIcon="rotate-cw">
+    // One strong action; the rest are quieter so the choice reads at a glance.
+    // The list is inset by the bracket offset so the primary's HUD corners show.
+    <ul className="flex flex-col gap-2 px-[6px] pt-[6px]">
+      <li className="pb-[6px]">
+        <Button variant="primary" size="lg" fullWidth leadingIcon="rotate-cw">
           Redeploy
         </Button>
       </li>
       <li>
-        <Button size="lg" fullWidth leadingIcon="file-text">
+        <Button
+          variant="ghost"
+          size="lg"
+          fullWidth
+          leadingIcon="file-text"
+          className="justify-start"
+        >
           View logs
         </Button>
       </li>
       <li>
-        <Button size="lg" fullWidth leadingIcon="history">
+        <Button variant="ghost" size="lg" fullWidth leadingIcon="history" className="justify-start">
           Roll back to this deploy
         </Button>
       </li>
       <li>
-        <Button size="lg" fullWidth leadingIcon="copy">
+        <Button variant="ghost" size="lg" fullWidth leadingIcon="copy" className="justify-start">
           Copy deployment ID
         </Button>
       </li>
@@ -693,7 +740,8 @@ function DeployActions() {
 export function SheetInteractive() {
   return (
     <Sheet
-      title="Deployment a1b2c3d"
+      eyebrow="Deployment"
+      title="a1b2c3d"
       description="fix: retry on 502 · 3 min ago"
       trigger={<Button leadingIcon="ellipsis">Deployment actions</Button>}
     >
@@ -717,7 +765,8 @@ export function SheetPreview({
         <Sheet
           open
           container={container}
-          title={withTabs ? "api" : "Deployment a1b2c3d"}
+          eyebrow={withTabs ? "Service" : "Deployment"}
+          title={withTabs ? "api" : "a1b2c3d"}
           {...(withTabs
             ? {
                 tabs: {

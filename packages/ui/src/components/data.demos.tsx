@@ -23,6 +23,7 @@ import {
   type Variable,
 } from "./data.fixtures";
 import { EmptyState } from "./empty-state";
+import { SealedValue } from "./secret-field";
 import { StatusTag } from "./status-tag";
 import { TerminalFrame, type TerminalStatus } from "./terminal-frame";
 
@@ -35,7 +36,7 @@ export const DEPLOYMENT_COLUMNS: DataTableColumn<Deployment>[] = [
     size: 150,
     sortable: true,
     value: (row) => STATUS[row.status].label,
-    cell: (row) => <StatusTag status={row.status} size="sm" brackets={false} />,
+    cell: (row) => <StatusTag status={row.status} size="sm" />,
   },
   { id: "message", header: "Commit message", value: (row) => row.message, sortable: true },
   { id: "commit", header: "Commit", size: 100, mono: true, value: (row) => row.commit },
@@ -93,10 +94,35 @@ export function DeploymentsTableDemo({ dense = false }: { dense?: boolean }) {
         }}
         dense={dense}
       />
-      <p className="text-meta" aria-live="polite">
-        {selected.length} selected
-        {opened === null ? "" : ` · opened ${opened}`}
-      </p>
+      {/* A selection is only worth making when there is something to do with it. */}
+      <div className="flex min-h-8 flex-wrap items-center gap-x-3 gap-y-1">
+        <p className="text-meta" aria-live="polite">
+          {selected.length} selected
+          {opened === null ? "" : ` · opened ${opened}`}
+        </p>
+        {selected.length > 0 && (
+          <>
+            <Button
+              size="sm"
+              leadingIcon="copy"
+              onClick={() => {
+                void navigator.clipboard.writeText(selected.join("\n")).catch(() => undefined);
+              }}
+            >
+              Copy {selected.length === 1 ? "ID" : "IDs"}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setSelected([]);
+              }}
+            >
+              Clear selection
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -108,7 +134,7 @@ export const VARIABLE_COLUMNS: DataTableColumn<Variable>[] = [
     header: "Value",
     cell: (row) =>
       row.sealed ? (
-        <span className="text-text-secondary">Sealed</span>
+        <SealedValue />
       ) : (
         <span className="text-text-secondary font-mono">
           <span aria-hidden="true">••••••••</span>

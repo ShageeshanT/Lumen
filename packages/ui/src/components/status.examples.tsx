@@ -154,10 +154,10 @@ export const kbdDoc: ComponentDoc = {
           ).map(([label, keys]) => (
             <div
               key={label}
-              className="border-border flex items-center justify-between border-b py-2"
+              className="border-border flex items-center justify-between gap-3 border-b py-2"
             >
-              <dt className="text-body-secondary">{label}</dt>
-              <dd>
+              <dt className="text-body-secondary min-w-0">{label}</dt>
+              <dd className="shrink-0">
                 <Kbd keys={[...keys]} platform="mac" />
               </dd>
             </div>

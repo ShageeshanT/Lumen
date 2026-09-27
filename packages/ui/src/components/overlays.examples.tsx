@@ -1,6 +1,7 @@
 import type { ComponentDoc } from "../examples/types";
 
 import { Button } from "./button";
+import { CodeBlock } from "./code-block";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -15,6 +16,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
+import { Field } from "./field";
 import { IconButton } from "./icon-button";
 import { Input } from "./input";
 import {
@@ -506,7 +508,9 @@ export const modalDoc: ComponentDoc = {
             </>
           }
         >
-          <Input aria-label="Service name" monospace defaultValue="api" />
+          <Field label="Service name" helper="Lowercase letters, numbers and dashes.">
+            <Input monospace defaultValue="api" />
+          </Field>
         </ModalPreview>
       ),
     },
@@ -520,11 +524,14 @@ export const modalDoc: ComponentDoc = {
           height={360}
           title="Connect a server"
           description="Run this on the VM you want to deploy to. It installs the Lumen agent."
-          footer={<Button variant="primary">I ran it</Button>}
+          footer={<Button variant="primary">Check connection</Button>}
         >
-          <code className="text-code block truncate">
-            curl -fsSL https://get.lumen.dev | sh -s -- --token ••••••••
-          </code>
+          <CodeBlock
+            language="bash"
+            label="Install command"
+            wrap="narrow"
+            code="curl -fsSL https://get.lumen.dev | sh -s -- --token lmn_4f2a9c"
+          />
         </ModalPreview>
       ),
     },

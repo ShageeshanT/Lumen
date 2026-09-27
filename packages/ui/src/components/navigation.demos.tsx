@@ -9,7 +9,7 @@ import { Breadcrumbs } from "./breadcrumbs";
 import { CommandPalette } from "./command-palette";
 import { EnvironmentSwitcher, type Environment } from "./environment-switcher";
 import { IconButton } from "./icon-button";
-import { PALETTE_GROUPS, PALETTE_RECENTS, Stage } from "./overlays.demos";
+import { InspectorBody, PALETTE_GROUPS, PALETTE_RECENTS, Stage } from "./overlays.demos";
 import { MobileTabBar, Rail, type MobileTabBarItem, type RailNavItem } from "./rail";
 import { StatusMarker } from "./status-marker";
 import { Tabs, TabsContent, type TabItem } from "./tabs";
@@ -130,8 +130,8 @@ export function TabsDemo({
       >
         {withPanels
           ? items.map((item) => (
-              <TabsContent key={item.value} value={item.value} className="text-body-secondary pt-4">
-                {item.label} for api show here.
+              <TabsContent key={item.value} value={item.value} className="pt-6">
+                <InspectorBody tab={item.value} />
               </TabsContent>
             ))
           : undefined}
@@ -234,7 +234,16 @@ export function RailDemo({
   slots?: boolean;
 }) {
   return (
-    <div className="border-border bg-bg-canvas flex border" style={{ height }}>
+    // The collapsed rail is a 220 px panel clipped to 56 px; clip-path does not
+    // clip layout, so the frame clips it. Otherwise it widens a phone's layout
+    // viewport and every later screenshot on the page lands off target.
+    <div
+      className={cn(
+        "border-border bg-bg-canvas flex overflow-hidden border",
+        slots && "w-[260px] max-w-full",
+      )}
+      style={{ height }}
+    >
       <Rail
         items={railItems(active)}
         responsive={false}
@@ -404,9 +413,7 @@ export function ShellFrame() {
               />
             </div>
             <div className="bg-grid min-h-0 flex-1 p-6 max-md:p-4">
-              <p className="text-body-secondary">
-                {SERVICE_TABS.find((item) => item.value === tab)?.label} for api show here.
-              </p>
+              <InspectorBody tab={tab} />
             </div>
             <MobileTabBar items={MOBILE_ITEMS} className="md:hidden" />
           </div>

@@ -59,7 +59,11 @@ export const toastDoc: ComponentDoc = {
             progress={1}
           />
           <Toast
-            toast={record({ title: "Couldn't reach GitHub", variant: "danger" })}
+            toast={record({
+              title: "Couldn't reach GitHub",
+              variant: "danger",
+              action: { label: "Retry", onClick: noop },
+            })}
             progress={1}
           />
         </ToastColumn>
@@ -78,7 +82,7 @@ export const toastDoc: ComponentDoc = {
           <Toast
             toast={record({
               title: "Deploy failed",
-              description: "api · build exited with code 1.",
+              description: "The build failed. The first error is in the logs.",
               variant: "danger",
               action: { label: "View logs", onClick: noop },
             })}
@@ -140,7 +144,7 @@ export const alertDoc: ComponentDoc = {
           <Alert variant="warning" title="Resizing this volume restarts postgres">
             Expect about 20 seconds of downtime. Connections retry on their own.
           </Alert>
-          <Alert variant="danger">
+          <Alert variant="danger" action={{ label: "Run backup now", onClick: noop }}>
             The last backup failed. Your data is safe; the next run is at 03:00.
           </Alert>
         </div>
@@ -339,11 +343,26 @@ export const emptyStateDoc: ComponentDoc = {
           title="Create your first project"
           description="A project holds your services, databases and their settings."
           tiles={[
-            { icon: "git-branch", title: "GitHub repo", description: "Deploy on every push" },
-            { icon: "database", title: "Database", description: "Postgres, MySQL, Redis" },
-            { icon: "box", title: "Docker image", description: "Run a prebuilt image" },
+            {
+              icon: "git-branch",
+              title: "GitHub repo",
+              description: "Deploy on every push",
+              onSelect: noop,
+            },
+            {
+              icon: "database",
+              title: "Database",
+              description: "Postgres, MySQL, Redis",
+              onSelect: noop,
+            },
+            {
+              icon: "box",
+              title: "Docker image",
+              description: "Run a prebuilt image",
+              onSelect: noop,
+            },
           ]}
-          action={{ label: "New project", icon: "plus", onClick: noop }}
+          action={{ label: "Empty project", icon: "plus", onClick: noop }}
         />
       ),
     },
@@ -363,7 +382,7 @@ export const emptyStateDoc: ComponentDoc = {
             { icon: "server", title: "AWS, GCP, Azure", description: "Any VM" },
             { icon: "hard-drive", title: "Bare metal", description: "Your own hardware" },
           ]}
-          action={{ label: "Add a server", onClick: noop }}
+          action={{ label: "Connect a server", onClick: noop }}
           secondary={{ label: "What the installer does", href: "#docs-installer" }}
         />
       ),

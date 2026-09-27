@@ -158,7 +158,7 @@ export function SliderDemo() {
           { value: 4096, label: "4 GB" },
           { value: 8192, label: "8 GB" },
         ]}
-        limit={{ value: 12288, label: "Server “oracle-1” has 12 GB free" }}
+        limit={{ value: 12288, server: "oracle-1" }}
       />
       <SliderWithInput
         label="Memory over the limit"
@@ -170,7 +170,7 @@ export function SliderDemo() {
         value={over}
         onValueChange={setOver}
         formatValue={formatMegabytes}
-        limit={{ value: 18432, label: "Server “oracle-1” has 18 GB free" }}
+        limit={{ value: 18432, server: "oracle-1" }}
       />
       <SliderWithInput
         label="CPU"
