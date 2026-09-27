@@ -6,7 +6,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./errors": "./src/errors/index.ts",
-    "./ids": "./src/ids.ts"
+    "./ids": "./src/ids.ts",
+    "./schemas": "./src/schemas/index.ts",
+    "./fixes": "./src/fixes/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -14,7 +16,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "ulid": "catalog:"
+    "ulid": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
