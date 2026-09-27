@@ -261,7 +261,12 @@ describe("ErrorCard", () => {
   it.each(LUMEN_ERROR_CODES)("renders the %s catalog entry", (code) => {
     const error = makeError(code, { port: 443, serverName: "oracle-1", memoryMb: 512 });
     const onAction = vi.fn();
-    render(<ErrorCard error={error} onAction={onAction} url="https://lumen.test/p" />);
+    // Command actions carry a copy button with a tooltip; the app mounts the provider at the root.
+    render(
+      <TooltipProvider>
+        <ErrorCard error={error} onAction={onAction} url="https://lumen.test/p" />
+      </TooltipProvider>,
+    );
     const card = screen.getByRole("region", { name: error.title });
     expect(card).toHaveTextContent(error.explanation);
     expect(card).toHaveTextContent(error.fix);
