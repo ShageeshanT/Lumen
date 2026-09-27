@@ -1,0 +1,171 @@
+/*
+ * Enter and exit choreography for overlays and navigation (Phase 1 §5 Motion).
+ * Every keyframe animates opacity and transform only. Durations come from the
+ * motion tokens, which drop to 0 ms under reduced motion, so nothing here needs
+ * its own reduced-motion branch except the looping progress line.
+ *
+ *   menus, popovers   scale 0.96 → 1 from the trigger side, --dur-base
+ *   modals            overlay fades, dialog scales 0.98 → 1
+ *   side panel        slides in from +24 px
+ *   sheets            slide up from 100 %
+ *   exits             --dur-exit-base (80 ms faster) with --ease-in
+ */
+
+@keyframes lumen-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lumen-pop-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes lumen-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lumen-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes lumen-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lumen-dialog-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes lumen-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lumen-panel-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes lumen-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes lumen-sheet-out {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes lumen-drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes lumen-drawer-out {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* A 2 px line sweeping across an edge while a connection is re-established. */
+@keyframes lumen-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@layer components {
+  .progress-sweep {
+    animation: lumen-indeterminate var(--dur-indeterminate) var(--ease-in) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .progress-sweep {
+      animation: none;
+      transform: none;
+      width: 100%;
+    }
+  }
+
+  :root[data-reduced-motion="true"] .progress-sweep {
+    animation: none;
+    transform: none;
+    width: 100%;
+  }
+
+  /* Horizontal scrollers that show fade masks instead of a scrollbar. */
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}

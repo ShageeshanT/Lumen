@@ -1,7 +1,7 @@
 "use client";
 
 import * as RadixTooltip from "@radix-ui/react-tooltip";
-import type { ReactElement, ReactNode } from "react";
+import { useState, type ReactElement, type ReactNode } from "react";
 
 import { cn } from "../lib/cn";
 
@@ -30,15 +30,30 @@ export interface TooltipProps {
   children: ReactElement;
   /** Force open, for gallery screenshots. */
   open?: boolean;
+  /**
+   * Never show, without changing the element tree (so a focused trigger keeps
+   * focus). The expanded rail uses it when its labels are already visible.
+   */
+  disabled?: boolean;
 }
 
 /**
  * Tooltip: sentence-case sans on a raised panel with a hairline frame. Shows
  * on hover and on keyboard focus; hides on blur and Escape.
  */
-export function Tooltip({ content, shortcut, side = "top", children, open }: TooltipProps) {
+export function Tooltip({
+  content,
+  shortcut,
+  side = "top",
+  children,
+  open,
+  disabled = false,
+}: TooltipProps) {
+  // Always controlled, so `disabled` can flip without Radix switching modes.
+  const [openState, setOpen] = useState(false);
+  const shown = open ?? (disabled ? false : openState);
   return (
-    <RadixTooltip.Root {...(open === undefined ? {} : { open })}>
+    <RadixTooltip.Root open={shown} onOpenChange={setOpen}>
       <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
       <RadixTooltip.Portal>
         <RadixTooltip.Content
