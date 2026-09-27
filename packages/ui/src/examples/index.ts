@@ -13,6 +13,25 @@ import {
   switchDoc,
   textareaDoc,
 } from "../components/form.examples";
+import {
+  breadcrumbsDoc,
+  environmentSwitcherDoc,
+  railDoc,
+  shellDoc,
+  tabsDoc,
+  topBarDoc,
+  workspaceSwitcherDoc,
+} from "../components/navigation.examples";
+import {
+  commandPaletteDoc,
+  confirmDialogDoc,
+  contextMenuDoc,
+  dropdownMenuDoc,
+  modalDoc,
+  popoverDoc,
+  sheetDoc,
+  sidePanelDoc,
+} from "../components/overlays.examples";
 import { avatarDoc, badgeDoc, kbdDoc, statusTagDoc } from "../components/status.examples";
 import { tooltipDoc } from "../components/tooltip.examples";
 import { iconsDoc } from "../icons/icons.examples";
@@ -39,6 +58,21 @@ export const COMPONENT_DOCS: readonly ComponentDoc[] = [
   keyValueDoc,
   copyFieldDoc,
   tooltipDoc,
+  commandPaletteDoc,
+  dropdownMenuDoc,
+  contextMenuDoc,
+  popoverDoc,
+  modalDoc,
+  confirmDialogDoc,
+  sidePanelDoc,
+  sheetDoc,
+  tabsDoc,
+  breadcrumbsDoc,
+  environmentSwitcherDoc,
+  workspaceSwitcherDoc,
+  railDoc,
+  topBarDoc,
+  shellDoc,
   skeletonDoc,
   statusTagDoc,
   badgeDoc,

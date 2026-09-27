@@ -173,9 +173,10 @@ describe("Badge, Avatar, Spinner", () => {
 describe("gallery registry", () => {
   it("covers every exported component", () => {
     const covered = new Set(COMPONENT_DOCS.flatMap((doc) => doc.components));
-    // Components are PascalCase; lowercase exports are hooks and helpers. Text has the Typography page.
+    // Components are PascalCase; lowercase exports are hooks and helpers and
+    // SCREAMING_CASE exports are constants. Text has the Typography page.
     const exported = Object.keys(components).filter(
-      (name) => /^[A-Z]/.test(name) && name !== "Text",
+      (name) => /^[A-Z][a-z]/.test(name) && name !== "Text",
     );
     const missing = exported.filter((name) => !covered.has(name));
     expect(missing).toEqual([]);
