@@ -1,7 +1,7 @@
 "use client";
 
 import * as RadixSlider from "@radix-ui/react-slider";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 
 import { cn } from "../lib/cn";
 
@@ -59,9 +59,12 @@ export function SliderWithInput({
 }: SliderWithInputProps) {
   const id = useId();
   const [draft, setDraft] = useState(String(value));
-  useEffect(() => {
+  // A new value from outside replaces whatever is being typed.
+  const [syncedValue, setSyncedValue] = useState(value);
+  if (syncedValue !== value) {
+    setSyncedValue(value);
     setDraft(String(value));
-  }, [value]);
+  }
 
   const over = limit !== undefined && value > limit.value;
   const atLimit = limit?.value === value;

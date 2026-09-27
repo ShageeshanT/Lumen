@@ -334,6 +334,7 @@ export function DataTable<T extends RowData>({
 
   const rows = table.getRowModel().rows;
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Virtual returns mutable functions by design; this component is not memoized by the compiler.
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scrollRef.current,

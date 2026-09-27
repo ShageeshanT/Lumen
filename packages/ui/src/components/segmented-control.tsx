@@ -82,7 +82,7 @@ export function SegmentedControl({
           data-value={item.value}
           disabled={item.disabled === true}
           className={cn(
-            "text-action relative z-[1] inline-flex items-center justify-center gap-[6px] rounded-[1px] px-[10px]",
+            "text-action relative inline-flex items-center justify-center gap-[6px] rounded-[1px] px-[10px]",
             "text-text-secondary is-hover:text-text data-[state=on]:text-text",
             "transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)]",
             "focus-visible:outline-offset-[-2px] disabled:cursor-not-allowed disabled:opacity-50",

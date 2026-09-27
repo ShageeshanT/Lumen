@@ -7,6 +7,44 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
+/** Strings that would bypass the token layer, with the fix to suggest. */
+const TOKEN_BYPASSES = [
+  {
+    pattern: /\[#[0-9a-f]{3,8}\]|#[0-9a-f]{6}(?:[0-9a-f]{2})?\b/i,
+    message: "Hex color outside src/tokens. Use a color token (bg-surface, text-danger-text).",
+  },
+  {
+    pattern: /(?:^|[\s:"'`])text-\[[0-9.]+(?:px|rem|em)\]/,
+    message:
+      "Raw font size. Use a text style (text-body, text-meta) or the text-11 to text-32 scale.",
+  },
+  {
+    pattern: /(?:^|[\s:"'`])-?z-(?:\[[0-9]|[0-9])/,
+    message: "Raw z-index. Use the scale, such as z-[var(--z-popover)] (tokens/z-index.css).",
+  },
+];
+
+/** @type {import("eslint").Rule.RuleModule} */
+const designTokensOnly = {
+  meta: { type: "problem", schema: [] },
+  create(context) {
+    /** @param {import("estree").Node} node @param {unknown} text */
+    const check = (node, text) => {
+      if (typeof text !== "string") return;
+      const hit = TOKEN_BYPASSES.find(({ pattern }) => pattern.test(text));
+      if (hit !== undefined) context.report({ node, message: hit.message });
+    };
+    return {
+      Literal: (node) => {
+        check(node, node.value);
+      },
+      TemplateElement: (node) => {
+        check(node, node.value.raw);
+      },
+    };
+  },
+};
+
 export default tseslint.config(
   {
     ignores: [
@@ -110,6 +148,26 @@ export default tseslint.config(
   {
     files: ["apps/web/**/*.tsx"],
     ...jsxA11y.flatConfigs.strict,
+  },
+
+  // Design-system guard (Phase 1 section 6): colors, font sizes and stacking come from
+  // tokens only. Tailwind arbitrary values would let a page invent its own.
+  {
+    files: ["packages/ui/src/**/*.{ts,tsx}", "apps/web/src/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}", "packages/ui/src/tokens/**"],
+    plugins: { lumen: { rules: { "design-tokens-only": designTokensOnly } } },
+    rules: { "lumen/design-tokens-only": "error" },
+  },
+
+  // The design system is React too: hooks rules apply there as in the app.
+  {
+    files: ["packages/ui/**/*.{ts,tsx}"],
+    plugins: { "react-hooks": reactHooks },
+    rules: {
+      ...reactHooks.configs.flat.recommended.rules,
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "error",
+    },
   },
 
   // Prettier owns formatting; disable every stylistic rule that would fight it.

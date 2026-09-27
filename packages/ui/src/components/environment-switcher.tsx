@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 
 import { Icon } from "../icons/icon";
 import { cn } from "../lib/cn";
@@ -92,8 +92,8 @@ export function EnvironmentSwitcher({
 }: EnvironmentSwitcherProps) {
   const current = environments.find((environment) => environment.id === value);
   // Pulse only after the value changes, never on first render.
-  const initial = useRef(value);
-  const switched = value !== initial.current;
+  const [initial] = useState(value);
+  const switched = value !== initial;
 
   return (
     <DropdownMenu {...(open === undefined ? {} : { open, modal: false })}>

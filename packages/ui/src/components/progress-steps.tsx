@@ -43,11 +43,14 @@ function useTicker(enabled: boolean): number {
     if (!enabled) {
       return;
     }
-    setNow(Date.now());
-    const id = setInterval(() => {
+    const tick = () => {
       setNow(Date.now());
-    }, 1000);
+    };
+    // Catch up at once when ticking starts, then once a second.
+    const first = setTimeout(tick, 0);
+    const id = setInterval(tick, 1000);
     return () => {
+      clearTimeout(first);
       clearInterval(id);
     };
   }, [enabled]);

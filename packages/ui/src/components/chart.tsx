@@ -277,9 +277,19 @@ export function Chart({
   const hasData = series.some((entry) => entry.data.some(([, value]) => value !== null));
   const text =
     summary ?? chartSummary({ title, series, unit, range, rangeLabel, limitLine, markers });
-  const colors = series.map(
-    (entry, index) => entry.color ?? DEFAULT_COLORS[index % DEFAULT_COLORS.length] ?? "accent",
+  const colors = useMemo(
+    () =>
+      series.map(
+        (entry, index) => entry.color ?? DEFAULT_COLORS[index % DEFAULT_COLORS.length] ?? "accent",
+      ),
+    [series],
   );
+  // Read when the canvas is built; later toggles go through setSeries so the cursor survives.
+  const hiddenRef = useRef(hidden);
+  useEffect(() => {
+    hiddenRef.current = hidden;
+  }, [hidden]);
+  const limitValue = limitLine?.value;
 
   // Rebuild the canvas when the theme changes: canvas colors are read from tokens.
   useEffect(() => {
@@ -317,7 +327,7 @@ export function Chart({
       const grid = withAlpha(token("--color-border"), 0.6);
       const maxValue = Math.max(
         ...aligned.slice(1).flatMap((column) => column.flatMap((v) => (v === null ? [] : [v]))),
-        limitLine?.value ?? 0,
+        limitValue ?? 0,
       );
       const yTicks = niceTicks(maxValue);
 
@@ -333,7 +343,7 @@ export function Chart({
           plotTop: shownTop,
           plotWidth: u.over.clientWidth,
           plotHeight: u.over.clientHeight,
-          ...(limitLine === undefined ? {} : { limitTop: u.valToPos(limitLine.value, "y") }),
+          ...(limitValue === undefined ? {} : { limitTop: u.valToPos(limitValue, "y") }),
           markers: markers
             .filter((marker) => marker.ts >= range.from && marker.ts <= range.to)
             .map((marker) => ({ marker, left: u.valToPos(marker.ts, "x") })),
@@ -388,7 +398,7 @@ export function Chart({
               label: entry.label,
               stroke: color,
               width: 1.5,
-              show: !hidden.has(entry.id),
+              show: !hiddenRef.current.has(entry.id),
               spanGaps: false,
               points: { show: false },
               ...(kind === "area" ? { fill: withAlpha(color, 0.12) } : {}),
@@ -423,15 +433,15 @@ export function Chart({
       instance?.destroy();
       plot.current = null;
     };
-    // `hidden` is applied live through setSeries below; rebuilding for it would reset the cursor.
   }, [
     aligned,
+    series,
+    colors,
     kind,
     unit,
     range.from,
     range.to,
-    limitLine?.value,
-    limitLine?.label,
+    limitValue,
     markers,
     sync,
     height,

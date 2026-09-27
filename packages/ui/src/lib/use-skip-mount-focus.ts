@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 
 /**
  * Overlays rendered into a container (gallery previews) that are already open
@@ -10,9 +10,9 @@ import { useRef } from "react";
  * use, because Strict Mode mounts focus scopes twice.
  */
 export function useSkipMountFocus(open: boolean | undefined, contained: boolean): () => boolean {
-  const skip = useRef(contained && open === true);
-  if (open !== true) {
-    skip.current = false;
+  const [skip, setSkip] = useState(contained && open === true);
+  if (open !== true && skip) {
+    setSkip(false);
   }
-  return () => skip.current;
+  return () => skip;
 }

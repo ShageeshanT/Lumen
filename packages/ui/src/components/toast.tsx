@@ -322,7 +322,9 @@ export function Toaster({ max = 3, className }: ToasterProps) {
   const all = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const visible = all.slice(-max);
   const [windowBlurred, setWindowBlurred] = useState(false);
-  const [reduced, setReduced] = useState(false);
+  // Only toast items read this, and none exist during hydration, so the
+  // client value can be used from the first render.
+  const [reduced] = useState(prefersReducedMotion);
   const listRef = useRef<HTMLOListElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
 
@@ -336,7 +338,6 @@ export function Toaster({ max = 3, className }: ToasterProps) {
   }, [all, max]);
 
   useEffect(() => {
-    setReduced(prefersReducedMotion());
     const onBlur = () => {
       setWindowBlurred(true);
     };
