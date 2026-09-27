@@ -25,6 +25,8 @@
   "dependencies": {
     "@lumen/shared": "workspace:*",
     "@radix-ui/react-checkbox": "catalog:",
+    "@radix-ui/react-context-menu": "catalog:",
+    "@radix-ui/react-dialog": "catalog:",
     "@radix-ui/react-dropdown-menu": "catalog:",
     "@radix-ui/react-popover": "catalog:",
     "@radix-ui/react-radio-group": "catalog:",
@@ -32,6 +34,7 @@
     "@radix-ui/react-slider": "catalog:",
     "@radix-ui/react-slot": "catalog:",
     "@radix-ui/react-switch": "catalog:",
+    "@radix-ui/react-tabs": "catalog:",
     "@radix-ui/react-toggle-group": "catalog:",
     "@radix-ui/react-tooltip": "catalog:",
     "@tanstack/react-table": "catalog:",

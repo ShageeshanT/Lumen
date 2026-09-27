@@ -75,6 +75,7 @@ if (typeof Element !== "undefined") {
   const missing: Record<string, () => unknown> = {
     scrollIntoView: () => undefined,
     hasPointerCapture: () => false,
+    setPointerCapture: () => undefined,
     releasePointerCapture: () => undefined,
   };
   for (const [name, fn] of Object.entries(missing)) {
