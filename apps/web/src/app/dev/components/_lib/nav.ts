@@ -30,6 +30,17 @@ const FOUNDATION_PAGES: GalleryEntry[] = [
   { slug: "signal", label: "Signal surfaces" },
 ];
 
+/** Performance pages for the 60 fps budgets (Phase 1 §5 Performance). */
+const SPECIALIZED_PAGES: GalleryEntry[] = [
+  { slug: "logs-perf", label: "Logs · 50k lines" },
+  { slug: "canvas-perf", label: "Canvas · 100 nodes" },
+];
+
+/** Every bespoke page, for registry.json (axe runs on each). */
+export const BESPOKE_PAGES: readonly string[] = [...FOUNDATION_PAGES, ...SPECIALIZED_PAGES].map(
+  (entry) => entry.slug,
+);
+
 export const GALLERY_GROUPS: readonly GalleryGroup[] = GROUP_ORDER.map((group) => ({
   label: group,
   entries: [
@@ -38,5 +49,6 @@ export const GALLERY_GROUPS: readonly GalleryGroup[] = GROUP_ORDER.map((group) =
       slug: doc.slug,
       label: doc.name,
     })),
+    ...(group === "Specialized" ? SPECIALIZED_PAGES : []),
   ],
 })).filter((group) => group.entries.length > 0);

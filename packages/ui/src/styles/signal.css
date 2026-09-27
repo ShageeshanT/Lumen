@@ -106,6 +106,16 @@
     animation: lumen-blink var(--dur-pulse) steps(1, end) infinite;
   }
 
+  /* Data moving along a canvas edge: short accent dashes travel toward the target. */
+  .edge-flow {
+    stroke: var(--color-accent);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 14;
+    opacity: 0.8;
+    pointer-events: none;
+    animation: lumen-flow var(--dur-flow) linear infinite;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .boot,
     .booted .boot {
@@ -114,7 +124,8 @@
     }
 
     .glow-field,
-    .blink {
+    .blink,
+    .edge-flow {
       animation: none;
     }
   }
@@ -126,7 +137,8 @@
   }
 
   :root[data-reduced-motion="true"] .glow-field,
-  :root[data-reduced-motion="true"] .blink {
+  :root[data-reduced-motion="true"] .blink,
+  :root[data-reduced-motion="true"] .edge-flow {
     animation: none;
   }
 }
