@@ -188,10 +188,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - name: Gallery screenshots and axe
+      - name: Gallery screenshots, axe and keyboard walk
         run: >-
           pnpm --filter e2e test --project=${{ matrix.project }}
-          tests/gallery.spec.ts tests/gallery-a11y.spec.ts
+          tests/gallery.spec.ts tests/gallery-a11y.spec.ts tests/keyboard-walk.spec.ts
       - name: Screenshot count
         if: always()
         run: |

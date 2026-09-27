@@ -7,7 +7,8 @@
 #
 # The working tree (tracked + untracked, minus ignored files) is copied into the
 # container, so node_modules and Windows build output never cross over. Only
-# *-linux.png files come back out.
+# *-linux.png files come back out. Downloads are cached in the
+# lumen-visual-pnpm-store volume, so only the first run fetches packages.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

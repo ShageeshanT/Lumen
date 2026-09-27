@@ -126,6 +126,9 @@ catalogs:
     drizzle-orm:
       specifier: 0.45.3
       version: 0.45.3
+    esbuild:
+      specifier: 0.27.7
+      version: 0.27.7
     eslint:
       specifier: 10.11.0
       version: 10.11.0
@@ -400,6 +403,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.19.0
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.27.7
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

@@ -1,0 +1,29 @@
+button-only: 65771 B minified, 21181 B gzip
+largest inputs:
+     28415  tailwind-merge@3.7.0/node_modules/tailwind-merge/dist/bundle-mjs.mjs
+      2428  @radix-ui+react-slot@1.3.3_@types+react@19.3.0_react@19.3.0/node_modules/@radix-ui/react-slot/dist/index.mjs
+      2209  ../packages/ui/src/components/button.tsx
+      1376  ../packages/ui/src/icons/icon.tsx
+      1134  lucide-react@1.48.0_react@19.3.0/node_modules/lucide-react/dist/esm/shared/src/build/buildLucideIconNode.mjs
+       942  ../packages/ui/src/lib/cn.ts
+       643  class-variance-authority@0.7.1/node_modules/class-variance-authority/dist/index.mjs
+       632  lucide-react@1.48.0_react@19.3.0/node_modules/lucide-react/dist/esm/Icon.mjs
+       620  lucide-react@1.48.0_react@19.3.0/node_modules/lucide-react/dist/esm/icons/cpu.mjs
+       561  ../packages/ui/src/components/spinner.tsx
+       510  lucide-react@1.48.0_react@19.3.0/node_modules/lucide-react/dist/esm/icons/memory-stick.mjs
+       506  lucide-react@1.48.0_react@19.3.0/node_modules/lucide-react/dist/esm/icons/unlink.mjs
+
+whole-kit: 896271 B minified, 304046 B gzip
+largest inputs:
+     78460  @xyflow+react@12.12.0_@type_1cb90ab7d1cf1770c5d6bdeb08bc880b/node_modules/@xyflow/react/dist/esm/index.js
+     53002  uplot@1.6.32/node_modules/uplot/dist/uPlot.esm.js
+     44505  @xyflow+system@0.0.83/node_modules/@xyflow/system/dist/esm/index.js
+     42795  ../packages/ui/src/icons/vendor/devicon-paths.ts
+     28576  tailwind-merge@3.7.0/node_modules/tailwind-merge/dist/bundle-mjs.mjs
+     23192  motion-dom@13.4.4/node_modules/motion-dom/dist/es/projection/node/create-projection-node.mjs
+     22949  @tanstack+virtual-core@3.17.11/node_modules/@tanstack/virtual-core/dist/esm/index.js
+     18276  @radix-ui+react-select@2.3._c077d25a874f27141804d1923df5095a/node_modules/@radix-ui/react-select/dist/index.mjs
+     13142  @radix-ui+react-menu@2.1.24_1a4859a4d38c8778bb96b91c46c24aae/node_modules/@radix-ui/react-menu/dist/index.mjs
+     12280  ../packages/ui/src/components/log-viewer.tsx
+     10868  cmdk@1.1.1_@types+react-dom_85039cdf082760c669f17a9688d50ed2/node_modules/cmdk/dist/index.mjs
+     10442  ../packages/ui/src/components/data-table.tsx
