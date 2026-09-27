@@ -144,6 +144,15 @@ jobs:
           fi
         working-directory: packages/protocol
 
+  installer:
+    name: Agent installer (bats + shellcheck)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y bats shellcheck
+      - run: shellcheck -s sh deploy/agent-install.sh deploy/agent-uninstall.sh deploy/tests/helpers/make-minisig.sh
+      - run: bats deploy/tests/install.bats
+
   e2e-smoke:
     name: E2E smoke
     runs-on: ubuntu-24.04

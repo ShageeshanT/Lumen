@@ -41,6 +41,9 @@ const (
 	exitUsage        = 2
 	exitTokenInvalid = 3
 	exitUnreachable  = 4
+	// exitNotJoined (EX_CONFIG) means "no valid credential": the systemd unit
+	// lists it in RestartPreventExitStatus so a revoked server stays stopped.
+	exitNotJoined = 78
 )
 
 func main() {
@@ -226,12 +229,17 @@ func cmdRun(args []string, stdout, stderr io.Writer) int {
 	switch {
 	case err == nil:
 		return exitOK
-	case errors.Is(err, agent.ErrRestartForUpdate), errors.Is(err, agent.ErrRevoked):
+	case errors.Is(err, agent.ErrRestartForUpdate):
 		log.Info(err.Error())
 		return exitOK
+	case errors.Is(err, agent.ErrRevoked):
+		// The unit's RestartPreventExitStatus keeps systemd from restarting us
+		// until a new join starts the service again.
+		log.Info(err.Error())
+		return exitNotJoined
 	case errors.Is(err, agent.ErrNotJoined):
 		fmt.Fprintln(stderr, "This server hasn't joined Lumen yet. Run the join command from Servers → Add server.")
-		return exitFailure
+		return exitNotJoined
 	default:
 		log.Error("the agent stopped", "err", err)
 		return exitFailure

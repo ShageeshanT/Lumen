@@ -233,6 +233,14 @@ export const catalog: Record<LumenErrorCode, CatalogEntry> = {
     action: { kind: "button", label: "Retry", actionId: "retry" },
   }),
 
+  PROTOCOL_UNSUPPORTED: (ctx) => ({
+    title: `The agent on '${ctx.serverName ?? "this server"}' is too old for this Lumen`,
+    explanation:
+      "The control plane talks to agents one protocol version back at most, and this agent is older than that, so it can't connect.",
+    fix: "Run the install command on the server again. It updates the agent and keeps the server's settings.",
+    action: { kind: "button", label: "Open troubleshooting", actionId: "open_troubleshooting" },
+  }),
+
   VALIDATION_FAILED: (ctx) => ({
     title: "Something in this request isn't valid",
     explanation: ctx.detail ?? "One or more fields have values Lumen can't accept.",

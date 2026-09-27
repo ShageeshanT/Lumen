@@ -86,7 +86,7 @@ func TestLoadEnvFile(t *testing.T) {
 func TestRunWithoutJoin(t *testing.T) {
 	t.Setenv("LUMEN_STATE_DIR", t.TempDir())
 	var stdout, stderr bytes.Buffer
-	if code := run([]string{"run"}, &stdout, &stderr); code != 1 || !strings.Contains(stderr.String(), "hasn't joined") {
+	if code := run([]string{"run"}, &stdout, &stderr); code != exitNotJoined || !strings.Contains(stderr.String(), "hasn't joined") {
 		t.Fatalf("exit %d: %q", code, stderr.String())
 	}
 }

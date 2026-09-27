@@ -157,7 +157,7 @@ audit)
   docker exec "$HOST" docker inspect -f 'image={{.Config.Image}} network={{.HostConfig.NetworkMode}} readonly={{.HostConfig.ReadonlyRootfs}} capdrop={{.HostConfig.CapDrop}} capadd={{.HostConfig.CapAdd}} pids={{.HostConfig.PidsLimit}} mem={{.HostConfig.Memory}} privileged={{.HostConfig.Privileged}} restart={{.HostConfig.RestartPolicy.Name}}' lumen-caddy | sed 's/^/    /'
   say "admin API from the host (loopback) and from the control plane (network)"
   docker exec "$HOST" sh -c 'curl -s -o /dev/null -w "    127.0.0.1:2019/config/ -> HTTP %{http_code}\n" http://127.0.0.1:2019/config/'
-  ip=$(docker exec "$HOST" hostname -I | awk '{print $1}')
+  ip=$(docker exec "$HOST" ip -4 -o addr show eth0 | awk '{print $4}' | cut -d/ -f1)
   docker exec lumen-p2-cp node -e "require('net').connect(2019,'$ip').on('connect',()=>{console.log('    $ip:2019 from the control plane -> CONNECTED (bad)');process.exit(0)}).on('error',e=>{console.log('    $ip:2019 from the control plane -> '+e.code);process.exit(0)})"
   docker exec lumen-p2-cp node -e "fetch('http://$ip/').then(async r=>{console.log('    http://$ip/ -> HTTP '+r.status+' '+(await r.text()).match(/<h1>(.*)<\/h1>/)[1])})"
   ;;
