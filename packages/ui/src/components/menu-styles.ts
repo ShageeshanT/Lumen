@@ -18,7 +18,7 @@ export const dropdownOrigin = "origin-(--radix-dropdown-menu-content-transform-o
 export const contextOrigin = "origin-(--radix-context-menu-content-transform-origin)";
 
 export const menuItemClasses = cn(
-  "text-13 text-text rounded-control relative flex h-8 cursor-default items-center gap-2 px-2 outline-none select-none",
+  "text-13 text-text rounded-control relative flex h-8 cursor-default density-compact:h-7 items-center gap-2 px-2 outline-none select-none",
   "transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)]",
   "data-[highlighted]:bg-surface-hover data-[force~=hover]:bg-surface-hover",
   "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",

@@ -28,6 +28,7 @@ import {
 
 import { Icon, type IconName } from "../icons/icon";
 import { cn } from "../lib/cn";
+import { useDensity } from "../lib/use-density";
 
 import { Alert } from "./alert";
 import {
@@ -92,7 +93,7 @@ export interface DataTableProps<T> {
   empty?: ReactNode;
   /** A failed load: an inline alert row with Retry. */
   error?: { message: string; onRetry?: () => void };
-  /** 32 px rows. Also on when an ancestor has data-density="compact". */
+  /** 32 px rows. Defaults to the global density preference (useDensity). */
   dense?: boolean;
   /** Render only the rows in view. Defaults to on above 100 rows. */
   virtualize?: boolean;
@@ -276,17 +277,13 @@ export function DataTable<T extends RowData>({
   const sorting = controlledSorting ?? innerSorting;
   const scrollRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLTableSectionElement>(null);
-  const [ancestorDense, setAncestorDense] = useState(false);
   const [focusIndex, setFocusIndex] = useState(0);
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const pendingFocus = useRef<number | null>(null);
   const narrow = useNarrow(responsive === "cards");
 
-  useEffect(() => {
-    setAncestorDense((scrollRef.current?.closest('[data-density="compact"]') ?? null) !== null);
-  }, []);
-
-  const dense = denseProp ?? ancestorDense;
+  const density = useDensity();
+  const dense = denseProp ?? density === "compact";
   const rowHeight = dense ? 32 : 40;
   const virtualize = virtualizeProp ?? data.length > 100;
 

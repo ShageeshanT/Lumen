@@ -15,6 +15,9 @@
 @custom-variant is-active (&:active, &[data-force~="active"]);
 @custom-variant is-focus (&:focus-visible, &[data-force~="focus"]);
 
+/* Global density preference (data-density="compact" on <html>, see useDensity). */
+@custom-variant density-compact (:root[data-density="compact"] &);
+
 /*
  * Tailwind reads the tokens through this inline mapping so utilities such as
  * bg-surface, text-text-secondary, border-border, rounded-card and gap-4 exist,

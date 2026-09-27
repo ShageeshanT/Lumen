@@ -12,14 +12,16 @@ export const THEME_EVENT = "lumen:theme";
  * Inline script for `<head>`. Runs before first paint so the theme never
  * flashes: reads the stored preference (default "system"), resolves "system"
  * through the OS media query, and sets both `data-theme` and `color-scheme`
- * on `<html>`. Kept dependency-free and minified by hand; keep it in sync with
+ * on `<html>`. It also restores the density preference (`lumen.density`) so
+ * compact tables do not jump after hydration. Kept dependency-free and minified by hand; keep it in sync with
  * `resolveTheme` below.
  */
 export const themeScript =
   '(function(){try{var k="lumen.theme",t=localStorage.getItem(k);' +
   'if(t!=="dark"&&t!=="light"&&t!=="system"){t="system"}' +
   'var r=t==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t;' +
-  "var d=document.documentElement;d.dataset.theme=r;d.style.colorScheme=r}" +
+  "var d=document.documentElement;d.dataset.theme=r;d.style.colorScheme=r;" +
+  'if(localStorage.getItem("lumen.density")==="compact"){d.dataset.density="compact"}}' +
   'catch(e){document.documentElement.dataset.theme="dark"}})();';
 
 export function isThemePreference(value: unknown): value is ThemePreference {
