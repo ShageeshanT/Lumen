@@ -1,0 +1,54 @@
+// Lumen agent protocol, version 1: the frame every message travels in.
+//
+// One WebSocket binary frame carries exactly one Envelope. The sender fills the
+// `body` oneof of an otherwise empty Envelope, serializes it, and puts those
+// bytes in `payload` of the outer Envelope, whose own `body` stays unset. The
+// signature covers the exact payload bytes, so no deterministic serialization
+// is needed across Go and TypeScript (docs/DECISIONS.md, envelope signing).
+//
+// Signed bytes, all integers big-endian:
+//   protocol_version (uint32) || len(server_id) (uint16) || server_id (UTF-8)
+//   || seq (uint64) || timestamp_ms (int64) || payload
+//
+// Field-number rule: 1-9 are the envelope's own fields; `body` numbers are
+// only ever appended and never reused. 30-99 are reserved for Phase 03
+// (DesiredState, ActualState, Build*, Log*, Exec*), 100+ for Phases 09 and 12.
+syntax = "proto3";
+
+package lumen.agent.v1;
+
+import "lumen/agent/v1/common.proto";
+import "lumen/agent/v1/heartbeat.proto";
+import "lumen/agent/v1/hello.proto";
+import "lumen/agent/v1/metrics.proto";
+import "lumen/agent/v1/portcheck.proto";
+import "lumen/agent/v1/update.proto";
+
+message Envelope {
+  // 1 for this phase. The control plane accepts N and N-1.
+  uint32 protocol_version = 1;
+  string server_id = 2;
+  // Strictly increasing per connection and per direction, starting at 1.
+  uint64 seq = 3;
+  int64 timestamp_ms = 4;
+  // A serialized Envelope that carries only `body`.
+  bytes payload = 5;
+  // Ed25519 over the signed bytes above: the agent's identity key for
+  // agent → control plane, the instance key for control plane → agent.
+  bytes signature = 6;
+
+  oneof body {
+    AgentHello agent_hello = 10;
+    ControlHello control_hello = 11;
+    Heartbeat heartbeat = 12;
+    HeartbeatAck heartbeat_ack = 13;
+    MetricsBatch metrics_batch = 14;
+    PortCheck port_check = 15;
+    PortCheckResult port_check_result = 16;
+    AgentUpdate agent_update = 17;
+    AgentUpdateResult agent_update_result = 18;
+    Revoke revoke = 19;
+    Ack ack = 20;
+    OpError op_error = 21;
+  }
+}

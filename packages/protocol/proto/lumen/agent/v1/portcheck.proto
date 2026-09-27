@@ -1,0 +1,28 @@
+// Lumen agent protocol, version 1: proving 80 and 443 reach the proxy.
+syntax = "proto3";
+
+package lumen.agent.v1;
+
+import "lumen/agent/v1/common.proto";
+
+// Asks the agent which ports have a listener and to install a temporary
+// `GET /.lumen/portcheck/<nonce>` route answering `200 <nonce>` on each of
+// them. The agent removes the route 60 s later.
+message PortCheck {
+  Meta meta = 1;
+  repeated uint32 ports = 2;
+  string nonce = 3;
+}
+
+message PortCheckResult {
+  string op_id = 1;
+  repeated PortState ports = 2;
+}
+
+message PortState {
+  uint32 port = 1;
+  bool listening = 2;
+  // The owning process or container name, when readable.
+  string listener = 3;
+  bool nonce_route_installed = 4;
+}

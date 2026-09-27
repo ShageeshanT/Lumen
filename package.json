@@ -61,7 +61,7 @@
       "bash scripts/lint-go-staged.sh"
     ],
     "*.proto": [
-      "buf format -w"
+      "bash scripts/format-proto-staged.sh"
     ]
   }
 }

@@ -1,0 +1,35 @@
+// Lumen agent protocol, version 1: self-update and revocation.
+syntax = "proto3";
+
+package lumen.agent.v1;
+
+import "lumen/agent/v1/common.proto";
+
+// Tells the agent to replace itself. The agent verifies sha256 and the
+// minisign signature against the release key built into it before swapping.
+message AgentUpdate {
+  Meta meta = 1;
+  string version = 2;
+  string url = 3;
+  // Lowercase hex.
+  string sha256 = 4;
+  // The full minisign signature file (.minisig) as text.
+  string signature = 5;
+  bool force = 6;
+}
+
+// Sent once the update settled: after the new binary passed its health check,
+// or on the next connection after a rollback.
+message AgentUpdateResult {
+  string op_id = 1;
+  bool success = 2;
+  string running_version = 3;
+  string error = 4;
+}
+
+// The server was removed. The agent deletes its credential, keeps its
+// identity, and stops until a new join.
+message Revoke {
+  Meta meta = 1;
+  string reason = 2;
+}

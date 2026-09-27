@@ -1,0 +1,56 @@
+// Lumen agent protocol, version 1: host metrics (SPEC B11).
+syntax = "proto3";
+
+package lumen.agent.v1;
+
+import "lumen/agent/v1/common.proto";
+
+message HostSample {
+  int64 ts_ms = 1;
+  double cpu_percent = 2;
+  double load1 = 3;
+  double load5 = 4;
+  double load15 = 5;
+  uint64 mem_total = 6;
+  uint64 mem_used = 7;
+  uint64 mem_available = 8;
+  uint64 swap_total = 9;
+  uint64 swap_used = 10;
+  repeated DiskSample disks = 11;
+  repeated NetSample nets = 12;
+  uint64 uptime_s = 13;
+  uint32 container_count = 14;
+  // The agent's own health (PHASE-02 §5 Observability).
+  AgentSelf self = 15;
+  // True when /var/lib/lumen or /var/lib/docker has less than 2 GB free.
+  // Phase 03 refuses builds while it is set (DISK_FULL).
+  bool disk_low = 16;
+}
+
+message DiskSample {
+  // "/", "/var/lib/lumen" or "/var/lib/docker".
+  string mount = 1;
+  uint64 total = 2;
+  uint64 used = 3;
+  uint64 free = 4;
+  uint64 inodes_free = 5;
+}
+
+message NetSample {
+  string iface = 1;
+  uint64 rx_bytes = 2;
+  uint64 tx_bytes = 3;
+}
+
+message AgentSelf {
+  uint64 agent_rss_bytes = 1;
+  uint32 goroutines = 2;
+  uint32 send_queue_len = 3;
+  uint64 reconnects_total = 4;
+}
+
+// Sent every metrics_interval_s (10 s). Phase 03 adds container_samples = 3.
+message MetricsBatch {
+  Meta meta = 1;
+  HostSample host_sample = 2;
+}

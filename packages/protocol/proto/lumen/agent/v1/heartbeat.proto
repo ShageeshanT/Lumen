@@ -1,0 +1,22 @@
+// Lumen agent protocol, version 1: liveness.
+syntax = "proto3";
+
+package lumen.agent.v1;
+
+import "lumen/agent/v1/common.proto";
+
+// Sent by the agent every heartbeat_interval_s (10 s). The control plane marks
+// a server offline after 30 s without one.
+message Heartbeat {
+  Meta meta = 1;
+  uint64 desired_state_version_applied = 2;
+  uint32 container_count = 3;
+  bool docker_ok = 4;
+  bool caddy_ok = 5;
+}
+
+// The control plane's answer; server_time_ms lets the agent track clock skew.
+message HeartbeatAck {
+  string op_id = 1;
+  int64 server_time_ms = 2;
+}

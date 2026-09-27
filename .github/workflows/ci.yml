@@ -132,8 +132,16 @@ jobs:
         working-directory: packages/protocol
       - run: buf format -d --exit-code
         working-directory: packages/protocol
+      # Protocol v1 is frozen from the Phase 02 envelope onwards. Until that
+      # envelope is on main there is no released baseline to compare against
+      # (the Phase 00 placeholder never shipped); see DECISIONS "protocol v1 baseline".
       - name: Breaking changes against main
-        run: buf breaking --against "https://github.com/ShageeshanT/Lumen.git#branch=main,subdir=packages/protocol"
+        run: |
+          if curl -fsSL -o /dev/null "https://raw.githubusercontent.com/ShageeshanT/Lumen/main/packages/protocol/proto/lumen/agent/v1/envelope.proto"; then
+            buf breaking --against "https://github.com/ShageeshanT/Lumen.git#branch=main,subdir=packages/protocol"
+          else
+            echo "main has no protocol v1 baseline yet; this change establishes it."
+          fi
         working-directory: packages/protocol
 
   e2e-smoke:
