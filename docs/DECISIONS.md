@@ -740,3 +740,215 @@ the log viewer's "Copied" button label (the kit's inline copy feedback, as in
 `CopyField`).
 **Why:** One menu, one banner and one copy-feedback pattern across the kit.
 
+## 0071 · 2026-09-27 · Bundle cost of the kit, measured
+**Decision:** `e2e/scripts/bundle-button.mjs` bundles `import { Button }` and the
+whole kit with esbuild (minified, React external) and records sizes and
+metafiles in `docs/evidence/phase-01/bundle/`. Button alone: 65.8 KB minified,
+21.2 KB gzip; whole kit: 896 KB / 304 KB. Of the Button cost, tailwind-merge is
+28 KB minified and the 83-icon allowlist 20.6 KB (about 6 KB gzip), because
+`<Icon name>` looks icons up in one map. Kept: every page renders icons, so the
+set is paid once per app, and the name-based API keeps the vocabulary fixed.
+`esbuild` 0.27.7 (MIT) is an e2e dev dependency at the version tsx installs.
+**Rejected:** per-icon imports (lets pages reach past the allowlist).
+
+## 0072 · 2026-09-27 · The keyboard pass is automated
+**Decision:** `keyboard-walk.spec.ts` tabs through every gallery page (except
+forced-open modal pages, covered by the overlay specs) in every project and
+fails when a focus stop looks identical focused and unfocused (outline, shadow,
+background, border and color of the element and its parent). Examples that force
+the focused look with `data-force="focus"` are skipped. It stands in for the
+per-group manual pass the phase asks for and runs in the Visual CI job.
+**Why:** A manual pass is not repeatable; a suppressed ring without a
+replacement is the failure that matters, and this catches it on every change.
+
+## 0073 · 2026-09-27 · Protocol v1 baseline replaces the Phase 00 placeholder
+**Decision:** The agent protocol is rebuilt to PHASE-02 §4.1: one proto file per
+concern (`common`, `envelope`, `hello`, `heartbeat`, `metrics`, `portcheck`,
+`update`) and the envelope with `protocol_version`, `server_id`, `seq`,
+`timestamp_ms`, `payload`, `signature` and the `body` oneof (10–21). This breaks
+the Phase 00 placeholder (`agent.proto`), which never shipped. CI's `buf breaking`
+step now compares against `main` only once `main` has `envelope.proto`, so this
+branch establishes the v1 baseline and every later change is checked.
+**Why:** The phase document fixes the exact fields; keeping the placeholder's
+field numbers would have forced a second envelope design.
+**Rejected:** keeping `agent.proto` and appending (field 1/2 types differ); a
+`v2` package for the first real protocol.
+
+## 0074 · 2026-09-27 · Envelope signing: body-only payload, both directions
+**Decision:** The sender serializes an `Envelope` that carries only `body` and puts
+those bytes in the outer envelope's `payload`; the outer `body` stays unset.
+The Ed25519 signature covers `protocol_version (u32) || len(server_id) (u16) ||
+server_id || seq (u64) || timestamp_ms (i64) || payload`, big-endian (the
+length prefix makes the concatenation unambiguous). Agents sign with the
+identity key registered at join; the control plane signs with an instance key
+(`AGENT_SIGNING_KEY`, a base64 seed; development generates one into
+`STATE_DIR/agent-signing.key`), whose public half the join response returns.
+Seal/Open live next to the generated code in Go (`envelope.go`) and TypeScript
+(`src/envelope.ts`); fixtures prove both produce identical bytes.
+**Why:** Signing the transmitted bytes needs no deterministic cross-language
+re-serialization; signing both directions means a compromised proxy can't
+inject commands (PHASE-02 §5). Resolves the §10 open question in favour of the
+default.
+**Rejected:** TLS + bearer only (weaker); signing a re-serialized oneof.
+
+## 0075 · 2026-09-27 · Protocol fields added beyond the §4.1 list
+**Decision:** `AgentHello.provider` (16) and `region_label` (17) — detection runs
+on the agent; `AgentConfig.rotated_credential` (7) — how rotation reaches the
+agent; `HostSample.self` (15, `AgentSelf{agent_rss_bytes, goroutines,
+send_queue_len, reconnects_total}`) — required by §5 Observability; and
+`HostSample.disk_low` (16) — the agent is authoritative for the build refusal in
+Phase 03.
+**Why:** Each is needed by a §4–§5 requirement that the message list omits.
+
+## 0076 · 2026-09-27 · Minisign "ED" signatures, verified with openssl in the installer
+**Decision:** Releases carry a `.sha256` (sha256sum format) and a standard
+minisign `.minisig` (prehashed "ED": Ed25519 over BLAKE2b-512, plus the global
+signature over the trusted comment). The agent verifies with
+`internal/minisign` (golang.org/x/crypto/blake2b); the installer verifies both
+signatures with `openssl pkeyutl -rawin` and coreutils only. The release key is
+embedded in the agent at build time (`LUMEN_RELEASE_PUBKEY` → ldflags) and
+substituted into the installer by the control plane (`AGENT_RELEASE_PUBKEY`).
+`lumen-agent/cmd/lumen-release` generates keys and signs; its secret-key file
+is unencrypted, so production keys stay offline or in a CI secret. Real
+`minisign -V` verifies our signatures (evidence).
+**Why:** One small Ed25519 key, a verifier that fits in a shell script with no
+extra packages on a fresh VM. Resolves the §10 signature-tooling question.
+**Rejected:** cosign/sigstore (heavier, needs network trust roots); GPG.
+
+## 0077 · 2026-09-27 · SHA-256 for random secrets
+**Decision:** Join tokens and server credentials are 32 random bytes (base64url)
+stored as SHA-256 hex and compared in constant time.
+**Why:** Brute force of a 256-bit random secret is infeasible, so a slow KDF
+adds cost without security; argon2 stays for passwords (Phase 04).
+
+## 0078 · 2026-09-27 · Reconnect, liveness and logging rules
+**Decision:** Backoff 1 → 2 → 4 → 8 → 16 → 30 s cap, ±20 % jitter, reset after
+60 s connected; one warn line per backoff step. After the ControlHello wait,
+reads have no deadline: liveness is a ping every 10 s whose pong must arrive
+within 30 s, plus 30 s write deadlines; the gateway closes sockets idle for 30 s
+(pings count as activity).
+**Why:** A per-read deadline closes the socket in coder/websocket when the
+control plane legitimately says nothing (found on the first host install).
+
+## 0079 · 2026-09-27 · Caddy bootstrap in Phase 02, hardened and pinned
+**Decision:** `caddy:2-alpine@sha256:6aeddd44…cb2b` (Caddy 2.11.4, multi-arch
+index), container `lumen-caddy`, host network, admin API `127.0.0.1:2019`,
+`--cap-drop ALL --cap-add NET_BIND_SERVICE`, read-only root with `/config` and
+`/data` mounts under `/var/lib/lumen/caddy`, pids 512, memory 256 MB,
+`no-new-privileges`, restart always, label `lumen.role=proxy`. Base config: a
+catch-all 404 page on `:80` and `:443`, a self-signed fallback certificate for
+`:443` (tag `lumen-fallback`), `automatic_https` disabled on these two base
+servers (Phase 03 enables certificates per route). A separate loop re-ensures
+the container every heartbeat interval; probes never block heartbeats.
+**Why:** The checklist needs "Proxy running" and the port check needs a
+listener (resolves §10). Measured: a container removed by hand is back in 9 s.
+
+## 0080 · 2026-09-27 · Queue bounds and rate limits
+**Decision:** Agent → control plane queue 1,000 messages: metrics are dropped
+first, then heartbeats; acks, errors and results are never dropped (kept even
+past the limit) and are the only thing kept while offline. Control plane →
+agent 256 in-flight per socket. Gateway: 200 msg/s and 2 MB/s per connection
+(`4008 rate_limited`), 60 upgrade attempts per minute per address, join
+10 attempts per minute per address (`AGENT_JOIN_RATE_LIMIT`), in-process limiters
+(single API process until Phase 04, SPEC_QUESTIONS 20).
+
+## 0081 · 2026-09-27 · Socket ownership in Postgres, commands over NOTIFY
+**Decision:** Each API process keeps `server_id → socket` in memory and writes
+`servers.gateway_node` / `gateway_connected_at` on connect. Commands for a
+socket held elsewhere, replies for waiters elsewhere, and "claimed" notices
+(which close an older connection on another process with `4001 superseded`)
+travel on the `lumen_agent` NOTIFY channel. Realtime events use `lumen_events`.
+**Why:** No Redis (SPEC B2); any replica can serve an API call for any server.
+Only the single-process path is exercised by tests so far (see Known gaps).
+
+## 0082 · 2026-09-27 · Clock skew is measured, corrected and surfaced
+**Decision:** Every connection starts with the raw local clock, so the control
+plane measures the real skew from AgentHello (stored in
+`servers.clock_skew_ms`, shown as a CLOCK_SKEW issue over 5 minutes). The agent
+then corrects its envelope timestamps with `server_time_ms`. The gateway rejects
+envelopes outside −5 min / +1 min with `OpError{CLOCK_SKEW}` (replay window).
+**Why:** §5 says a skewed server gets every message rejected; with correction the
+server keeps working while the user is told to enable NTP. Deviation recorded
+in SPEC questions.
+
+## 0083 · 2026-09-27 · Self-update: trial run, health window, guard, probation
+**Decision:** The agent verifies SHA-256 and signature, writes
+`lumen-agent.new`, runs it as `run --trial <op_id>` (must connect, be accepted
+and see Docker and Caddy healthy within 60 s), then swaps (`current → .prev`,
+`.new → current`), records `state.update`, and exits 0. After the restart the
+new binary must confirm health within 60 s or rolls back; three starts without
+settling roll back; a ten-minute probation follows. The unit also runs
+`ExecStartPre=-/usr/local/bin/lumen-agent.prev update-guard`: the previous
+binary counts starts while an update is in progress and restores itself after
+five, which covers a new binary that crashes before its own checks run.
+**Why:** A binary that exits immediately can never roll itself back; the trial
+and the guard close that hole (§9 review question). Verified on a systemd host:
+good update, exit-immediately build, and crash-after-swap build.
+
+## 0084 · 2026-09-27 · Revoked agents exit 78 and stay stopped
+**Decision:** On Revoke the agent deletes its credential and exits 78
+(EX_CONFIG); `run` without a credential also exits 78. The unit adds
+`RestartPreventExitStatus=78` and `SuccessExitStatus=78` next to
+`ConditionPathExists`.
+**Why:** On the test host (systemd 255) `ConditionPathExists` did not stop
+`Restart=always` from restarting the service after the credential was deleted.
+
+## 0085 · 2026-09-27 · Phase 02 API shape
+**Decision:** Server routes use snake_case bodies (0019) and prefixed ids
+(`workspace_id: ws_…`, 0012) rather than the camelCase/UUID sketch in §4.11.
+`POST /port-check` runs synchronously and returns 200 with the result (no job
+queue until Phase 04); `POST /agent-update` returns 202 with `status: sent` and
+the result lands on `servers.agent_update` and a `server.update` event. The
+server object adds `os_version`, `kernel`, `hostname`, `docker_version`,
+`disk_low`, `clock_skew_ms` and `issues` (catalog errors). Routes are guarded by
+`LUMEN_ADMIN_TOKEN` (temporary instance-admin bearer, replaced in Phase 04) and
+write `audit_log` rows. `/v1/ws` takes the token as the `auth.<token>`
+subprotocol (browsers can't set headers) or a bearer header.
+
+## 0086 · 2026-09-27 · Extra Phase 02 tables
+**Decision:** Migration 0001 adds, beside `servers` and `server_join_tokens`:
+`agent_ops` (24 h de-duplication, composite key `(server_id, op_id)` with the
+op id stored as `<kind>:<op_id>` because replies reuse the request's op id),
+`notifications` (in-app rows; Phase 08 delivers them), and `audit_log` (SPEC B6
+columns). Phase 04 adds foreign keys to `workspaces` and must keep the columns.
+**Why:** §5 and §6 require the de-dup table, the notification row and audit
+entries; the phase's "two tables only" line predates those requirements.
+
+## 0087 · 2026-09-27 · Automatic port check when the proxy is ready
+**Decision:** The automatic check runs on the first heartbeat that reports Caddy
+healthy while no result is stored (retried at most every five minutes), not on
+the first heartbeat.
+**Why:** On a fresh VM the proxy image is still pulling at first heartbeat; the
+check would report `not_listening`.
+
+## 0088 · 2026-09-27 · Detected provider wins over the wizard's choice
+**Decision:** The join token records the provider the user picked; a provider
+detected from the metadata service replaces it unless detection says `other`.
+
+## 0089 · 2026-09-27 · Phase 02 dependencies
+**Decision:** Licenses and maintenance checked on 2026-09-27.
+
+| Package | Version | License | Role |
+|---|---|---|---|
+| github.com/coder/websocket | v1.8.15 | ISC | Agent WebSocket client (context-aware, no deps) |
+| golang.org/x/crypto | v0.57.0 | BSD-3-Clause | BLAKE2b for minisign verification |
+| ws (npm) | 8.21.3 | MIT | Gateway and `/v1/ws` servers (8.22.0 was one day old; the pnpm release-age guard applies) |
+| @types/ws | 8.18.1 | MIT | Types |
+| zod (in @lumen/shared) | 4.6.5 | MIT | Already in the catalog; shared request schemas |
+| caddy:2-alpine | digest `6aeddd44…` | Apache-2.0 | Platform proxy image |
+
+**Rejected:** gorilla/websocket (no context API); the Docker Go SDK (large; the
+agent uses the Engine HTTP API directly); testcontainers (tests use schemas in
+the shared dev Postgres instead).
+
+## 0090 · 2026-09-27 · Host verification in systemd containers instead of Multipass
+**Decision:** `e2e/vm/` runs the real installer against a bundled control plane
+in a Linux container: `host.Dockerfile` is a privileged systemd Ubuntu 24.04
+"VM" (no Docker preinstalled; the installer installs it), `/var/lib/docker` and
+`/var/lib/containerd` are volumes (overlay can't stack on overlay), a test CA
+signs the control plane certificate, and `scenarios.sh` drives port-block,
+offline, disk-full, proxy removal, updates and the audit. `build-releases.sh`
+signs real and deliberately broken builds.
+**Why:** The development machine is Windows with Docker Desktop; Multipass is not
+available. The harness exercises systemd, iptables, Docker installation and the
+network path the port check uses.
