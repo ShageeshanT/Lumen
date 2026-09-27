@@ -8,6 +8,21 @@ import { loadRegistry, openStill } from "../lib/gallery";
 // runs in parallel instead of as one long test.
 const SHARDS = 4;
 
+// A gallery page shows the same component several times (every state side by
+// side) and nests shell demos inside the gallery's own header, so landmark
+// uniqueness and banner placement cannot hold on it. Phase 5 checks those on
+// real pages, where each landmark appears once.
+const GALLERY_ONLY = [
+  "landmark-unique",
+  "landmark-no-duplicate-banner",
+  "landmark-banner-is-top-level",
+  "landmark-complementary-is-top-level",
+];
+
+// A forced-open modal hides the rest of the page from assistive tech by design,
+// so the page-level rules see no main, no h1 and content outside landmarks.
+const MODAL_PAGE = ["aria-hidden-focus", "page-has-heading-one", "landmark-one-main", "region"];
+
 test.describe("gallery accessibility", () => {
   test.describe.configure({ timeout: 300_000 });
 
@@ -22,10 +37,13 @@ test.describe("gallery accessibility", () => {
         await openStill(page, `/dev/components/${slug}`);
         await expect(page.locator("main h1").first()).toBeVisible();
         await test.step(slug, async () => {
-          // A forced-open modal hides the rest of the page from assistive tech by design.
           await expectNoA11yViolations(page, {
             bestPractice: true,
-            ...(registry.modalPages.includes(slug) ? { disableRules: ["aria-hidden-focus"] } : {}),
+            allowPortalsOutsideLandmarks: true,
+            disableRules: [
+              ...GALLERY_ONLY,
+              ...(registry.modalPages.includes(slug) ? MODAL_PAGE : []),
+            ],
           });
         });
       }

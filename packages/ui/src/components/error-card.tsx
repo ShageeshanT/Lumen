@@ -12,6 +12,8 @@ import { CodeBlock } from "./code-block";
 import { CopyField, useCopied } from "./copy-field";
 
 export interface ErrorCardProps {
+  /** Heading level of the error title, so it fits the page outline. Default 3. */
+  headingLevel?: 2 | 3 | 4;
   /** A catalog error, usually from `makeError(code, context)` in @lumen/shared. */
   error: LumenError;
   /** Called with the catalog action id when the fix button is pressed. */
@@ -49,8 +51,10 @@ export function ErrorCard({
   announce = false,
   defaultRawOpen = false,
   url,
+  headingLevel = 3,
   className,
 }: ErrorCardProps) {
+  const Heading = `h${String(headingLevel)}` as "h2" | "h3" | "h4";
   const titleId = useId();
   const rawId = useId();
   const [rawOpen, setRawOpen] = useState(defaultRawOpen);
@@ -119,9 +123,9 @@ export function ErrorCard({
         <span className="text-danger inline-flex shrink-0 pt-[2px]">
           <Icon name="circle-alert" size={20} />
         </span>
-        <h3 id={titleId} className="text-subsection text-16 min-w-0 flex-1 leading-tight">
+        <Heading id={titleId} className="text-subsection text-16 min-w-0 flex-1 leading-tight">
           {error.title}
-        </h3>
+        </Heading>
         <span className="text-eyebrow hidden shrink-0 pt-[2px] sm:inline">{error.code}</span>
       </div>
       <p className="text-body text-text-secondary">{error.explanation}</p>

@@ -27,7 +27,7 @@ export function ComponentPage({ slug }: { slug: string }) {
           >
             <div className="flex items-baseline gap-3">
               <Text variant="eyebrow">{String(index + 1).padStart(2, "0")}</Text>
-              <Text variant="label" id={`example-${example.id}`}>
+              <Text variant="label" as="h2" id={`example-${example.id}`}>
                 {example.title}
               </Text>
             </div>

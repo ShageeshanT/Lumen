@@ -15,10 +15,16 @@ const isCi = process.env["CI"] !== undefined;
 // without reusing each other's servers.
 const webPort = process.env["E2E_WEB_PORT"] ?? "3000";
 const apiPort = process.env["E2E_API_PORT"] ?? "4000";
+// The gallery needs no API; visual runs in a container skip it (and Postgres).
+const webOnly = process.env["E2E_WEB_ONLY"] === "1";
 
 export default defineConfig({
   testDir: "./tests",
-  snapshotPathTemplate: "{testDir}/../__screenshots__/{testFileName}/{arg}-{projectName}{ext}",
+  // Fonts rasterise differently per OS, so each platform keeps its own
+  // baselines: win32 for local Windows runs, linux for CI and the Docker
+  // script (scripts/visual-linux.sh) that generates them.
+  snapshotPathTemplate:
+    "{testDir}/../__screenshots__/{testFileName}/{arg}-{projectName}-{platform}{ext}",
   fullyParallel: true,
   forbidOnly: isCi,
   retries: isCi ? 1 : 0,
@@ -34,16 +40,20 @@ export default defineConfig({
   // waits for /v1/health to answer 200, so tests never start against a server
   // whose database is still coming up (503 keeps Playwright waiting).
   webServer: [
-    {
-      command: "pnpm --filter @lumen/api dev",
-      cwd: "..",
-      env: { API_PORT: apiPort, WEB_ORIGIN: `http://localhost:${webPort}` },
-      url: `http://localhost:${apiPort}/v1/health`,
-      reuseExistingServer: !isCi,
-      timeout: 180_000,
-      stdout: "pipe",
-      stderr: "pipe",
-    },
+    ...(webOnly
+      ? []
+      : [
+          {
+            command: "pnpm --filter @lumen/api dev",
+            cwd: "..",
+            env: { API_PORT: apiPort, WEB_ORIGIN: `http://localhost:${webPort}` },
+            url: `http://localhost:${apiPort}/v1/health`,
+            reuseExistingServer: !isCi,
+            timeout: 180_000,
+            stdout: "pipe" as const,
+            stderr: "pipe" as const,
+          },
+        ]),
     {
       command: `pnpm --filter @lumen/web exec next dev --port ${webPort}`,
       cwd: "..",

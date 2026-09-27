@@ -29,6 +29,8 @@ export interface DiffGroup {
 }
 
 export interface DiffViewerProps {
+  /** Heading level of each group title, so it fits the page outline. Default 3. */
+  headingLevel?: 2 | 3 | 4;
   changes: DiffGroup[];
   mode?: "side-by-side" | "inline";
   /** Group headers become buttons that fold their rows. */
@@ -91,8 +93,10 @@ export function DiffViewer({
   mode = "side-by-side",
   collapsible = false,
   defaultCollapsed = [],
+  headingLevel = 3,
   className,
 }: DiffViewerProps) {
+  const Heading = `h${String(headingLevel)}` as "h2" | "h3" | "h4";
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set(defaultCollapsed));
   const baseId = useId();
   const groups = changes.filter((group) => group.items.length > 0);
@@ -152,7 +156,7 @@ export function DiffViewer({
             aria-labelledby={headingId}
             className="border-border bg-surface rounded-card min-w-0 border"
           >
-            <h3 id={headingId} className="m-0">
+            <Heading id={headingId} className="m-0">
               {collapsible ? (
                 <button
                   type="button"
@@ -176,7 +180,7 @@ export function DiffViewer({
               ) : (
                 <span className="flex h-[36px] items-center gap-2 px-3">{heading}</span>
               )}
-            </h3>
+            </Heading>
             {open && (
               <table
                 id={bodyId}

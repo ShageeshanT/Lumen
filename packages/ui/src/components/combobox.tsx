@@ -127,6 +127,7 @@ export function Combobox({
       </div>
       <Popover.Portal>
         <Popover.Content
+          aria-label={ariaLabel ?? placeholder}
           onOpenAutoFocus={(event) => {
             if (forcedOpen === true) {
               event.preventDefault();

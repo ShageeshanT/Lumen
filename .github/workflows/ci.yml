@@ -158,19 +158,55 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Install Chromium
         run: pnpm --filter e2e exec playwright install --with-deps chromium
-      - name: Smoke test
-        # Screenshot baselines are generated on Windows for now; Linux baselines land in Phase 01.
-        run: pnpm --filter e2e test --project=desktop-dark --ignore-snapshots
+      - name: Smoke, theme and interaction specs
+        # The gallery screenshot and axe walks run in the Visual job below. The
+        # smoke page screenshot has Windows baselines only (it needs the API and
+        # Postgres, which the Linux baseline script does not start).
+        run: >-
+          pnpm --filter e2e test --project=desktop-dark --ignore-snapshots
+          tests/smoke.spec.ts tests/theme.spec.ts tests/gallery-keyboard.spec.ts
+          tests/gallery-tools.spec.ts tests/side-panel.spec.ts tests/feedback-data.spec.ts
+          tests/specialized.spec.ts
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: playwright-report
           path: e2e/playwright-report
 
+  visual:
+    name: Visual (${{ matrix.project }})
+    runs-on: ubuntu-24.04
+    # The same image scripts/visual-linux.sh uses, so fonts rasterise identically
+    # to the committed *-linux.png baselines. Keep the tag equal to @playwright/test.
+    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [desktop-dark, desktop-light, tablet-dark, tablet-light, mobile-dark, mobile-light]
+    env:
+      E2E_WEB_ONLY: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Gallery screenshots and axe
+        run: >-
+          pnpm --filter e2e test --project=${{ matrix.project }}
+          tests/gallery.spec.ts tests/gallery-a11y.spec.ts
+      - name: Screenshot count
+        if: always()
+        run: |
+          count=$(ls e2e/__screenshots__/gallery.spec.ts/*-${{ matrix.project }}-linux.png | wc -l)
+          echo "Gallery screenshots compared for ${{ matrix.project }}: $count" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: visual-report-${{ matrix.project }}
+          path: e2e/playwright-report
+
   ci-ok:
     name: CI OK
     runs-on: ubuntu-24.04
-    needs: [lint, typecheck, test, build-web, go, proto, e2e-smoke]
+    needs: [lint, typecheck, test, build-web, go, proto, e2e-smoke, visual]
     if: always()
     steps:
       - name: Every job succeeded
