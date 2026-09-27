@@ -32,7 +32,13 @@ git ls-files -co --exclude-standard -z |
       set -euo pipefail
       mkdir -p /work && cd /work && tar -xf - 1>&2
       corepack enable 1>&2
-      pnpm install --frozen-lockfile --filter e2e --filter @lumen/web... 1>&2
+      # Registry access from Docker Desktop can be flaky; the store volume keeps
+      # finished downloads, so each retry picks up where the last one stopped.
+      for attempt in 1 2 3 4 5; do
+        pnpm install --frozen-lockfile --filter e2e --filter @lumen/web... 1>&2 && break
+        [[ $attempt == 5 ]] && exit 1
+        echo "pnpm install failed (attempt $attempt), retrying" 1>&2
+      done
       cd e2e
       status=0
       npx playwright test $SPECS $UPDATE_FLAG --reporter=line 1>&2 || status=$?
