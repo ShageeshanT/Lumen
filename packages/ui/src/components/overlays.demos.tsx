@@ -170,7 +170,9 @@ function NodeCard({ name = "api" }: { name?: string }) {
         <span className="text-card-title flex-1">{name}</span>
         <StatusTag status="active" />
       </span>
-      <span className="text-meta font-mono">api-production-x2p4.apps.example.com</span>
+      <span className="text-meta block truncate font-mono">
+        api-production-x2p4.apps.example.com
+      </span>
       <span className="text-meta">3 min ago · fix: retry on 502</span>
     </span>
   );
@@ -196,7 +198,7 @@ function NodeMenuItems() {
         </ContextMenuSubContent>
       </ContextMenuSub>
       <ContextMenuSeparator />
-      <ContextMenuItem icon="trash-2" destructive shortcut={["mod", "⌫"]}>
+      <ContextMenuItem icon="trash-2" destructive shortcut={["mod", "Del"]}>
         Delete
       </ContextMenuItem>
     </>
@@ -270,7 +272,7 @@ export function LogLineMenu() {
   const [copied, setCopied] = useState<string | null>(null);
   return (
     <div className="flex w-full max-w-[560px] flex-col gap-3">
-      <ul className="bg-terminal-bg border-border flex flex-col border py-1">
+      <ul className="bg-surface border-border flex flex-col border py-1">
         {LOG_LINES.map((line) => (
           <li key={line.text}>
             <ContextMenu>
@@ -278,7 +280,7 @@ export function LogLineMenu() {
                 <button
                   type="button"
                   data-log-line={line.level}
-                  className="text-log is-hover:bg-surface-hover focus-inset flex w-full gap-3 px-3 text-left"
+                  className="text-log is-hover:bg-surface-hover focus-inset flex min-h-[28px] w-full items-center gap-3 px-3 text-left"
                 >
                   <span
                     className={cn(

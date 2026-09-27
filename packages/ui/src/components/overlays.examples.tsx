@@ -141,7 +141,11 @@ export const dropdownMenuDoc: ComponentDoc = {
             <DropdownMenuTrigger asChild>
               <IconButton icon="ellipsis" label="More actions for api" variant="secondary" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent onCloseAutoFocus={keepFocus} avoidCollisions={false}>
+            <DropdownMenuContent
+              onCloseAutoFocus={keepFocus}
+              avoidCollisions={false}
+              className="max-h-none"
+            >
               <DropdownMenuItem icon="terminal" shortcut={["mod", "J"]}>
                 Open shell
               </DropdownMenuItem>
@@ -172,7 +176,11 @@ export const dropdownMenuDoc: ComponentDoc = {
                 Deployment
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent onCloseAutoFocus={keepFocus} avoidCollisions={false}>
+            <DropdownMenuContent
+              onCloseAutoFocus={keepFocus}
+              avoidCollisions={false}
+              className="max-h-none"
+            >
               <DropdownMenuLabel>Deployment a1b2c3d</DropdownMenuLabel>
               <DropdownMenuItem icon="history" disabled>
                 Roll back (this is live)
@@ -198,7 +206,11 @@ export const dropdownMenuDoc: ComponentDoc = {
                 View
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent onCloseAutoFocus={keepFocus} avoidCollisions={false}>
+            <DropdownMenuContent
+              onCloseAutoFocus={keepFocus}
+              avoidCollisions={false}
+              className="max-h-none"
+            >
               <DropdownMenuLabel>Show</DropdownMenuLabel>
               <DropdownMenuCheckboxItem checked>Timestamps</DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem checked>Wrap long lines</DropdownMenuCheckboxItem>
@@ -222,7 +234,11 @@ export const dropdownMenuDoc: ComponentDoc = {
                 Sort
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent onCloseAutoFocus={keepFocus} avoidCollisions={false}>
+            <DropdownMenuContent
+              onCloseAutoFocus={keepFocus}
+              avoidCollisions={false}
+              className="max-h-none"
+            >
               <DropdownMenuLabel>Sort by</DropdownMenuLabel>
               <DropdownMenuRadioGroup value="newest">
                 <DropdownMenuRadioItem value="newest">Newest first</DropdownMenuRadioItem>
@@ -243,11 +259,15 @@ export const dropdownMenuDoc: ComponentDoc = {
             <DropdownMenuTrigger asChild>
               <IconButton icon="ellipsis" label="More actions for worker" variant="secondary" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent onCloseAutoFocus={keepFocus} avoidCollisions={false}>
+            <DropdownMenuContent
+              onCloseAutoFocus={keepFocus}
+              avoidCollisions={false}
+              className="max-h-none"
+            >
               <DropdownMenuItem icon="pencil">Rename</DropdownMenuItem>
               <DropdownMenuSub open>
                 <DropdownMenuSubTrigger icon="layers">Move to group</DropdownMenuSubTrigger>
-                <DropdownMenuSubContent avoidCollisions={false}>
+                <DropdownMenuSubContent avoidCollisions={false} className="max-h-none">
                   <DropdownMenuRadioGroup value="backend">
                     <DropdownMenuRadioItem value="backend">Backend</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="frontend">Frontend</DropdownMenuRadioItem>
@@ -348,6 +368,7 @@ export const popoverDoc: ComponentDoc = {
               width={320}
               onOpenAutoFocus={keepFocus}
               avoidCollisions={false}
+              className="max-h-none"
             >
               <ul className="flex flex-col gap-3">
                 {[
@@ -396,6 +417,7 @@ export const popoverDoc: ComponentDoc = {
               width={340}
               onOpenAutoFocus={keepFocus}
               avoidCollisions={false}
+              className="max-h-none"
               closeButton
               title="DATABASE_URL"
             >
@@ -427,11 +449,16 @@ export const popoverDoc: ComponentDoc = {
             <PopoverContent
               title="Recent events"
               width={300}
-              className="max-h-[200px]"
+              className="max-h-none"
               onOpenAutoFocus={keepFocus}
               avoidCollisions={false}
             >
-              <ul className="flex flex-col">
+              {/* Long content scrolls in a focusable region so keyboards can scroll it. */}
+              <ul
+                tabIndex={0}
+                aria-label="Recent events"
+                className="-mx-3 flex max-h-[160px] flex-col overflow-y-auto px-3"
+              >
                 {[
                   "api deployed a1b2c3d",
                   "worker restarted after a crash",
@@ -518,7 +545,10 @@ export const modalDoc: ComponentDoc = {
             </>
           }
         >
-          <pre className="text-log bg-surface border-border overflow-x-auto border p-3">
+          <pre
+            tabIndex={0}
+            className="text-log bg-surface border-border overflow-x-auto border p-3"
+          >
             {"DATABASE_URL=${{ postgres.DATABASE_URL }}\nPORT=3000\nNODE_ENV=production"}
           </pre>
         </ModalPreview>

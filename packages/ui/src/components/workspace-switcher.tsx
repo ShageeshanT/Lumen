@@ -104,7 +104,7 @@ export function WorkspaceSwitcher({
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-[240px]"
+        className={cn("w-[240px]", open === true && "max-h-none")}
         side="bottom"
         align="start"
         avoidCollisions={open !== true}

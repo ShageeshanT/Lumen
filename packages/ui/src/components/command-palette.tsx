@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { Command } from "cmdk";
+import { Command, useCommandState } from "cmdk";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Icon, type IconName } from "../icons/icon";
@@ -130,6 +130,26 @@ const HEADING = cn(
 );
 
 /**
+ * The result listbox. It is removed from the page (display: none) while
+ * loading or when nothing matches, so assistive tech never meets an empty
+ * listbox; the "No matches" message sits outside it.
+ */
+function ResultList({ loading, children }: { loading: boolean; children: ReactNode }) {
+  const empty = useCommandState((state) => state.filtered.count === 0);
+  return (
+    <Command.List
+      className={cn(
+        "min-h-0 flex-1 overflow-y-auto overscroll-contain p-2",
+        (loading || empty) && "hidden",
+      )}
+      aria-busy={loading || undefined}
+    >
+      {children}
+    </Command.List>
+  );
+}
+
+/**
  * The command palette (Radix Dialog + cmdk). ⌘K / Ctrl+K toggles, arrows move,
  * Enter runs, Escape closes or steps back out of a nested page, Backspace on an
  * empty query steps back too. Tab stays inside. Full screen under 640 px.
@@ -254,6 +274,7 @@ export function CommandPalette({
         )}
         <Dialog.Content
           aria-describedby={undefined}
+          aria-modal={contained ? undefined : true}
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             if (!skipFocus()) {
@@ -329,18 +350,14 @@ export function CommandPalette({
                 ))}
               </div>
             )}
-            <Command.List
-              className={cn(
-                "min-h-0 flex-1 overflow-y-auto overscroll-contain p-2",
-                loading && "hidden",
-              )}
-              aria-busy={loading || undefined}
-            >
+            {!loading && (
+              <Command.Empty className="text-body-secondary px-3 py-8 text-center">
+                No matches for “{trimmed}”
+              </Command.Empty>
+            )}
+            <ResultList loading={loading}>
               {!loading && (
                 <>
-                  <Command.Empty className="text-body-secondary px-3 py-8 text-center">
-                    No matches for “{trimmed}”
-                  </Command.Empty>
                   {page === undefined && trimmed === "" && recents.length > 0 && (
                     <Command.Group heading="Recent" className={HEADING}>
                       {recents.map((item) => renderItem(item, "recent:"))}
@@ -353,7 +370,7 @@ export function CommandPalette({
                   ))}
                 </>
               )}
-            </Command.List>
+            </ResultList>
             <div
               aria-hidden="true"
               className="border-border text-eyebrow flex h-8 shrink-0 items-center gap-4 border-t px-4 max-sm:hidden"

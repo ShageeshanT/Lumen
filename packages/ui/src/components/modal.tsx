@@ -1,7 +1,15 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { useId, useRef, type ReactElement, type ReactNode, type RefObject } from "react";
+import {
+  useCallback,
+  useId,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+  type RefObject,
+} from "react";
 
 import { cn } from "../lib/cn";
 import { useSkipMountFocus } from "../lib/use-skip-mount-focus";
@@ -72,6 +80,26 @@ export function Modal({
   const contained = container !== undefined;
   const skipFocus = useSkipMountFocus(open ?? defaultOpen, contained);
   const bodyRef = useRef<HTMLDivElement>(null);
+  // A body that scrolls must be reachable by keyboard (WCAG 2.1.1): it joins
+  // the tab order only while its content overflows.
+  const [scrollable, setScrollable] = useState(false);
+  const observer = useRef<ResizeObserver | null>(null);
+  const measureBody = useCallback((node: HTMLDivElement | null) => {
+    bodyRef.current = node;
+    observer.current?.disconnect();
+    if (node === null || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const check = () => {
+      setScrollable(node.scrollHeight > node.clientHeight + 1);
+    };
+    observer.current = new ResizeObserver(check);
+    observer.current.observe(node);
+    for (const child of node.children) {
+      observer.current.observe(child);
+    }
+    check();
+  }, []);
   const closeRef = useRef<HTMLButtonElement>(null);
   // Whatever had focus when the modal opened gets it back on close, with or
   // without a Trigger (Radix only restores focus to its own Trigger).
@@ -93,7 +121,8 @@ export function Modal({
   const body = (
     <>
       <div
-        ref={bodyRef}
+        ref={measureBody}
+        tabIndex={scrollable ? 0 : undefined}
         className={cn(
           "text-body min-h-0 flex-1 overflow-y-auto px-6",
           footer === undefined ? "pb-6" : "pb-5",

@@ -107,12 +107,18 @@ export function EnvironmentSwitcher({
         <span className="min-w-0 truncate">{current?.name ?? "Choose environment"}</span>
         <Icon name="chevron-down" size={14} className="text-text-secondary shrink-0" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[260px]" avoidCollisions={open !== true}>
+      <DropdownMenuContent
+        // Forced open (screenshots): full height, fixed side, whatever the scroll position.
+        className={cn("w-[260px]", open === true && "max-h-none")}
+        avoidCollisions={open !== true}
+      >
         <DropdownMenuLabel>Environments</DropdownMenuLabel>
         <DropdownMenuRadioGroup
           value={value}
           onValueChange={onValueChange}
           className="max-h-[256px] overflow-y-auto"
+          // A scrolling list must be reachable by keyboard (WCAG 2.1.1).
+          tabIndex={environments.length > 8 ? 0 : undefined}
         >
           {environments.map((environment) => (
             <DropdownMenuRadioItem key={environment.id} value={environment.id} indicator="check">

@@ -173,6 +173,7 @@ export function Sheet({
         <Dialog.Content
           ref={sheetRef}
           aria-describedby={undefined}
+          aria-modal={contained ? undefined : true}
           data-side={side}
           data-dragging={dragging || dragOffset !== undefined || undefined}
           onOpenAutoFocus={(event) => {

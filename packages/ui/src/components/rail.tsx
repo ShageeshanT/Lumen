@@ -276,6 +276,7 @@ export function Rail({
             )}
             <Dialog.Content
               aria-describedby={undefined}
+              aria-modal={drawerContainer === undefined ? true : undefined}
               onOpenAutoFocus={(event) => {
                 if (skipDrawerFocus()) {
                   event.preventDefault();

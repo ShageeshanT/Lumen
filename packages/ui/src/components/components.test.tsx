@@ -194,7 +194,8 @@ describe("gallery registry", () => {
     }
   });
 
-  it("renders every example without throwing", () => {
+  // Mounts every example once (over a hundred, overlays included): allow time under load.
+  it("renders every example without throwing", { timeout: 30_000 }, () => {
     for (const doc of COMPONENT_DOCS) {
       for (const example of doc.examples) {
         const { unmount } = render(<TooltipProvider>{example.render()}</TooltipProvider>);
