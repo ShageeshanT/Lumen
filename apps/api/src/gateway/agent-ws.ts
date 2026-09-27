@@ -50,8 +50,11 @@ const PING_EVERY_MS = 10_000;
 const SEND_QUEUE_LIMIT = 256;
 
 export interface GatewayHooks {
-  /** Called when a server's first heartbeat moves it from pending to online. */
-  onFirstOnline?: (serverId: string) => void;
+  /**
+   * Called on heartbeats reporting a healthy proxy while the server has never
+   * had a port check: the automatic check after install (PHASE-02 §4.6).
+   */
+  onProxyReady?: (serverId: string) => void;
 }
 
 function opIdOf(body: EnvelopeBody): string {
@@ -403,8 +406,8 @@ class AgentSession implements AgentLink {
         this.cp.metrics.heartbeatLag((this.cp.now().getTime() - timestampMs) / 1000);
         this.ackHeartbeat(body.value.meta?.opId ?? "");
         const outcome = await recordHeartbeat(this.cp, this.serverId, body.value);
-        if (outcome?.previous === "pending" && outcome.status === "online") {
-          this.hooks.onFirstOnline?.(this.serverId);
+        if (outcome?.neverPortChecked === true && body.value.caddyOk) {
+          this.hooks.onProxyReady?.(this.serverId);
         }
         return;
       }

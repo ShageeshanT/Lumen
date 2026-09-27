@@ -36,6 +36,7 @@ type Bootstrap struct {
 
 	mu     sync.Mutex
 	loaded bool
+	image  string
 }
 
 // ContainerSpec is the hardened container definition (PHASE-02 §5 Security):
@@ -72,6 +73,7 @@ func (b *Bootstrap) Ensure(ctx context.Context, image string) error {
 	if image == "" {
 		image = DefaultImage
 	}
+	b.image = image
 	root := b.Root
 	if root == "" {
 		root = DefaultRoot
@@ -179,14 +181,25 @@ func (b *Bootstrap) waitAdmin(ctx context.Context, limit time.Duration) error {
 }
 
 // Restart restarts the container (used once when a port has no listener).
+// A missing container is recreated instead.
 func (b *Bootstrap) Restart(ctx context.Context) error {
 	b.mu.Lock()
-	defer b.mu.Unlock()
-	if err := b.Docker.Restart(ctx, ContainerName); err != nil {
+	err := b.Docker.Restart(ctx, ContainerName)
+	b.loaded = false
+	b.mu.Unlock()
+	if errors.Is(err, docker.ErrNotFound) {
+		return b.Ensure(ctx, b.lastImage())
+	}
+	if err != nil {
 		return fmt.Errorf("caddy: restart: %w", err)
 	}
-	b.loaded = false
 	return nil
+}
+
+func (b *Bootstrap) lastImage() string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.image
 }
 
 // Healthy reports whether the admin API answers.

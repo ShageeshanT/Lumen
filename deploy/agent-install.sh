@@ -1335,7 +1335,9 @@ step_wait() {
   {
     lumen-agent status --wait-online 90 2>&1
     echo "$?" >"$wait_rc_file"
-  } | tr -d '\000-\010\013-\037\177' | while IFS= read -r wait_line; do
+  } | while IFS= read -r wait_line; do
+    # Relayed line by line (no filter in between: tr would buffer the pipe
+    # and hold every checklist line until the end).
     printf '  %s\n' "$wait_line"
     log "agent: $wait_line"
   done

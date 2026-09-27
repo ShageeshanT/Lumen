@@ -219,6 +219,7 @@ func (a *Agent) run(parent context.Context) error {
 		Kick:    a.kick,
 	}
 	goFn(func() { hb.Run(ctx) })
+	goFn(func() { a.keepProxy(ctx) })
 	a.sampler = &metrics.Sampler{
 		Collector: &metrics.Collector{ProcRoot: a.o.ProcRoot},
 		Interval:  func() time.Duration { return time.Duration(a.mxEvery.Load()) },
@@ -459,24 +460,51 @@ func (a *Agent) handleRevoke(r *agentv1.Revoke) {
 	}()
 }
 
-// probe checks Docker, keeps Caddy in place and reports both.
+// probe checks Docker and Caddy for a heartbeat. It is quick and never
+// repairs anything, so a slow image pull can't delay heartbeats; keepProxy
+// does the repairing.
 func (a *Agent) probe(ctx context.Context) heartbeat.Probe {
 	var p heartbeat.Probe
-	pctx, cancel := context.WithTimeout(ctx, 8*time.Second)
+	pctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	if _, err := a.docker.Version(pctx); err == nil {
 		p.DockerOK = true
-		if err := a.proxy.Ensure(ctx, *a.image.Load()); err != nil {
-			a.log.Warn("the proxy is not ready", "err", err)
-		}
 		if n, err := a.docker.CountRunning(pctx); err == nil {
 			p.ContainerCount = uint32(n) //nolint:gosec // container counts fit
 		}
-	} else {
-		a.log.Warn("Docker is not responding; run: sudo systemctl restart docker", "err", err)
 	}
 	p.CaddyOK = a.proxy.Healthy(ctx)
 	return p
+}
+
+// keepProxy makes sure the platform Caddy container exists and runs, right
+// away and then every heartbeat interval, so a container removed by hand
+// comes back within one heartbeat (PHASE-02 §5). Each distinct failure is
+// logged once.
+func (a *Agent) keepProxy(ctx context.Context) {
+	lastErr := ""
+	for {
+		pctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+		_, derr := a.docker.Version(pctx)
+		cancel()
+		msg := ""
+		if derr != nil {
+			msg = "Docker is not responding; run: sudo systemctl restart docker"
+		} else if err := a.proxy.Ensure(ctx, *a.image.Load()); err != nil {
+			msg = "the proxy is not ready: " + err.Error()
+		}
+		if msg != "" && msg != lastErr {
+			a.log.Warn(msg)
+		} else if msg == "" && lastErr != "" {
+			a.log.Info("the proxy is running again")
+		}
+		lastErr = msg
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(time.Duration(a.hbEvery.Load())):
+		}
+	}
 }
 
 func (a *Agent) observe(p heartbeat.Probe) {

@@ -69,9 +69,17 @@ export async function startServer(opts: StartOptions): Promise<RunningServer> {
   await registry.start();
   const realtime = new RealtimeServer(bus, config.LUMEN_ADMIN_TOKEN, logger);
   await realtime.start();
+  // Last automatic port-check attempt per server; a failed attempt (no
+  // result stored) is retried at most every five minutes.
+  const autoChecks = new Map<string, number>();
   const gateway = new AgentGateway(cp, {
-    onFirstOnline: (serverId) => {
-      // Once when a freshly installed server comes online (PHASE-02 §4.6).
+    onProxyReady: (serverId) => {
+      // Once after install, as soon as the proxy runs (PHASE-02 §4.6).
+      const last = autoChecks.get(serverId);
+      if (last !== undefined && Date.now() - last < 5 * 60_000) {
+        return;
+      }
+      autoChecks.set(serverId, Date.now());
       runPortCheck(cp, serverId, [80, 443], opts.prober)
         .then((r) => {
           logger.info(

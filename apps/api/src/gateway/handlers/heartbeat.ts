@@ -8,6 +8,8 @@ import { checklistEvent, loadServer } from "../../services/servers/servers";
 export interface HeartbeatOutcome {
   previous: ServerStatus;
   status: ServerStatus;
+  /** True until the first port check result is stored. */
+  neverPortChecked: boolean;
 }
 
 interface Row {
@@ -17,6 +19,7 @@ interface Row {
   previous_status: ServerStatus;
   last_heartbeat_at: Date;
   flags_changed: boolean;
+  never_port_checked: boolean;
 }
 
 /**
@@ -44,7 +47,8 @@ export async function recordHeartbeat(
      from prev
      where s.id = prev.id
      returning s.id, s.workspace_id, s.status, prev.status as previous_status, s.last_heartbeat_at,
-       (prev.docker_ok is distinct from $3 or prev.caddy_ok is distinct from $4) as flags_changed`,
+       (prev.docker_ok is distinct from $3 or prev.caddy_ok is distinct from $4) as flags_changed,
+       (s.port_check is null) as never_port_checked`,
     [serverId, now, hb.dockerOk, hb.caddyOk, hb.containerCount],
   );
   const row = res.rows[0];
@@ -68,5 +72,9 @@ export async function recordHeartbeat(
       await publishEvent(cp.bus, checklistEvent(server, now));
     }
   }
-  return { previous: row.previous_status, status: row.status };
+  return {
+    previous: row.previous_status,
+    status: row.status,
+    neverPortChecked: row.never_port_checked,
+  };
 }

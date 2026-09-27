@@ -37,6 +37,11 @@ func (c *Clock) Observe(serverTimeMs int64) {
 	}
 }
 
+// Reset forgets the measured offset. Each connection starts with the raw
+// local clock so the control plane can measure this server's real skew from
+// AgentHello; ControlHello then sets the offset again.
+func (c *Clock) Reset() { c.offsetMs.Store(0) }
+
 // OffsetMs is control-plane time minus local time.
 func (c *Clock) OffsetMs() int64 { return c.offsetMs.Load() }
 

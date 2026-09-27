@@ -190,9 +190,17 @@ func (c *Client) session(ctx context.Context, h Handler) error {
 		}
 		return nil
 	}
-	read := func() (*agentv1.Envelope, error) {
-		rctx, rcancel := context.WithTimeout(ctx, ioTimeout)
-		defer rcancel()
+	// Only the ControlHello wait has a read deadline. Afterwards the control
+	// plane may legitimately send nothing for a while; liveness comes from our
+	// ping every 10 s, which fails the connection when no pong arrives within
+	// 30 s. (A canceled Read context closes the socket in coder/websocket.)
+	read := func(deadline bool) (*agentv1.Envelope, error) {
+		rctx := ctx
+		if deadline {
+			var rcancel context.CancelFunc
+			rctx, rcancel = context.WithTimeout(ctx, ioTimeout)
+			defer rcancel()
+		}
 		typ, frame, err := ws.Read(rctx)
 		if err != nil {
 			return nil, fmt.Errorf("read: %w", err)
@@ -204,10 +212,11 @@ func (c *Client) session(ctx context.Context, h Handler) error {
 	}
 
 	hello := c.cfg.Hello(ctx)
+	c.cfg.Clock.Reset()
 	if err := write(&agentv1.Envelope{Body: &agentv1.Envelope_AgentHello{AgentHello: hello}}); err != nil {
 		return err
 	}
-	env, err := read()
+	env, err := read(true)
 	if err != nil {
 		return fmt.Errorf("waiting for ControlHello: %w", err)
 	}
@@ -233,7 +242,7 @@ func (c *Client) session(ctx context.Context, h Handler) error {
 	go func() { errc <- c.writer(ctx, ws, write) }()
 	go func() {
 		for {
-			env, err := read()
+			env, err := read(false)
 			if err != nil {
 				errc <- err
 				return
