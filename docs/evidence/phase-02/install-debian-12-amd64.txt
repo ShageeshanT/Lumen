@@ -1,0 +1,69 @@
+# host: lumen-p2-host4 (Debian GNU/Linux 12 (bookworm) x86_64)
+# command: curl -fsSL --cacert /root/lumen-test-ca.pem https://lumen-p2-cp:4204/install/agent.sh | sudo sh -s -- --token <redacted> --control-plane https://lumen-p2-cp:4204 --ca-file /root/lumen-test-ca.pem 
+# started: 2026-09-27T08:06:58Z
+08:06:59  
+08:06:59  Lumen agent installer · agent 0.2.0 · https://lumen-p2-cp:4204
+08:06:59    Log: /var/log/lumen-agent-install.log
+08:06:59  
+08:06:59  [1/8] Checking your server
+08:07:00    ✔ Debian GNU/Linux 12 (bookworm) is supported
+08:07:00    ✔ amd64, 7.6 GB memory, 933 GB free disk
+08:07:00    ✔ curl, tar, openssl and CA certificates are installed (already done)
+08:07:00    ✔ The clock is synced
+08:07:00    Docker isn't installed yet. It will be installed next.
+08:07:00  
+08:07:00  [2/8] Docker
+08:07:01    Installing Docker (about a minute)…
+08:23:11    ✔ Docker 29.8.1 is installed and running
+08:23:11  
+08:23:11  [3/8] Firewall
+08:23:11    ✔ Ports 80, 443 and 51820/udp are open in the OS firewall (already done)
+08:23:11    ✔ No cloud provider detected (bare metal or another host)
+08:23:11  
+08:23:11    ┃ Open ports 80 and 443 in your provider's firewall too
+08:23:11    ┃ Open ports 80 and 443 in your provider's firewall (about 3 min)
+08:23:11    ┃ 
+08:23:11    ┃ 1. Open your provider's dashboard and find the firewall, security group or network rules for this server.
+08:23:11    ┃ 2. Add inbound rules that allow TCP ports 80 and 443 from anywhere: 0.0.0.0/0 for IPv4 and ::/0 for IPv6.
+08:23:11    ┃ 3. Save the rules and wait a minute for them to apply.
+08:23:11  
+08:23:11  [4/8] Downloading the agent
+08:23:11    Downloading Lumen agent 0.2.0 for amd64…
+08:23:11    ✔ Downloaded agent 0.2.0 and verified its checksum and signature
+08:23:12  
+08:23:12  [5/8] Installing the agent
+08:23:12    ✔ Installed the agent at /usr/local/bin/lumen-agent
+08:23:12    ✔ Saved your CA bundle to /etc/lumen/ca.pem
+08:23:12    ✔ Wrote the agent settings to /etc/lumen/agent.env
+08:23:12  
+08:23:12  [6/8] Joining Lumen
+08:23:12    ✔ This server joined Lumen
+08:23:12  
+08:23:12  [7/8] Starting the agent service
+08:23:12    ✔ Wrote the lumen-agent service
+08:23:12    ✔ Started the lumen-agent service
+08:23:12  
+08:23:12  [8/8] Waiting for the server to come online
+08:23:13    ✔ Connected
+08:23:13    ✔ Docker ready
+08:24:41    The agent didn't come online in time.
+08:24:41  
+08:24:41    ✘ This server didn't come online within 90 seconds.
+08:24:41      Last 20 lines of the agent log:
+08:24:41  
+08:24:41        Sep 27 08:23:12 lumen-p2-host4 systemd[1]: Starting lumen-agent.service - Lumen agent...
+08:24:41        Sep 27 08:23:12 lumen-p2-host4 (ent.prev)[1438]: lumen-agent.service: Executable /usr/local/bin/lumen-agent.prev missing, skipping: No such file or directory
+08:24:41        Sep 27 08:23:12 lumen-p2-host4 systemd[1]: Started lumen-agent.service - Lumen agent.
+08:24:41        Sep 27 08:23:12 lumen-p2-host4 lumen-agent[1439]: {"ts":"2026-09-27T08:23:12.526121799Z","level":"info","msg":"agent started","service":"lumen-agent","component":"agent","version":"0.2.0","server_id":"srv_01m3gzc1jgaehn9c9py0wmccz8","provider":"other","startup_ms":53}
+08:24:41        Sep 27 08:23:12 lumen-p2-host4 lumen-agent[1439]: {"ts":"2026-09-27T08:23:12.574841577Z","level":"info","msg":"pulling the proxy image","service":"lumen-agent","component":"caddy","image":"caddy:2-alpine@sha256:6aeddd44c3078b0f9a35206472a11420648a79c184603ef95957d0a20044cb2b"}
+08:24:41  
+08:24:41      Fix the problem above, then run the install again (it skips finished steps):
+08:24:41  
+08:24:41        curl -fsSL https://lumen-p2-cp:4204/install/agent.sh | sudo sh -s -- --control-plane https://lumen-p2-cp:4204 --ca-file /root/lumen-test-ca.pem
+08:24:41  
+08:24:41      Ran for 17m 43s.
+08:24:41  
+08:24:41      Full install log: /var/log/lumen-agent-install.log
+# finished: 2026-09-27T08:24:41Z
+# exit status: 1
+# paste-to-online: 1063 s

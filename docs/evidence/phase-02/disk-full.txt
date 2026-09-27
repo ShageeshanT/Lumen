@@ -1,0 +1,8 @@
+05:08:34.040  free space before:
+    Filesystem      Size  Used Avail Use% Mounted on
+    tmpfs           2.6G   48K  2.6G   1% /var/lib/lumen
+05:08:34.849  fallocate 1 GB into /var/lib/lumen/lumen-fill (leaves ~1.5 GB free)
+05:08:45.517  disk_low = true after 9 s
+[{"code":"DISK_FULL","title":"Your server is almost out of disk space","explanation":"Only 1.5 GB is free. Builds need at least 2 GB. Old images and build cache usually take most of the space.","fix":"Clean up unused images and build cache. If that isn't enough, resize the disk or move services to another server."}]
+05:08:46.071  removing the file
+05:08:55.081  disk_low = false after 8 s

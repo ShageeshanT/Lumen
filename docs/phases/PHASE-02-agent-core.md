@@ -285,8 +285,8 @@ Beginners lose most of their time on firewalls and OS differences, not on code (
 > (amd64: 8.6 MB `MemoryCurrent` after 65 min), tampered binaries refused (bats
 > + Go tests), `/v1/ws` latency 56–125 ms, DISK_FULL under 2 GB, routes tested.
 > Partly met — one-command join works and re-runs safely on Ubuntu 24.04 amd64,
-> but took 3.5–4.8 min here (Docker's apt install) and wasn't run on Ubuntu
-> 22.04, Debian 12 or native arm64; `buf breaking` passes against this branch
+> and Debian 12 amd64, but took 3.5–4.8 min here (Docker's apt install) and
+> wasn't run on Ubuntu 22.04 or arm64 (emulated arm64 failed under QEMU); `buf breaking` passes against this branch
 > but fails once against `main` by design. Needs real cloud VMs — public
 > reachability, provider detection, the Oracle security list, arm64 RSS.
 > Details: `docs/evidence/phase-02/README.md`, `docs/_pending/phase-02.md`.

@@ -1,0 +1,52 @@
+# host: lumen-p2-host1 (Ubuntu 24.04.5 LTS x86_64)
+# command: curl -fsSL --cacert /root/lumen-test-ca.pem https://lumen-p2-cp:4204/install/agent.sh | sudo sh -s -- --token <redacted> --control-plane https://lumen-p2-cp:4204 --ca-file /root/lumen-test-ca.pem 
+# started: 2026-09-27T05:44:48Z
+05:44:48  
+05:44:48  Lumen agent installer · agent 0.2.0 · https://lumen-p2-cp:4204
+05:44:48    Log: /var/log/lumen-agent-install.log
+05:44:48  
+05:44:48  [1/8] Checking your server
+05:44:48    ✔ Ubuntu 24.04.5 LTS is supported
+05:44:48    ✔ amd64, 7.6 GB memory, 936 GB free disk
+05:44:48    ✔ curl, tar, openssl and CA certificates are installed (already done)
+05:44:48    ✔ The clock is synced
+05:44:48    ✔ Docker 29.8.1 found
+05:44:48  
+05:44:48  [2/8] Docker
+05:44:48    ✔ Docker 29.8.1 is running (already done)
+05:44:48  
+05:44:48  [3/8] Firewall
+05:44:48    ✔ Ports 80, 443 and 51820/udp are open in the OS firewall (already done)
+05:44:49    ✔ No cloud provider detected (bare metal or another host)
+05:44:49  
+05:44:49    ┃ Open ports 80 and 443 in your provider's firewall too
+05:44:49    ┃ Open ports 80 and 443 in your provider's firewall (about 3 min)
+05:44:49    ┃ 
+05:44:49    ┃ 1. Open your provider's dashboard and find the firewall, security group or network rules for this server.
+05:44:49    ┃ 2. Add inbound rules that allow TCP ports 80 and 443 from anywhere: 0.0.0.0/0 for IPv4 and ::/0 for IPv6.
+05:44:49    ┃ 3. Save the rules and wait a minute for them to apply.
+05:44:49  
+05:44:49  [4/8] Downloading the agent
+05:44:49    Downloading Lumen agent 0.2.0 for amd64…
+05:44:49    ✔ Downloaded agent 0.2.0 and verified its checksum and signature
+05:44:49  
+05:44:49  [5/8] Installing the agent
+05:44:49    ✔ Installed the agent at /usr/local/bin/lumen-agent
+05:44:49  
+05:44:49  [6/8] Joining Lumen
+05:44:49    ✔ This server joined Lumen
+05:44:49  
+05:44:49  [7/8] Starting the agent service
+05:44:49    ✔ Wrote the lumen-agent service
+05:44:50    ✔ Started the lumen-agent service
+05:44:50  
+05:44:50  [8/8] Waiting for the server to come online
+05:44:51    ✔ Connected
+05:44:51    ✔ Docker ready
+05:44:51    ✔ Proxy running
+05:44:51  
+05:44:51    This server is online. Go back to your browser.
+05:44:51    Finished in 2s.
+# finished: 2026-09-27T05:44:51Z
+# exit status: 0
+# paste-to-online: 3 s

@@ -1,0 +1,16 @@
+# identity public key before revoke:
+"public_key": "d3Iq05ixgS/bg3XiOTrQ43fF/3Yf9d7kLg8B5E69UeI="
+# 05:42:20 DELETE /v1/servers/srv_01m3gk61g2marse60176fwxf9t
+
+HTTP 204 in 0.036693s
+# 05:42:27 on the server:
+activating
+identity.json
+state.json
+status.json
+lumen-agent.service: Scheduled restart job, restart counter is at 9.
+Starting lumen-agent.service - Lumen agent...
+Started lumen-agent.service - Lumen agent.
+This server hasn't joined Lumen yet. Run the join command from Servers → Add server.
+lumen-agent.service: Main process exited, code=exited, status=1/FAILURE
+lumen-agent.service: Failed with result 'exit-code'.

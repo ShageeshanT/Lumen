@@ -1,0 +1,13 @@
+
+HTTP 204 in 0.039549s
+systemctl is-active: failed
+NRestarts=73
+ExecMainStatus=78
+identity.json
+state.json
+status.json
+{"ts":"2026-09-27T05:44:50.049093648Z","level":"info","msg":"agent started","service":"lumen-agent","component":"agent","version":"0.2.0","server_id":"srv_01m3gpa18sjz13j6348vr2r1h5","provider":"other
+{"ts":"2026-09-27T05:45:01.232913297Z","level":"warn","msg":"this server was removed from Lumen; stopping","service":"lumen-agent","component":"agent","reason":"This server was removed from Lumen."}
+{"ts":"2026-09-27T05:45:01.734551798Z","level":"info","msg":"this server was removed from Lumen","service":"lumen-agent"}
+lumen-agent.service: Main process exited, code=exited, status=78/CONFIG
+lumen-agent.service: Failed with result 'exit-code'.

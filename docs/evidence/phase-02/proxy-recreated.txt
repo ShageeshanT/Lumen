@@ -1,0 +1,5 @@
+05:14:25.589  removing the proxy container by hand: docker rm -f lumen-caddy
+05:14:35.457  lumen-caddy is running again after 9 s
+    HTTP/1.1 404 Not Found
+    Cache-Control: no-store
+    Content-Type: text/html; charset=utf-8

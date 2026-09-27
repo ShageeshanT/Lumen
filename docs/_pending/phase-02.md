@@ -262,8 +262,13 @@ network path the port check uses.
   unverified (see evidence README for what the container host did cover).
 - Paste-to-online on the test host was 3m31s–4m48s, dominated by Docker's apt
   install (3–4 min over this network); the agent part took ~40 s.
-- arm64: binaries build and run under QEMU; the installer on an emulated arm64
-  host (see evidence) is the only arm64 end-to-end run.
+- arm64: binaries build and run under QEMU, but the end-to-end install on an
+  emulated arm64 host failed (Docker never came up under QEMU), so there is no
+  arm64 end-to-end result.
+- Debian 12 amd64 joined and turned fully green, but on a congested network the
+  installer's 90 s wait expired while the Caddy image was still pulling (the
+  re-run then finished). Pre-pulling the proxy image during the Docker step
+  would make the wait independent of pull time.
 - Dashboard pieces (add-server wizard, checklist, fix cards) are Phase 05; the
   API and events they need exist.
 - `rolloutAgentUpdate` (one server at a time, stop on failure) has no route yet;

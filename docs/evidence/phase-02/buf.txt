@@ -1,0 +1,60 @@
+$ buf --version
+1.73.0
+
+$ buf lint
+(no findings)
+
+$ buf format -d --exit-code
+(already formatted)
+
+$ buf breaking --against ".git#ref=HEAD,subdir=packages/protocol"   # protocol v1 baseline set by this branch
+(no breaking changes)
+
+$ buf breaking --against ".git#branch=main,subdir=packages/protocol"  # fails once by design: the Phase 00 placeholder is replaced
+<input>:1:1:Previously present file "google/protobuf/timestamp.proto" was deleted.
+<input>:1:1:Previously present file "lumen/agent/v1/agent.proto" was deleted.
+proto\lumen\agent\v1\envelope.proto:27:1:Previously present oneof "payload" on message "Envelope" was deleted.
+proto\lumen\agent\v1\envelope.proto:29:3:Field "1" with name "protocol_version" on message "Envelope" changed option "json_name" from "opId" to "protocolVersion".
+proto\lumen\agent\v1\envelope.proto:29:3:Field "1" with name "protocol_version" on message "Envelope" changed type from "string" to "uint32".
+proto\lumen\agent\v1\envelope.proto:29:10:Field "1" on message "Envelope" changed name from "op_id" to "protocol_version".
+proto\lumen\agent\v1\envelope.proto:30:3:Field "2" with name "server_id" on message "Envelope" changed cardinality from "optional with explicit presence" to "optional with implicit presence".
+proto\lumen\agent\v1\envelope.proto:30:3:Field "2" with name "server_id" on message "Envelope" changed option "json_name" from "timestamp" to "serverId".
+proto\lumen\agent\v1\envelope.proto:30:3:Field "2" with name "server_id" on message "Envelope" changed type from "message" to "string".
+proto\lumen\agent\v1\envelope.proto:30:10:Field "2" on message "Envelope" changed name from "timestamp" to "server_id".
+proto\lumen\agent\v1\envelope.proto:41:5:Field "10" with name "agent_hello" on message "Envelope"q moved from oneof "payload" to oneof "body".
+proto\lumen\agent\v1\envelope.proto:42:5:Field "11" with name "control_hello" on message "Envelope"q moved from oneof "payload" to oneof "body".
+proto\lumen\agent\v1\envelope.proto:43:5:Field "12" with name "heartbeat" on message "Envelope" changed option "json_name" from "ack" to "heartbeat".
+proto\lumen\agent\v1\envelope.proto:43:5:Field "12" with name "heartbeat" on message "Envelope"q moved from oneof "payload" to oneof "body".
+proto\lumen\agent\v1\envelope.proto:43:5:Field "12" with name "heartbeat" on message "Envelope" changed type from "lumen.agent.v1.Ack" to "lumen.agent.v1.Heartbeat".
+proto\lumen\agent\v1\envelope.proto:43:15:Field "12" on message "Envelope" changed name from "ack" to "heartbeat".
+proto\lumen\agent\v1\envelope.proto:44:5:Field "13" with name "heartbeat_ack" on message "Envelope" changed option "json_name" from "opError" to "heartbeatAck".
+proto\lumen\agent\v1\envelope.proto:44:5:Field "13" with name "heartbeat_ack" on message "Envelope"q moved from oneof "payload" to oneof "body".
+proto\lumen\agent\v1\envelope.proto:44:5:Field "13" with name "heartbeat_ack" on message "Envelope" changed type from "lumen.agent.v1.OpError" to "lumen.agent.v1.HeartbeatAck".
+proto\lumen\agent\v1\envelope.proto:44:18:Field "13" on message "Envelope" changed name from "op_error" to "heartbeat_ack".
+proto\lumen\agent\v1\hello.proto:12:3:Field "5" with name "os_version" on message "AgentHello" changed option "json_name" from "arch" to "osVersion".
+proto\lumen\agent\v1\hello.proto:12:10:Field "5" on message "AgentHello" changed name from "arch" to "os_version".
+proto\lumen\agent\v1\hello.proto:13:3:Field "6" with name "arch" on message "AgentHello" changed option "json_name" from "cpuCores" to "arch".
+proto\lumen\agent\v1\hello.proto:13:3:Field "6" with name "arch" on message "AgentHello" changed type from "uint32" to "string".
+proto\lumen\agent\v1\hello.proto:13:10:Field "6" on message "AgentHello" changed name from "cpu_cores" to "arch".
+proto\lumen\agent\v1\hello.proto:14:3:Field "7" with name "cpu_cores" on message "AgentHello" changed option "json_name" from "memoryBytes" to "cpuCores".
+proto\lumen\agent\v1\hello.proto:14:3:Field "7" with name "cpu_cores" on message "AgentHello" changed type from "uint64" to "uint32".
+proto\lumen\agent\v1\hello.proto:14:10:Field "7" on message "AgentHello" changed name from "memory_bytes" to "cpu_cores".
+proto\lumen\agent\v1\hello.proto:15:3:Field "8" with name "memory_bytes" on message "AgentHello" changed option "json_name" from "diskBytes" to "memoryBytes".
+proto\lumen\agent\v1\hello.proto:15:10:Field "8" on message "AgentHello" changed name from "disk_bytes" to "memory_bytes".
+proto\lumen\agent\v1\hello.proto:16:3:Field "9" with name "disk_bytes" on message "AgentHello" changed option "json_name" from "dockerVersion" to "diskBytes".
+proto\lumen\agent\v1\hello.proto:16:3:Field "9" with name "disk_bytes" on message "AgentHello" changed type from "string" to "uint64".
+proto\lumen\agent\v1\hello.proto:16:10:Field "9" on message "AgentHello" changed name from "docker_version" to "disk_bytes".
+proto\lumen\agent\v1\hello.proto:17:3:Field "10" with name "docker_version" on message "AgentHello" changed option "json_name" from "publicIp" to "dockerVersion".
+proto\lumen\agent\v1\hello.proto:17:10:Field "10" on message "AgentHello" changed name from "public_ip" to "docker_version".
+proto\lumen\agent\v1\hello.proto:33:3:Field "2" with name "reject_reason" on message "ControlHello" changed option "json_name" from "desiredStateVersion" to "rejectReason".
+proto\lumen\agent\v1\hello.proto:33:3:Field "2" with name "reject_reason" on message "ControlHello" changed type from "uint64" to "string".
+proto\lumen\agent\v1\hello.proto:33:10:Field "2" on message "ControlHello" changed name from "desired_state_version" to "reject_reason".
+proto\lumen\agent\v1\hello.proto:34:3:Field "3" with name "desired_state_version" on message "ControlHello" changed cardinality from "optional with explicit presence" to "optional with implicit presence".
+proto\lumen\agent\v1\hello.proto:34:3:Field "3" with name "desired_state_version" on message "ControlHello" changed option "json_name" from "config" to "desiredStateVersion".
+proto\lumen\agent\v1\hello.proto:34:3:Field "3" with name "desired_state_version" on message "ControlHello" changed type from "message" to "uint64".
+proto\lumen\agent\v1\hello.proto:34:10:Field "3" on message "ControlHello" changed name from "config" to "desired_state_version".
+proto\lumen\agent\v1\hello.proto:35:3:Field "4" with name "config" on message "ControlHello" changed cardinality from "optional with implicit presence" to "optional with explicit presence".
+proto\lumen\agent\v1\hello.proto:35:3:Field "4" with name "config" on message "ControlHello" changed option "json_name" from "rejectReason" to "config".
+proto\lumen\agent\v1\hello.proto:35:3:Field "4" with name "config" on message "ControlHello" changed type from "string" to "message".
+proto\lumen\agent\v1\hello.proto:35:15:Field "4" on message "ControlHello" changed name from "reject_reason" to "config".
+(exit 100)

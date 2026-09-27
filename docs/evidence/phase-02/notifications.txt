@@ -1,0 +1,7 @@
+          created_at           |       kind       | severity |     code      |                  title                   |           target_id            
+-------------------------------+------------------+----------+---------------+------------------------------------------+--------------------------------
+ 2026-09-27 05:04:33.906343+00 | server.offline   | critical | AGENT_OFFLINE | Server 'ubuntu-amd64-1' isn't responding | srv_01m3gk61g2marse60176fwxf9t
+ 2026-09-27 05:06:02.769565+00 | server.disk_full | critical | DISK_FULL     | Your server is almost out of disk space  | srv_01m3gk61g2marse60176fwxf9t
+ 2026-09-27 05:08:45.431807+00 | server.disk_full | critical | DISK_FULL     | Your server is almost out of disk space  | srv_01m3gk61g2marse60176fwxf9t
+(3 rows)
+

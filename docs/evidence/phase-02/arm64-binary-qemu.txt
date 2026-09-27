@@ -1,0 +1,3 @@
+aarch64
+lumen-agent 0.2.1 (8ac7697, 2026-09-27T05:44:29Z, linux/arm64, protocol 1)
+Not joined. Run the join command from Servers → Add server.

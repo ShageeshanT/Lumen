@@ -1,0 +1,14 @@
+05:04:03.837  status: "online"
+05:04:03.911  disconnecting lumen-p2-host1 from the network (docker network disconnect lumen-p2)
+05:04:35.341  status: "offline" after 31 s without network
+05:04:35.408  notifications row and issues:
+[{"code":"AGENT_OFFLINE","title":"Server 'ubuntu-amd64-1' isn't responding","explanation":"The Lumen agent on this server hasn't checked in. Your apps keep running if the machine is up; only the dashboard has lost contact.","fix":"Check that the server is powered on and can reach the internet, then follow the troubleshooting steps. Reinstalling the agent is safe."}]
+05:04:35.929  reconnecting lumen-p2-host1
+05:04:41.350  status: "online" 5 s after the network came back
+05:04:44.490  /v1/ws events received (latency = receive time - event 'at'):
+    05:04:03.707  server.metrics   disk_low=false latency 54 ms
+    05:04:33.925  server.status    offline    latency 105 ms
+    05:04:33.945  server.offline              latency 125 ms
+    05:04:40.907  server.status    online     latency 56 ms
+    05:04:40.932  server.checklist            latency 81 ms
+    05:04:43.781  server.metrics   disk_low=false latency 107 ms

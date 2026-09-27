@@ -1,0 +1,55 @@
+# host: lumen-p2-host1 (Ubuntu 24.04.5 LTS x86_64)
+# command: curl -fsSL --cacert /root/lumen-test-ca.pem https://lumen-p2-cp:4204/install/agent.sh | sudo sh -s -- --token <redacted> --control-plane https://lumen-p2-cp:4204 --ca-file /root/lumen-test-ca.pem 
+# started: 2026-09-27T04:46:05Z
+04:46:06  
+04:46:06  Lumen agent installer · agent 0.2.0 · https://lumen-p2-cp:4204
+04:46:06    Log: /var/log/lumen-agent-install.log
+04:46:06  
+04:46:06  [1/8] Checking your server
+04:46:06    ✔ Ubuntu 24.04.5 LTS is supported
+04:46:06    ✔ amd64, 7.6 GB memory, 937 GB free disk
+04:46:06    ✔ curl, tar, openssl and CA certificates are installed (already done)
+04:46:06    ✔ The clock is synced
+04:46:06    Docker isn't installed yet. It will be installed next.
+04:46:06  
+04:46:06  [2/8] Docker
+04:46:06    Installing Docker (about a minute)…
+04:50:11    ✔ Docker 29.8.1 is installed and running
+04:50:11  
+04:50:11  [3/8] Firewall
+04:50:11    ✔ Ports 80, 443 and 51820/udp are open in the OS firewall (already done)
+04:50:11    ✔ No cloud provider detected (bare metal or another host)
+04:50:11  
+04:50:11    ┃ Open ports 80 and 443 in your provider's firewall too
+04:50:11    ┃ Open ports 80 and 443 in your provider's firewall (about 3 min)
+04:50:11    ┃ 
+04:50:12    ┃ 1. Open your provider's dashboard and find the firewall, security group or network rules for this server.
+04:50:12    ┃ 2. Add inbound rules that allow TCP ports 80 and 443 from anywhere: 0.0.0.0/0 for IPv4 and ::/0 for IPv6.
+04:50:12    ┃ 3. Save the rules and wait a minute for them to apply.
+04:50:12  
+04:50:12  [4/8] Downloading the agent
+04:50:12    Downloading Lumen agent 0.2.0 for amd64…
+04:50:12    ✔ Downloaded agent 0.2.0 and verified its checksum and signature
+04:50:12  
+04:50:12  [5/8] Installing the agent
+04:50:12    ✔ Installed the agent at /usr/local/bin/lumen-agent
+04:50:12    ✔ Saved your CA bundle to /etc/lumen/ca.pem
+04:50:12    ✔ Wrote the agent settings to /etc/lumen/agent.env
+04:50:12  
+04:50:12  [6/8] Joining Lumen
+04:50:13    ✔ This server joined Lumen
+04:50:13  
+04:50:13  [7/8] Starting the agent service
+04:50:13    ✔ Wrote the lumen-agent service
+04:50:13    ✔ Started the lumen-agent service
+04:50:13  
+04:50:13  [8/8] Waiting for the server to come online
+04:50:54    ✔ Connected
+04:50:54    ✔ Docker ready
+04:50:54    ✔ Proxy running
+04:50:54  
+04:50:54    This server is online. Go back to your browser.
+04:50:54    Finished in 4m 48s.
+# finished: 2026-09-27T04:50:55Z
+# exit status: 0
+# paste-to-online: 289 s

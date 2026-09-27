@@ -1,0 +1,52 @@
+# host: lumen-p2-host1 (Ubuntu 24.04.5 LTS x86_64)
+# command: curl -fsSL --cacert /root/lumen-test-ca.pem https://lumen-p2-cp:4204/install/agent.sh | sudo sh -s -- --control-plane https://lumen-p2-cp:4204 --ca-file /root/lumen-test-ca.pem 
+# started: 2026-09-27T05:40:28Z
+05:40:28  
+05:40:28  Lumen agent installer · agent 0.2.0 · https://lumen-p2-cp:4204
+05:40:28    Log: /var/log/lumen-agent-install.log
+05:40:28  
+05:40:28  [1/8] Checking your server
+05:40:28    ✔ Ubuntu 24.04.5 LTS is supported
+05:40:28    ✔ amd64, 7.6 GB memory, 936 GB free disk
+05:40:28    ✔ curl, tar, openssl and CA certificates are installed (already done)
+05:40:28    ✔ The clock is synced
+05:40:28    ✔ Docker 29.8.1 found
+05:40:28  
+05:40:28  [2/8] Docker
+05:40:28    ✔ Docker 29.8.1 is running (already done)
+05:40:28  
+05:40:28  [3/8] Firewall
+05:40:28    ✔ Ports 80, 443 and 51820/udp are open in the OS firewall (already done)
+05:40:28    ✔ No cloud provider detected (bare metal or another host)
+05:40:28  
+05:40:28    ┃ Open ports 80 and 443 in your provider's firewall too
+05:40:29    ┃ Open ports 80 and 443 in your provider's firewall (about 3 min)
+05:40:29    ┃ 
+05:40:29    ┃ 1. Open your provider's dashboard and find the firewall, security group or network rules for this server.
+05:40:29    ┃ 2. Add inbound rules that allow TCP ports 80 and 443 from anywhere: 0.0.0.0/0 for IPv4 and ::/0 for IPv6.
+05:40:29    ┃ 3. Save the rules and wait a minute for them to apply.
+05:40:29  
+05:40:29  [4/8] Downloading the agent
+05:40:29    Downloading Lumen agent 0.2.0 for amd64…
+05:40:29    ✔ Downloaded agent 0.2.0 and verified its checksum and signature
+05:40:29  
+05:40:29  [5/8] Installing the agent
+05:40:29    ✔ Installed the agent at /usr/local/bin/lumen-agent
+05:40:29  
+05:40:29  [6/8] Joining Lumen
+05:40:29    ✔ Already joined as ubuntu-amd64-1 (srv_01m3gk61g2marse60176fwxf9t) (already done)
+05:40:29  
+05:40:29  [7/8] Starting the agent service
+05:40:29    ✔ Wrote the lumen-agent service
+05:40:29    ✔ Restarted the agent to pick up the changes
+05:40:29  
+05:40:29  [8/8] Waiting for the server to come online
+05:40:29    ✔ Docker ready
+05:40:29    ✔ Proxy running
+05:40:30    ✔ Connected
+05:40:30  
+05:40:30    This server is online. Go back to your browser.
+05:40:30    Finished in 2s.
+# finished: 2026-09-27T05:40:30Z
+# exit status: 0
+# paste-to-online: 2 s
