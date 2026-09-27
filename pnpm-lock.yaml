@@ -275,6 +275,9 @@ importers:
       '@scalar/hono-api-reference':
         specifier: 'catalog:'
         version: 0.12.6(hono@4.13.9)
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.3(@types/pg@8.23.1)(pg@8.23.0)
       hono:
         specifier: 'catalog:'
         version: 4.13.9

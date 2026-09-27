@@ -19,6 +19,7 @@
     "@lumen/protocol": "workspace:*",
     "@lumen/shared": "workspace:*",
     "@scalar/hono-api-reference": "catalog:",
+    "drizzle-orm": "catalog:",
     "hono": "catalog:",
     "pg": "catalog:",
     "pino": "catalog:",
