@@ -11,7 +11,7 @@ import { LiveRegion } from "./live-region";
 import { Skeleton } from "./skeleton";
 import { Tooltip } from "./tooltip";
 
-export type ChartColor = "accent" | "info" | "success" | "warning" | "danger";
+export type ChartColor = "accent" | "violet" | "info" | "success" | "warning" | "danger";
 export type ChartUnit = "%" | "MB" | "GB" | "req/min" | "ms" | "KB/s";
 
 export interface ChartSeries {
@@ -55,6 +55,7 @@ export interface ChartProps {
 
 const COLOR_VAR: Record<ChartColor, string> = {
   accent: "--color-accent",
+  violet: "--color-violet",
   info: "--color-info",
   success: "--color-success",
   warning: "--color-warning",
@@ -63,13 +64,15 @@ const COLOR_VAR: Record<ChartColor, string> = {
 
 const SWATCH: Record<ChartColor, string> = {
   accent: "bg-accent",
+  violet: "bg-violet",
   info: "bg-info",
   success: "bg-success",
   warning: "bg-warning",
   danger: "bg-danger",
 };
 
-const DEFAULT_COLORS: ChartColor[] = ["accent", "info", "success", "warning"];
+// Accent then violet: blue and info-blue sat too close for a second line.
+const DEFAULT_COLORS: ChartColor[] = ["accent", "violet", "success", "warning"];
 const NO_MARKERS: ChartMarker[] = [];
 
 /** "34 %", "512 MB", "1.2 GB", "1,204 req/min", "42 ms", "380 KB/s". */

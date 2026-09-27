@@ -96,8 +96,11 @@ export interface CodeBlockProps {
   code: string;
   language?: CodeLanguage;
   lineNumbers?: boolean;
-  /** Wrap long lines instead of scrolling sideways. */
-  wrap?: boolean;
+  /**
+   * Wrap long lines instead of scrolling sideways. "narrow" wraps only under
+   * 640 px, for a command that must stay readable in a phone-width modal.
+   */
+  wrap?: boolean | "narrow";
   /** Show the copy button. On by default. */
   copy?: boolean;
   /** Scroll vertically past this height, with a fade at the bottom edge. */
@@ -129,6 +132,7 @@ export function CodeBlock({
   const scrollRef = useRef<HTMLPreElement>(null);
   const [fade, setFade] = useState(false);
   const lines = code.replace(/\n$/, "").split("\n");
+  const singleLine = lines.length === 1;
   const name = title ?? label ?? "Code";
 
   useEffect(() => {
@@ -189,8 +193,14 @@ export function CodeBlock({
         className={cn(
           "text-log overflow-auto",
           lineNumbers ? "p-4 pl-0" : "p-3",
-          title === undefined && copy && "pr-[40px]",
-          wrap ? "break-words whitespace-pre-wrap" : "whitespace-pre",
+          // A single-line command keeps its copy button in view: room for the
+          // 28 px button plus the 24 px fade that sits in front of it.
+          title === undefined && copy && (singleLine ? "pr-[56px]" : "pr-[40px]"),
+          wrap === true
+            ? "break-words whitespace-pre-wrap"
+            : wrap === "narrow"
+              ? "whitespace-pre max-sm:break-all max-sm:whitespace-pre-wrap"
+              : "whitespace-pre",
           lineNumbers && "[counter-reset:line]",
         )}
         style={maxHeight === undefined ? undefined : { maxHeight }}
@@ -215,7 +225,44 @@ export function CodeBlock({
           ))}
         </code>
       </pre>
-      {title === undefined && copyButton !== false && (
+      {title === undefined && copyButton !== false && singleLine && (
+        // Always visible for one-line commands (40 %, full on hover or focus,
+        // like table row actions). It sits outside the scroller, so on phones
+        // the line scrolls underneath while the button stays at the right edge.
+        // A wrapped command doesn't scroll, so it needs no fade and the button
+        // sits by the first line instead of the middle of the block.
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-y-px right-px flex",
+            wrap === true ? "items-start" : "items-center",
+            wrap === "narrow" && "max-sm:items-start",
+          )}
+        >
+          <span
+            aria-hidden="true"
+            className={cn(
+              "to-bg h-full w-6 bg-linear-to-r from-transparent",
+              wrap === true && "hidden",
+              wrap === "narrow" && "max-sm:hidden",
+            )}
+          />
+          <div
+            className={cn(
+              "bg-bg pointer-events-auto flex h-full items-center pr-1",
+              wrap === true && "h-auto pt-2",
+              wrap === "narrow" && "max-sm:h-auto max-sm:pt-2",
+            )}
+          >
+            <div
+              data-code-copy=""
+              className="opacity-40 transition-opacity duration-[var(--dur-fast)] group-focus-within/code:opacity-100 group-hover/code:opacity-100"
+            >
+              {copyButton}
+            </div>
+          </div>
+        </div>
+      )}
+      {title === undefined && copyButton !== false && !singleLine && (
         <div className="absolute top-1 right-1 opacity-0 transition-opacity duration-[var(--dur-fast)] group-focus-within/code:opacity-100 group-hover/code:opacity-100 [@media(hover:none)]:opacity-100">
           {copyButton}
         </div>

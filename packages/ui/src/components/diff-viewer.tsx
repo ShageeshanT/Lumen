@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { Fragment, useEffect, useId, useState, type ReactNode } from "react";
 
 import { Icon, type IconName } from "../icons/icon";
 import { cn } from "../lib/cn";
 
 import { Badge } from "./badge";
+import { SealedValue } from "./secret-field";
 
 export type DiffKind = "changed" | "added" | "removed";
 
@@ -55,13 +56,37 @@ export function describeChange(item: DiffItem): string {
   }
 }
 
-function SecretValue() {
-  return (
-    <span className="text-body-secondary inline-flex items-center gap-1 italic">
-      <Icon name="lock" size={14} />
-      value changed
+/** Sealed values never show; the row says only that the value changed. */
+function SecretValue({ sealLabel }: { sealLabel: boolean }) {
+  return sealLabel ? (
+    <span className="inline-flex flex-wrap items-center gap-x-2">
+      <SealedValue />
+      <span className="text-body-secondary">· value changed</span>
     </span>
+  ) : (
+    <span className="text-body-secondary">value changed</span>
   );
+}
+
+/**
+ * Variable names break after "_" (STRIPE_SECRET_ / KEY), never mid-word; one
+ * very long segment still wraps rather than overflow (break-word).
+ */
+export function breakAtUnderscores(name: string): ReactNode {
+  const parts = name.split("_");
+  if (parts.length === 1) {
+    return name;
+  }
+  return parts.map((part, index) => (
+    <Fragment key={index}>
+      {part}
+      {index < parts.length - 1 && (
+        <>
+          _<wbr />
+        </>
+      )}
+    </Fragment>
+  ));
 }
 
 function Value({ value, tone, mono }: { value: string; tone: "removed" | "added"; mono: boolean }) {
@@ -123,7 +148,10 @@ export function DiffViewer({
           className,
         )}
       >
-        Nothing to review
+        <p className="max-w-[360px] text-center">
+          <span className="text-text">Nothing to review yet.</span> Edit a variable or setting and
+          it shows up here.
+        </p>
       </div>
     );
   }
@@ -220,9 +248,9 @@ function DiffRow({ item, mode }: { item: DiffItem; mode: "side-by-side" | "inlin
   const field = (
     <th
       scope="row"
-      className="text-13 font-regular w-[40%] px-3 py-[6px] text-left align-top font-mono [overflow-wrap:anywhere]"
+      className="text-13 font-regular w-[40%] px-3 py-[6px] text-left align-top font-mono [overflow-wrap:break-word]"
     >
-      {item.field}
+      {breakAtUnderscores(item.field)}
       <span className="sr-only">, {item.kind}</span>
     </th>
   );
@@ -238,7 +266,7 @@ function DiffRow({ item, mode }: { item: DiffItem; mode: "side-by-side" | "inlin
                 <span aria-hidden="true" className="text-text-secondary text-13 w-3 font-mono">
                   ~
                 </span>
-                <SecretValue />
+                <SecretValue sealLabel />
               </span>
             ) : (
               <>
@@ -279,7 +307,7 @@ function DiffRow({ item, mode }: { item: DiffItem; mode: "side-by-side" | "inlin
       {field}
       <td className="px-3 py-[6px] align-top">
         {secret ? (
-          <span className="text-body-secondary">Sealed</span>
+          <SealedValue />
         ) : item.kind === "added" || item.before === undefined ? (
           <Empty />
         ) : (
@@ -291,7 +319,7 @@ function DiffRow({ item, mode }: { item: DiffItem; mode: "side-by-side" | "inlin
           <Icon name="arrow-right" size={14} />
         </span>
         {secret ? (
-          <SecretValue />
+          <SecretValue sealLabel={false} />
         ) : item.kind === "removed" || item.after === undefined ? (
           <Empty />
         ) : (

@@ -123,6 +123,35 @@ export function Toast({
 }: ToastProps) {
   const style = VARIANT[record.variant];
   const staticBar = progress !== undefined;
+  const stacked = record.description !== undefined;
+  const actions = (record.undo !== undefined || record.action !== undefined) && (
+    <div className={cn("flex shrink-0 items-center gap-1", stacked ? "pt-2" : "self-center")}>
+      {record.undo !== undefined && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            record.undo?.();
+            onDismiss?.();
+          }}
+        >
+          Undo
+        </Button>
+      )}
+      {record.action !== undefined && (
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => {
+            record.action?.onClick();
+            onDismiss?.();
+          }}
+        >
+          {record.action.label}
+        </Button>
+      )}
+    </div>
+  );
   return (
     <div
       data-variant={record.variant}
@@ -141,35 +170,10 @@ export function Toast({
         {record.description !== undefined && (
           <p className="text-body-secondary">{record.description}</p>
         )}
+        {/* With a body, the buttons get their own row instead of squeezing the text. */}
+        {stacked && actions}
       </div>
-      {(record.undo !== undefined || record.action !== undefined) && (
-        <div className="flex shrink-0 items-center gap-1 self-center">
-          {record.undo !== undefined && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                record.undo?.();
-                onDismiss?.();
-              }}
-            >
-              Undo
-            </Button>
-          )}
-          {record.action !== undefined && (
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => {
-                record.action?.onClick();
-                onDismiss?.();
-              }}
-            >
-              {record.action.label}
-            </Button>
-          )}
-        </div>
-      )}
+      {!stacked && actions}
       {onDismiss !== undefined && (
         <IconButton
           icon="x"

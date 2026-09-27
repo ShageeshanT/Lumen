@@ -9,12 +9,21 @@ export type EmptyStateAction = { label: string; icon?: IconName } & (
   { onClick: () => void; href?: undefined } | { href: string; onClick?: undefined }
 );
 
+/**
+ * A tile is either a real action (it has `onSelect` or `href`: a framed
+ * button or link) or a plain row that explains an option (no frame, not
+ * focusable). Never a button that does nothing.
+ */
 export interface EmptyStateTile {
   icon: IconName;
   title: string;
   description?: string;
-  onClick?: () => void;
+  onSelect?: () => void;
   href?: string;
+}
+
+function isActionTile(tile: EmptyStateTile): boolean {
+  return tile.onSelect !== undefined || tile.href !== undefined;
 }
 
 export interface EmptyStateProps {
@@ -25,7 +34,10 @@ export interface EmptyStateProps {
   title: string;
   /** One sentence: why it is empty and what happens next. */
   description: string;
-  /** The one obvious next step. Omit for roles that cannot act. */
+  /**
+   * The one obvious next step. Omit for roles that cannot act. When the tiles
+   * are actions they are the choices, so this becomes a ghost "other" way out.
+   */
   action?: EmptyStateAction;
   /** A docs link under the action. */
   secondary?: { label: string; href: string };
@@ -53,6 +65,8 @@ export function EmptyState({
 }: EmptyStateProps) {
   const titleId = useId();
   const hero = size === "hero";
+  const tileActions = tiles?.some(isActionTile) === true;
+  const actionVariant = tileActions ? "ghost" : "primary";
   return (
     <section
       aria-labelledby={titleId}
@@ -103,7 +117,7 @@ export function EmptyState({
       {action !== undefined && (
         <div className="mt-5">
           {action.href !== undefined ? (
-            <Button asChild variant="primary" size={hero ? "lg" : "md"}>
+            <Button asChild variant={actionVariant} size={hero ? "lg" : "md"}>
               <a href={action.href}>
                 {action.icon !== undefined && <Icon name={action.icon} size={14} />}
                 {action.label}
@@ -111,7 +125,7 @@ export function EmptyState({
             </Button>
           ) : (
             <Button
-              variant="primary"
+              variant={actionVariant}
               size={hero ? "lg" : "md"}
               onClick={action.onClick}
               {...(action.icon === undefined ? {} : { leadingIcon: action.icon })}
@@ -156,6 +170,10 @@ function EmptyTile({ tile }: { tile: EmptyStateTile }) {
       </span>
     </>
   );
+  if (!isActionTile(tile)) {
+    // Information, not a target: no frame, no hover, not in the tab order.
+    return <div className="flex w-full items-start gap-3 px-1 py-2 text-left">{body}</div>;
+  }
   const classes = cn(
     "border-border bg-surface rounded-card flex w-full items-start gap-3 border p-3 text-left",
     "transition-[background-color,border-color] duration-[var(--dur-fast)] ease-[var(--ease-out)]",
@@ -169,7 +187,7 @@ function EmptyTile({ tile }: { tile: EmptyStateTile }) {
     );
   }
   return (
-    <button type="button" onClick={tile.onClick} className={classes}>
+    <button type="button" onClick={tile.onSelect} className={classes}>
       {body}
     </button>
   );

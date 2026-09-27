@@ -12,6 +12,34 @@ export interface SliderMark {
   label: string;
 }
 
+export interface SliderLimit {
+  /** The most this server can give, in the slider's unit. */
+  value: number;
+  /** The server's name, shown as an identifier: "oracle-1". */
+  server: string;
+}
+
+/** The sentence under the slider, in parts so the server name renders as an identifier. */
+export function limitMessage(
+  limit: SliderLimit,
+  value: number,
+  format: (value: number) => string,
+): { tone: "ok" | "at" | "over"; server: string; text: string } {
+  const free = format(limit.value);
+  if (value > limit.value) {
+    return {
+      tone: "over",
+      server: limit.server,
+      text: ` only has ${free} free. Lower it or move to a bigger server.`,
+    };
+  }
+  return {
+    tone: value === limit.value ? "at" : "ok",
+    server: limit.server,
+    text: ` has ${free} free.`,
+  };
+}
+
 export interface SliderWithInputProps {
   value: number;
   onValueChange: (value: number) => void;
@@ -25,8 +53,13 @@ export interface SliderWithInputProps {
   /** Visible label and accessible name for both the slider and the number. */
   label: string;
   marks?: SliderMark[];
-  /** Capacity: beyond this the band turns warning and the value turns invalid. */
-  limit?: { value: number; label: string };
+  /**
+   * Capacity on a server: beyond `value` the band turns warning and the value
+   * turns invalid. The message is built from these parts ("oracle-1 only has
+   * 18 GB free. …"), never by splicing a caller's sentence.
+   */
+  limit?: SliderLimit;
+  /** Formats a value with its unit for people: 20480 → "20 GB". Defaults to "4 vCPU". */
   formatValue?: (value: number) => string;
   disabled?: boolean;
   className?: string;
@@ -53,7 +86,7 @@ export function SliderWithInput({
   label,
   marks = [],
   limit,
-  formatValue = (v) => String(v),
+  formatValue: formatValueProp,
   disabled = false,
   className,
 }: SliderWithInputProps) {
@@ -66,8 +99,9 @@ export function SliderWithInput({
     setDraft(String(value));
   }
 
-  const over = limit !== undefined && value > limit.value;
-  const atLimit = limit?.value === value;
+  const formatValue = formatValueProp ?? ((v: number) => `${String(v)} ${unit}`);
+  const message = limit === undefined ? undefined : limitMessage(limit, value, formatValue);
+  const over = message?.tone === "over";
   const pct = (v: number) => ((v - min) / (max - min)) * 100;
   const messageId = `${id}-message`;
 
@@ -87,6 +121,9 @@ export function SliderWithInput({
           {label}
         </label>
         <span className="text-meta">
+          <span className="text-text tabular font-mono">{formatValue(value)}</span>
+          <span aria-hidden="true"> · </span>
+          <span className="sr-only">, range </span>
           {formatValue(min)} – {formatValue(max)}
         </span>
       </div>
@@ -121,7 +158,9 @@ export function SliderWithInput({
             </RadixSlider.Track>
             <RadixSlider.Thumb
               aria-label={label}
-              aria-valuetext={`${formatValue(value)} ${unitName}`}
+              aria-valuetext={
+                formatValueProp === undefined ? `${String(value)} ${unitName}` : formatValue(value)
+              }
               aria-describedby={limit === undefined ? undefined : messageId}
               className="group/thumb flex size-6 items-center justify-center outline-none"
             >
@@ -175,22 +214,28 @@ export function SliderWithInput({
               monospace: true,
               className: "tabular text-right",
             })}
-            style={{ paddingRight: 16 + unit.length * 7 }}
+            // Room for the unit: its length in the input's mono ch plus the 16 px gutter.
+            style={{ paddingRight: `calc(${String(unit.length)}ch + var(--space-4))` }}
           />
-          <span className="text-meta pointer-events-none absolute top-1/2 right-[10px] -translate-y-1/2">
+          <span className="text-12 text-text-secondary pointer-events-none absolute top-1/2 right-[10px] -translate-y-1/2 font-mono">
             {unit}
           </span>
         </div>
       </div>
-      {limit !== undefined && (
+      {message !== undefined && (
         <p
           id={messageId}
           className={cn(
             "text-13",
-            over ? "text-danger-text" : atLimit ? "text-warning-text" : "text-text-secondary",
+            message.tone === "over"
+              ? "text-danger-text"
+              : message.tone === "at"
+                ? "text-warning-text"
+                : "text-text-secondary",
           )}
         >
-          {over ? `More than ${limit.label}. Lower it or move to a bigger server.` : limit.label}
+          <span className="font-mono">{message.server}</span>
+          {message.text}
         </p>
       )}
     </div>

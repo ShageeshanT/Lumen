@@ -239,6 +239,9 @@ export function CanvasFlow({
           gap={96}
           lineWidth={1}
           color="var(--color-grid-major)"
+          // Each Background paints the canvas color by default; the major grid
+          // sits on top, so an opaque fill here hid the 8 px grid entirely.
+          bgColor="transparent"
         />
       </ReactFlow>
     </section>

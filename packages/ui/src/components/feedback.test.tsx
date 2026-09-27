@@ -6,7 +6,7 @@ import { LUMEN_ERROR_CODES, makeError, type LumenError } from "@lumen/shared/err
 import { Alert } from "./alert";
 import { AvatarStack, avatarStackLabel } from "./avatar-stack";
 import { EmptyState } from "./empty-state";
-import { ErrorCard, supportReport } from "./error-card";
+import { ErrorCard, supportReport, withIdentifiers } from "./error-card";
 import { ProgressSteps, type ProgressStep } from "./progress-steps";
 import { activeToasts, Toast, Toaster, toast } from "./toast";
 import { TooltipProvider } from "./tooltip";
@@ -255,6 +255,45 @@ describe("EmptyState", () => {
     expect(onClick).toHaveBeenCalled();
     expect(screen.getByRole("link", { name: "How logging works" })).toBeInTheDocument();
   });
+
+  it("makes tiles real actions and demotes the separate action to ghost", () => {
+    const onSelect = vi.fn();
+    render(
+      <EmptyState
+        title="Create your first project"
+        description="A project holds your services."
+        tiles={[
+          { icon: "git-branch", title: "GitHub repo", onSelect },
+          { icon: "box", title: "Docker image", href: "#image" },
+        ]}
+        action={{ label: "Empty project", onClick: () => undefined }}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /GitHub repo/ }));
+    expect(onSelect).toHaveBeenCalled();
+    expect(screen.getByRole("link", { name: /Docker image/ })).toHaveAttribute("href", "#image");
+    expect(screen.getByRole("button", { name: "Empty project" }).className).toContain(
+      "text-text-secondary",
+    );
+  });
+
+  it("renders tiles without a handler as plain rows, keeping the primary", () => {
+    render(
+      <EmptyState
+        title="Connect your first server"
+        description="Paste one command into any Linux VM you own."
+        tiles={[
+          { icon: "server", title: "Oracle Cloud", description: "Always-free ARM" },
+          { icon: "server", title: "Hetzner" },
+        ]}
+        action={{ label: "Connect a server", onClick: () => undefined }}
+      />,
+    );
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(screen.queryByRole("link")).toBeNull();
+    expect(screen.getByText("Oracle Cloud")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Connect a server" }).className).toContain("hud");
+  });
 });
 
 describe("ErrorCard", () => {
@@ -267,9 +306,11 @@ describe("ErrorCard", () => {
         <ErrorCard error={error} onAction={onAction} url="https://lumen.test/p" />
       </TooltipProvider>,
     );
-    const card = screen.getByRole("region", { name: error.title });
-    expect(card).toHaveTextContent(error.explanation);
-    expect(card).toHaveTextContent(error.fix);
+    // On screen, quoted names lose their quotes and render as mono identifiers.
+    const unquote = (text: string) => text.replace(/'([A-Za-z0-9][\w.:/@-]*)'/g, "$1");
+    const card = screen.getByRole("region", { name: unquote(error.title) });
+    expect(card).toHaveTextContent(unquote(error.explanation));
+    expect(card).toHaveTextContent(unquote(error.fix));
     const { action } = error;
     if (action.kind === "button") {
       fireEvent.click(within(card).getByRole("button", { name: action.label }));
@@ -328,8 +369,36 @@ describe("ErrorCard", () => {
         <ErrorCard error={error} announce />
       </TooltipProvider>,
     );
-    expect(screen.getByRole("alert")).toHaveTextContent(error.title);
+    expect(screen.getByRole("alert")).toHaveTextContent("Server unknown isn't responding");
     expect(screen.getByDisplayValue("curl lumen | sh")).toBeInTheDocument();
+  });
+
+  it("renders quoted names as mono identifiers, leaving apostrophes alone", () => {
+    const { container } = render(<p>{withIdentifiers("Server 'oracle-1' isn't responding")}</p>);
+    expect(container).toHaveTextContent("Server oracle-1 isn't responding");
+    expect(container.querySelector(".font-mono")).toHaveTextContent("oracle-1");
+    expect(withIdentifiers("It isn't ready")).toBe("It isn't ready");
+  });
+
+  it("counts a rate-limited retry down before it can be pressed", () => {
+    vi.useFakeTimers();
+    try {
+      const onAction = vi.fn();
+      render(
+        <ErrorCard error={makeError("RATE_LIMITED", { retryAfterS: 3 })} onAction={onAction} />,
+      );
+      const button = screen.getByRole("button", { name: "Retry in 3s" });
+      expect(button).toBeDisabled();
+      act(() => {
+        vi.advanceTimersByTime(3_100);
+      });
+      const ready = screen.getByRole("button", { name: "Retry" });
+      expect(ready).toBeEnabled();
+      fireEvent.click(ready);
+      expect(onAction).toHaveBeenCalledWith("retry");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("puts title, fix and action in one row when compact", () => {
