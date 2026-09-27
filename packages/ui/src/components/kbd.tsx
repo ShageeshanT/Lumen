@@ -11,7 +11,8 @@ const SYMBOLS: Record<string, { mac: string; other: string; spoken: string }> = 
   mod: { mac: "⌘", other: "Ctrl", spoken: "Command" },
   shift: { mac: "⇧", other: "Shift", spoken: "Shift" },
   alt: { mac: "⌥", other: "Alt", spoken: "Option" },
-  enter: { mac: "⏎", other: "Enter", spoken: "Enter" },
+  // ⏎ is missing from Geist Mono and falls back to a system font; the word reads everywhere.
+  enter: { mac: "Enter", other: "Enter", spoken: "Enter" },
   esc: { mac: "Esc", other: "Esc", spoken: "Escape" },
 };
 

@@ -122,7 +122,11 @@ export function Field({
 
   return (
     <FieldContext.Provider value={state}>
-      <div className={cn("flex flex-col gap-[6px]", className)} data-field={controlId}>
+      <div
+        className={cn("flex flex-col gap-[6px]", className)}
+        data-field={controlId}
+        data-locked={locked || undefined}
+      >
         <div className={cn("flex items-center gap-2", hideLabel && "sr-only")}>
           <label htmlFor={controlId} className="text-label">
             {label}

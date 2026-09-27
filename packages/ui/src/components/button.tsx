@@ -26,7 +26,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary: [
-          "hud border-text text-text bg-text/[0.04]",
+          "hud border-text text-text bg-primary-bg",
           "[--hud-color:var(--color-text)] [--hud-size:6px] [--hud-offset:3px]",
           "enabled:is-hover:bg-accent-subtle enabled:is-hover:shadow-[0_0_0_1px_var(--color-text),var(--shadow-glow)]",
           "enabled:is-hover:[--hud-offset:5px]",
@@ -54,7 +54,8 @@ export const buttonVariants = cva(
         lg: "h-[36px] min-w-[36px] px-4",
       },
       fullWidth: {
-        true: "w-full",
+        // Full-width buttons are the phone pattern: 44 px touch height under 640 px.
+        true: "w-full max-sm:h-[44px]",
         false: "",
       },
     },

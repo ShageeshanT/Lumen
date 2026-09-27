@@ -1,6 +1,14 @@
 import { cn } from "../lib/cn";
 
 /**
+ * Phone hit targets: under 640 px, the buttons and links directly inside a
+ * dialog or sheet footer grow to 44 px tall (the touch size). Desktop sizes
+ * stay 28 / 32 / 36.
+ */
+export const TOUCH_FOOTER =
+  "max-sm:[&>a]:h-[44px] max-sm:[&>button]:h-[44px] max-sm:[&>button]:min-w-[44px]";
+
+/**
  * The shared look of every text-entry control (input, textarea, select and
  * combobox triggers). Focus shows an accent frame, a soft accent halo and
  * accent corner brackets; the global outline ring is replaced because a field
@@ -31,6 +39,9 @@ export function controlClasses({
     "data-[force~=focus]:outline-none data-[force~=focus]:border-accent data-[force~=focus]:shadow-[0_0_0_3px_var(--color-accent-subtle)]",
     "disabled:cursor-not-allowed disabled:opacity-50",
     "read-only:bg-bg read-only:text-text-secondary",
+    // Locked by config: a real value that can't be edited here. Secondary text
+    // at full strength, not the faded disabled look that reads as a placeholder.
+    "[[data-locked]_&]:bg-bg [[data-locked]_&]:text-text-secondary [[data-locked]_&]:disabled:opacity-100",
     className,
   );
 }

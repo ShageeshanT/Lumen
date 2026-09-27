@@ -64,6 +64,7 @@
   --color-grid-major: var(--color-grid-major);
   --color-glow-a: var(--color-glow-a);
   --color-glow-b: var(--color-glow-b);
+  --color-violet: var(--color-violet);
   --color-vignette: var(--color-vignette);
   --color-surface: var(--color-surface);
   --color-surface-raised: var(--color-surface-raised);
@@ -99,6 +100,7 @@
   --color-sleeping-text: var(--color-sleeping-text);
   --color-sleeping-subtle: var(--color-sleeping-subtle);
   --color-overlay: var(--color-overlay);
+  --color-primary-bg: var(--color-primary-bg);
   --color-terminal-bg: var(--color-terminal-bg);
 
   --spacing-*: initial;

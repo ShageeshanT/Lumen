@@ -148,6 +148,11 @@ export function Tabs({
       measure();
     });
     observer.observe(el);
+    // The row inside changes width when counts or labels change, without the
+    // scroller itself resizing; the edges must be re-measured then too.
+    if (el.firstElementChild !== null) {
+      observer.observe(el.firstElementChild);
+    }
     // Fonts arriving change tab widths.
     if ("fonts" in document) {
       void document.fonts.ready.then(() => {
@@ -177,12 +182,16 @@ export function Tabs({
     }
   };
 
-  const mask =
+  // 40 px: wide enough that the fade lands on a label, not only on tab padding,
+  // so a clipped row visibly says "more this way". Prefixed for WebKit.
+  const maskValue =
     edges.left || edges.right
-      ? `linear-gradient(to right, ${edges.left ? "transparent 0, black 24px" : "black 0"}, ${
-          edges.right ? "black calc(100% - 24px), transparent 100%" : "black 100%"
+      ? `linear-gradient(to right, ${edges.left ? "transparent 0, black 40px" : "black 0"}, ${
+          edges.right ? "black calc(100% - 40px), transparent 100%" : "black 100%"
         })`
       : undefined;
+  const mask =
+    maskValue === undefined ? undefined : { maskImage: maskValue, WebkitMaskImage: maskValue };
 
   const underline = indicator !== null && (
     <span
@@ -226,12 +235,7 @@ export function Tabs({
   if (linkMode) {
     return (
       <nav aria-label={ariaLabel} className={cn("min-w-0", className)}>
-        <div
-          ref={scroller}
-          className={rowClasses}
-          style={mask === undefined ? undefined : { maskImage: mask }}
-          onScroll={measure}
-        >
+        <div ref={scroller} className={rowClasses} style={mask} onScroll={measure}>
           <ul className="relative flex min-w-full" onKeyDown={onLinkKeyDown}>
             {items.map((item) => (
               <li key={item.value} className={cn("flex", fitted && "flex-1")}>
@@ -262,12 +266,7 @@ export function Tabs({
       activationMode="automatic"
       className={cn("flex min-w-0 flex-col", className)}
     >
-      <div
-        ref={scroller}
-        className={rowClasses}
-        style={mask === undefined ? undefined : { maskImage: mask }}
-        onScroll={measure}
-      >
+      <div ref={scroller} className={rowClasses} style={mask} onScroll={measure}>
         <Radix.List aria-label={ariaLabel} className="relative flex min-w-full">
           {items.map((item) => {
             const trigger = (

@@ -173,6 +173,7 @@ export function SidePanel({
         side="full"
         title={title}
         container={container}
+        {...(eyebrow === undefined ? {} : { eyebrow })}
         {...(tabs === undefined ? {} : { tabs })}
       >
         {children}

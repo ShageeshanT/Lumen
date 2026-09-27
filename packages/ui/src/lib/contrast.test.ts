@@ -107,7 +107,15 @@ describe("the Direction D contrast table (docs/UI_DECISIONS.md)", () => {
   it("holds every non-text status color to 3:1 on every surface in both themes", () => {
     const surfaces = ["bg", "surface", "surface-raised", "surface-hover"];
     for (const theme of [dark, light]) {
-      for (const token of ["accent", "success", "warning", "danger", "info", "sleeping"]) {
+      for (const token of [
+        "accent",
+        "success",
+        "warning",
+        "danger",
+        "info",
+        "sleeping",
+        "violet",
+      ]) {
         for (const bg of surfaces) {
           expect(
             contrast(theme[token] ?? "", theme[bg] ?? ""),
