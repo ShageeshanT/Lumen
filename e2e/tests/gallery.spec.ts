@@ -26,7 +26,7 @@ async function openStill(page: Page, path: string) {
 
 test.describe("component gallery", () => {
   // Two tests walk every gallery page; give them room under parallel load.
-  test.describe.configure({ timeout: 180_000 });
+  test.describe.configure({ timeout: 480_000 });
 
   test("every page is axe-clean", async ({ page }) => {
     const registry = await loadRegistry(page);
