@@ -1,0 +1,9 @@
+# 2026-09-27T06:10:55Z start
+pid=2060 ticks=1640 starttime=721976 hz=100 uptime=10692.37 nproc=8
+rss_kb=16028 MemoryCurrent=8687616
+goroutines=13 agent_rss=16412672 queue=0 reconnects=7 sample_ts=2026-09-27T06:10:56.277Z
+# 2026-09-27T06:15:58Z after 300s
+pid=2060 ticks=1698 starttime=721976 hz=100 uptime=10996.98 nproc=8
+rss_kb=15844 MemoryCurrent=8695808
+goroutines=13 agent_rss=16224256 queue=0 reconnects=7 sample_ts=2026-09-27T06:15:54.581Z
+agent CPU over the window: 0.58 s = 0.193 % of one core

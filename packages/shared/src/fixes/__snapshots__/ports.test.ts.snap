@@ -1,0 +1,34 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`fix card keys > has every provider × layer key for PORT_BLOCKED and MESH_UNREACHABLE 1`] = `
+[
+  "MESH_UNREACHABLE.aws.cloud",
+  "MESH_UNREACHABLE.aws.os",
+  "MESH_UNREACHABLE.azure.cloud",
+  "MESH_UNREACHABLE.azure.os",
+  "MESH_UNREACHABLE.digitalocean.cloud",
+  "MESH_UNREACHABLE.digitalocean.os",
+  "MESH_UNREACHABLE.gcp.cloud",
+  "MESH_UNREACHABLE.gcp.os",
+  "MESH_UNREACHABLE.hetzner.cloud",
+  "MESH_UNREACHABLE.hetzner.os",
+  "MESH_UNREACHABLE.oracle.cloud",
+  "MESH_UNREACHABLE.oracle.os",
+  "MESH_UNREACHABLE.other.cloud",
+  "MESH_UNREACHABLE.other.os",
+  "PORT_BLOCKED.aws.cloud",
+  "PORT_BLOCKED.aws.os",
+  "PORT_BLOCKED.azure.cloud",
+  "PORT_BLOCKED.azure.os",
+  "PORT_BLOCKED.digitalocean.cloud",
+  "PORT_BLOCKED.digitalocean.os",
+  "PORT_BLOCKED.gcp.cloud",
+  "PORT_BLOCKED.gcp.os",
+  "PORT_BLOCKED.hetzner.cloud",
+  "PORT_BLOCKED.hetzner.os",
+  "PORT_BLOCKED.oracle.cloud",
+  "PORT_BLOCKED.oracle.os",
+  "PORT_BLOCKED.other.cloud",
+  "PORT_BLOCKED.other.os",
+]
+`;

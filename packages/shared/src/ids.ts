@@ -17,6 +17,9 @@ export const ID_PREFIXES = [
   "dom", // domain
   "tpl", // template
   "tok", // API token
+  "jtk", // server join token
+  "ntf", // in-app notification
+  "aud", // audit log entry
   "req", // request (tracing only, never stored)
 ] as const;
 

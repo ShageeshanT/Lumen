@@ -1,0 +1,19 @@
+﻿# Go tests on Ubuntu 24.04.4 LTS x86_64, kernel 6.6.87.2-microsoft-standard-WSL2
+apps/agent/cmd/lumen-agent               rc=0 pass=7 skip=0 fail=0
+apps/agent/internal/caddy                rc=0 pass=5 skip=0 fail=0
+apps/agent/internal/conn                 rc=0 pass=5 skip=0 fail=0
+apps/agent/internal/docker               rc=0 pass=2 skip=0 fail=0
+apps/agent/internal/heartbeat            rc=0 pass=1 skip=0 fail=0
+apps/agent/internal/hostinfo             rc=0 pass=1 skip=0 fail=0
+apps/agent/internal/httpx                rc=0 pass=3 skip=0 fail=0
+apps/agent/internal/join                 rc=0 pass=3 skip=0 fail=0
+apps/agent/internal/logs                 rc=0 pass=2 skip=0 fail=0
+apps/agent/internal/metrics              rc=0 pass=6 skip=0 fail=0
+apps/agent/internal/minisign             rc=0 pass=3 skip=0 fail=0
+apps/agent/internal/opid                 rc=0 pass=2 skip=0 fail=0
+apps/agent/internal/portcheck            rc=0 pass=5 skip=0 fail=0
+apps/agent/internal/provider             rc=0 pass=9 skip=0 fail=0
+apps/agent/internal/state                rc=0 pass=3 skip=0 fail=0
+apps/agent/internal/update               rc=0 pass=6 skip=0 fail=0
+packages/protocol                        rc=0 pass=7 skip=0 fail=0
+TOTAL passed=70 failed=0

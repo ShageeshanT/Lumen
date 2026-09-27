@@ -25,6 +25,14 @@ export const LUMEN_ERROR_CODES = [
   "VOLUME_FULL",
   "BACKUP_FAILED",
   "MESH_UNREACHABLE",
+  // Agent and servers (PHASE-02)
+  "CLOCK_SKEW",
+  "AGENT_TIMEOUT",
+  "JOIN_TOKEN_INVALID",
+  "SIGNATURE_INVALID",
+  "UPDATE_VERIFY_FAILED",
+  "UPDATE_ROLLED_BACK",
+  "PROTOCOL_UNSUPPORTED",
   // Infrastructure
   "VALIDATION_FAILED",
   "NOT_FOUND",
@@ -56,7 +64,8 @@ export type ErrorActionId =
   | "increase_volume_limit"
   | "test_backup_destination"
   | "retry"
-  | "sign_in";
+  | "sign_in"
+  | "create_join_token";
 
 export type ErrorAction =
   | { kind: "none" }
@@ -93,6 +102,10 @@ export interface ErrorContext {
   repo?: string;
   volumeName?: string;
   freeDiskGb?: number;
+  /** How far the server clock is off, in minutes (CLOCK_SKEW). */
+  skewMinutes?: number;
+  /** Agent version involved in an update (UPDATE_*). */
+  version?: string;
   resource?: string;
   roleNeeded?: string;
   retryAfterS?: number;

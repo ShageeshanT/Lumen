@@ -1,0 +1,20 @@
+05:40:40.421  agent before: "0.2.0"; lumen-agent 0.2.0 (8ac7697, 2026-09-27T05:40:04Z, linux/amd64, protocol 1)
+05:40:40.756  proxy container before: abd3576aff219a7319a14a1f732dfa324b6da1efc458b67363c3087303fd1be0 started 2026-09
+05:40:40.789  POST /v1/servers/srv_01m3gk61g2marse60176fwxf9t/agent-update {"version":"0.2.1"}
+{"at":"2026-09-27T05:40:41.244Z","error":null,"op_id":"01a0e161-3c9c-7ff4-b467-312368c5af29","status":"sent","version":"0.2.1"}
+HTTP 202 in 0.143908s
+
+05:40:45.855  agent_update: {"at":"2026-09-27T05:40:45.525Z","error":null,"op_id":"01a0e161-3c9c-7ff4-b467-312368c5af29","status":"succeeded","version":"0.2.1"}
+05:40:49.509  agent after: "0.2.1"; lumen-agent 0.2.1 (8ac7697, 2026-09-27T05:40:08Z, linux/amd64, protocol 1)
+05:40:49.534  binaries on the host:
+    -rwxr-xr-x 1 root root 9121954 Sep 27 05:40 /usr/local/bin/lumen-agent
+    -rwxr-xr-x 1 root root 9121954 Sep 27 05:40 /usr/local/bin/lumen-agent.prev
+05:40:50.208  proxy container after: abd3576aff219a7319a14a1f732dfa324b6da1efc458b67363c3087303fd1be0 started 2026-09
+05:40:50.240  agent log (update lines):
+    lumen-agent: unknown command "update-guard"
+    {"ts":"2026-09-27T05:40:30.009120937Z","level":"info","msg":"agent started","service":"lumen-agent","component":"agent","version":"0.2.0","server_id":"srv_01m3gk61g2marse60176fwxf9t","provider":"other","startup_ms":37}
+    {"ts":"2026-09-27T05:40:41.25338333Z","level":"info","msg":"updating the agent","service":"lumen-agent","component":"agent","op_id":"01a0e161-3c9c-7ff4-b467-312368c5af29","to":"0.2.1"}
+    {"ts":"2026-09-27T05:40:41.71845864Z","level":"info","msg":"the new agent is in place; restarting into it","service":"lumen-agent","component":"update","from":"0.2.0","to":"0.2.1","op_id":"01a0e161-3c9c-7ff4-b467-312368c5af29"}
+    {"ts":"2026-09-27T05:40:42.219569521Z","level":"info","msg":"restarting into the new agent version","service":"lumen-agent"}
+    {"ts":"2026-09-27T05:40:44.509795075Z","level":"info","msg":"agent started","service":"lumen-agent","component":"agent","version":"0.2.1","server_id":"srv_01m3gk61g2marse60176fwxf9t","provider":"other","startup_ms":96}
+    {"ts":"2026-09-27T05:40:45.511828943Z","level":"info","msg":"the new agent is healthy","service":"lumen-agent","component":"agent","version":"0.2.1"}

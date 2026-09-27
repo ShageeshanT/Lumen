@@ -1,0 +1,50 @@
+# host: lumen-p2-host4 (Debian GNU/Linux 12 (bookworm) x86_64)
+# command: curl -fsSL --cacert /root/lumen-test-ca.pem https://lumen-p2-cp:4204/install/agent.sh | sudo sh -s -- --control-plane https://lumen-p2-cp:4204 --ca-file /root/lumen-test-ca.pem 
+# started: 2026-09-27T08:29:47Z
+08:29:47  
+08:29:47  Lumen agent installer · agent 0.2.0 · https://lumen-p2-cp:4204
+08:29:47    Log: /var/log/lumen-agent-install.log
+08:29:47  
+08:29:47  [1/8] Checking your server
+08:29:47    ✔ Debian GNU/Linux 12 (bookworm) is supported
+08:29:47    ✔ amd64, 7.6 GB memory, 931 GB free disk
+08:29:47    ✔ curl, tar, openssl and CA certificates are installed (already done)
+08:29:47    ✔ The clock is synced
+08:29:47    ✔ Docker 29.8.1 found
+08:29:47  
+08:29:47  [2/8] Docker
+08:29:47    ✔ Docker 29.8.1 is running (already done)
+08:29:47  
+08:29:47  [3/8] Firewall
+08:29:47    ✔ Ports 80, 443 and 51820/udp are open in the OS firewall (already done)
+08:29:47    ✔ No cloud provider detected (bare metal or another host)
+08:29:48  
+08:29:48    ┃ Open ports 80 and 443 in your provider's firewall too
+08:29:48    ┃ Open ports 80 and 443 in your provider's firewall (about 3 min)
+08:29:48    ┃ 
+08:29:48    ┃ 1. Open your provider's dashboard and find the firewall, security group or network rules for this server.
+08:29:48    ┃ 2. Add inbound rules that allow TCP ports 80 and 443 from anywhere: 0.0.0.0/0 for IPv4 and ::/0 for IPv6.
+08:29:48    ┃ 3. Save the rules and wait a minute for them to apply.
+08:29:48  
+08:29:48  [4/8] Downloading the agent
+08:29:48    ✔ Lumen agent 0.2.0 (amd64) is installed and matches the release (already done)
+08:29:48  
+08:29:48  [5/8] Installing the agent
+08:29:48    ✔ Agent files and settings are in place (already done)
+08:29:48  
+08:29:48  [6/8] Joining Lumen
+08:29:48    ✔ Already joined as debian12-amd64 (srv_01m3gzc1jgaehn9c9py0wmccz8) (already done)
+08:29:48  
+08:29:48  [7/8] Starting the agent service
+08:29:48    ✔ The lumen-agent service is enabled and running (already done)
+08:29:48  
+08:29:48  [8/8] Waiting for the server to come online
+08:29:48    ✔ Connected
+08:29:48    ✔ Docker ready
+08:29:48    ✔ Proxy running
+08:29:48  
+08:29:48    This server is online. Go back to your browser.
+08:29:48    Finished in 1s.
+# finished: 2026-09-27T08:29:48Z
+# exit status: 0
+# paste-to-online: 1 s

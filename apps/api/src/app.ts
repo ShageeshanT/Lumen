@@ -6,11 +6,17 @@ import type pg from "pg";
 import { makeError } from "@lumen/shared";
 
 import type { Config } from "./config";
+import type { ControlPlane } from "./context";
+import { clientIp } from "./lib/client-ip";
 import type { Logger } from "./logger";
 import { errorHandler, notFoundHandler, type ErrorBody } from "./middleware/error";
 import { requestId, type RequestIdVariables } from "./middleware/request-id";
 import { registerOpenApi } from "./openapi";
+import { agentJoinRoutes } from "./routes/agent/join";
 import { healthRoutes } from "./routes/health";
+import { installRoutes } from "./routes/install/agent-script";
+import { serverRoutes } from "./routes/servers/index";
+import type { Prober } from "./workers/port-check";
 
 export interface AppEnv {
   Variables: RequestIdVariables;
@@ -23,6 +29,10 @@ export interface AppDeps {
   version: string;
   startedAt?: number;
   dbTimeoutMs?: number;
+  /** Server routes, the agent join endpoint and install routes need the control plane. */
+  controlPlane?: ControlPlane;
+  /** Replaces the network prober in port-check tests. */
+  prober?: Prober;
 }
 
 /** Builds the API without listening, so tests can call `app.request()`. */
@@ -70,6 +80,20 @@ export function createApp(deps: AppDeps): OpenAPIHono<AppEnv> {
     ...(deps.dbTimeoutMs === undefined ? {} : { dbTimeoutMs: deps.dbTimeoutMs }),
   };
   app.route("/", healthRoutes(healthDeps));
+  if (deps.controlPlane !== undefined) {
+    const cp = deps.controlPlane;
+    app.route("/", agentJoinRoutes(cp));
+    app.route("/", serverRoutes(cp, deps.prober === undefined ? {} : { prober: deps.prober }));
+    app.route("/", installRoutes(cp));
+    // Gateway metrics for loopback scrapers only (PHASE-02 §5).
+    app.get("/internal/metrics", (c) => {
+      const addr = clientIp(c, false);
+      if (addr !== "127.0.0.1" && addr !== "::1") {
+        return notFoundHandler(c);
+      }
+      return c.text(cp.metrics.render(), 200, { "content-type": "text/plain; version=0.0.4" });
+    });
+  }
   registerOpenApi(app, deps.version);
 
   app.notFound(notFoundHandler);

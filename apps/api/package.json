@@ -12,19 +12,24 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "catalog:",
     "@hono/node-server": "catalog:",
     "@hono/zod-openapi": "catalog:",
     "@lumen/db": "workspace:*",
+    "@lumen/protocol": "workspace:*",
     "@lumen/shared": "workspace:*",
     "@scalar/hono-api-reference": "catalog:",
+    "drizzle-orm": "catalog:",
     "hono": "catalog:",
     "pg": "catalog:",
     "pino": "catalog:",
+    "ws": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
+    "@types/ws": "catalog:",
     "tsup": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

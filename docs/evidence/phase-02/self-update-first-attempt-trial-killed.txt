@@ -1,0 +1,11 @@
+05:14:53.752  agent before: "0.2.0"; lumen-agent 0.2.0 (f33602f, 2026-09-27T04:45:03Z, linux/amd64, protocol 1)
+05:14:56.411  proxy container before: abd3576aff219a7319a14a1f732dfa324b6da1efc458b67363c3087303fd1be0 started 2026-09
+05:14:56.458  POST /v1/servers/srv_01m3gk61g2marse60176fwxf9t/agent-update {"version":"0.2.1"}
+{"at":"2026-09-27T05:14:57.832Z","error":null,"op_id":"01a0e149-afa8-7764-9f18-d1d7f7258814","status":"sent","version":"0.2.1"}
+HTTP 202 in 1.489139s
+
+05:22:45.100  agent after: "0.2.0"; lumen-agent 0.2.0 (f33602f, 2026-09-27T04:45:03Z, linux/amd64, protocol 1)
+05:22:45.129  binaries on the host:
+    -rwxr-xr-x 1 root root 9117858 Sep 27 04:50 /usr/local/bin/lumen-agent
+05:22:45.783  proxy container after: abd3576aff219a7319a14a1f732dfa324b6da1efc458b67363c3087303fd1be0 started 2026-09
+05:22:45.813  agent log (update lines):

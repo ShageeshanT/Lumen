@@ -21,7 +21,14 @@ export function registerOpenApi(app: OpenAPIHono<AppEnv>, version: string): void
         "The public API of a Lumen instance. The dashboard, CLI and MCP server all use it; anything they can do, you can do with a token.",
     },
     servers: [{ url: "/", description: "This instance" }],
-    tags: [{ name: "system", description: "Instance health and metadata" }],
+    tags: [
+      { name: "system", description: "Instance health and metadata" },
+      {
+        name: "servers",
+        description: "Servers running the Lumen agent: join, checklist, port checks, updates",
+      },
+      { name: "agent", description: "Endpoints the agent itself calls" },
+    ],
     // Every route requires a token unless it opts out with `security: []`.
     security: [{ bearerAuth: [] }],
   });

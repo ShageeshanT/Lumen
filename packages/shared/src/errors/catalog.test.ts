@@ -24,6 +24,7 @@ const ACTION_VERBS = [
   "Recheck",
   "Jump",
   "Sign",
+  "Create",
 ];
 
 // Contexts that exercise every interpolation branch.
@@ -41,6 +42,8 @@ const CONTEXTS: ErrorContext[] = [
     repo: "acme/api",
     volumeName: "data",
     freeDiskGb: 1,
+    skewMinutes: 7,
+    version: "0.2.1",
     resource: "project",
     roleNeeded: "member",
     retryAfterS: 30,
@@ -90,6 +93,22 @@ describe("error catalog", () => {
     expect(makeError("VARIABLE_REF_CYCLE", { cycle: ["api.A", "worker.B"] }).explanation).toContain(
       "api.A → worker.B → api.A",
     );
+  });
+
+  it("words the agent errors for the checklist", () => {
+    expect(makeError("CLOCK_SKEW", { skewMinutes: 7 }).title).toBe(
+      "Your server's clock is off by 7 minutes",
+    );
+    expect(makeError("CLOCK_SKEW", { skewMinutes: 1 }).title).toBe(
+      "Your server's clock is off by 1 minute",
+    );
+    expect(makeError("CLOCK_SKEW").action).toEqual({
+      kind: "command",
+      label: "Copy the command",
+      command: "sudo timedatectl set-ntp true",
+    });
+    expect(makeError("UPDATE_ROLLED_BACK", { version: "0.2.1" }).explanation).toContain("0.2.1");
+    expect(ERROR_STATUS.JOIN_TOKEN_INVALID).toBe(401);
   });
 
   it("keeps raw details and support ids only when given", () => {

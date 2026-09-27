@@ -1,0 +1,25 @@
+05:03:46.991  iptables INPUT on lumen-p2-host2 before:
+    -P INPUT ACCEPT
+    -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+    -A INPUT -p icmp -j ACCEPT
+    -A INPUT -i lo -j ACCEPT
+    -A INPUT -p udp -m udp --sport 123 -j ACCEPT
+    -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+    -A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+    -A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
+    -A INPUT -p udp -m state --state NEW -m udp --dport 51820 -j ACCEPT
+    -A INPUT -j REJECT --reject-with icmp-host-prohibited
+05:03:47.337  removing the ACCEPT rule for 443 (the REJECT at the end now applies to it)
+05:03:47.734  POST /v1/servers/srv_01m3gkv365qb5047xv4m99eh9c/port-check (before opening 443)
+{"op_id":"01a0e13f-7763-7822-80f0-3e3f4f2a05de","checked_at":"2026-09-27T05:03:48.092Z","ports":[{"port":80,"state":"reachable","latency_ms":2,"listener":"caddy","fix":null},{"port":443,"state":"listening_not_reachable","latency_ms":null,"listener":"caddy","fix":{"code":"PORT_BLOCKED","message":"Port 443 is blocked on your server","cards":[{"key":"PORT_BLOCKED.oracle.cloud","title":"Open port 443 in Oracle Cloud's security list","steps":[{"text":"In the Oracle Cloud console, open Networking, then Virtual cloud networks, and select the VCN your server uses.","link":"https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm"},{"text":"Open the subnet your server is in and select its security list, usually named Default Security List."},{"text":"Select Add Ingress Rules, set Source CIDR to 0.0.0.0/0 and set IP Protocol to TCP."},{"text":"Set Destination Port Range to 443, then select Add Ingress Rules."},{"text":"If your server's network card uses a network security group, add the same rules there too.","link":"https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm"}],"estimated_minutes":3},{"key":"PORT_BLOCKED.oracle.os","title":"Open port 443 in the server's iptables rules","steps":[{"text":"Check the rules first: Oracle's Ubuntu image ends the INPUT chain with a REJECT rule (reject-with icmp-host-prohibited) that blocks new ports.","command":"sudo iptables -L INPUT --line-numbers","link":"https://blogs.oracle.com/developers/enabling-network-traffic-to-ubuntu-images-in-oracle-cloud-infrastructure"},{"text":"Allow new connections on port 443 above the image's default reject rule.","command":"sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT"},{"text":"Save the rules so they survive a reboot.","command":"sudo netfilter-persistent save"},{"text":"On Oracle Linux images, which use firewalld instead, allow port 443 and reload it.","command":"sudo firewall-cmd --permanent --add-port=443/tcp && sudo firewall-cmd --reload"}],"estimated_minutes":2}]}}]}
+HTTP 200 in 0.082565s
+
+05:03:48.171  checklist and issues:
+{"checklist":{"connected":"ok","docker_ready":"ok","proxy_running":"ok","port_80":"ok","port_443":"failed","mesh":"n/a"},"issues":[{"code":"PORT_BLOCKED","title":"Port 443 is blocked on your server","explanation":"Traffic can't reach port 443. Most cloud providers block it in their firewall until you open it.","fix":"Open the port in your provider's firewall and, if needed, in the server's own firewall. The fix card has the exact steps for your provider."}]}
+05:03:48.574  re-adding the ACCEPT rule for 443 before the REJECT (the fix card's OS step)
+05:03:49.409  POST /v1/servers/srv_01m3gkv365qb5047xv4m99eh9c/port-check (after opening 443)
+{"op_id":"01a0e13f-7dbd-7513-b427-c2ccb88cff85","checked_at":"2026-09-27T05:03:49.721Z","ports":[{"port":80,"state":"reachable","latency_ms":5,"listener":"caddy","fix":null},{"port":443,"state":"reachable","latency_ms":6,"listener":"caddy","fix":null}]}
+HTTP 200 in 0.080945s
+
+05:03:49.791  checklist:
+{"connected":"ok","docker_ready":"ok","proxy_running":"ok","port_80":"ok","port_443":"ok","mesh":"n/a"}

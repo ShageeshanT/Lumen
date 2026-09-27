@@ -1,0 +1,24 @@
+# host: lumen-p2-host3 (Ubuntu 24.04.5 LTS aarch64)
+# command: curl -fsSL --cacert /root/lumen-test-ca.pem https://lumen-p2-cp:4204/install/agent.sh | sudo sh -s -- --token <redacted> --control-plane https://lumen-p2-cp:4204 --ca-file /root/lumen-test-ca.pem 
+# started: 2026-09-27T06:18:15Z
+06:18:18  
+06:18:18  Lumen agent installer · agent 0.2.0 · https://lumen-p2-cp:4204
+06:18:18    Log: /var/log/lumen-agent-install.log
+06:18:18  
+06:18:19  [1/8] Checking your server
+06:18:19    ✔ Ubuntu 24.04.5 LTS is supported
+06:18:20    ✔ arm64, 7.6 GB memory, 935 GB free disk
+06:18:20    ✔ curl, tar, openssl and CA certificates are installed (already done)
+06:18:21    ✔ The clock is synced
+06:18:22    Docker isn't installed yet. It will be installed next.
+06:18:22  
+06:18:22  [2/8] Docker
+06:18:22    Installing Docker (about a minute)…
+08:14:00  
+08:14:00    ✘ Docker was installed but isn't answering.
+08:14:00      Check it with: sudo systemctl status docker. Then run the install command again.
+08:14:00  
+08:14:00      Full install log: /var/log/lumen-agent-install.log
+# finished: 2026-09-27T08:14:00Z
+# exit status: 1
+# paste-to-online: 6945 s

@@ -180,6 +180,67 @@ export const catalog: Record<LumenErrorCode, CatalogEntry> = {
     action: { kind: "link", label: "Open the UDP 51820 guide", href: "/docs/networking/private" },
   }),
 
+  CLOCK_SKEW: (ctx) => ({
+    title:
+      ctx.skewMinutes === undefined
+        ? "Your server's clock is off"
+        : `Your server's clock is off by ${String(ctx.skewMinutes)} minute${ctx.skewMinutes === 1 ? "" : "s"}`,
+    explanation:
+      "Lumen rejects messages with timestamps more than five minutes off, so this server can't report in until its clock is right.",
+    fix: "Turn on automatic time sync (NTP) on the server. The command below does it on Ubuntu and Debian.",
+    action: {
+      kind: "command",
+      label: "Copy the command",
+      command: "sudo timedatectl set-ntp true",
+    },
+  }),
+
+  AGENT_TIMEOUT: (ctx) => ({
+    title: `Server '${ctx.serverName ?? "unknown"}' didn't answer in time`,
+    explanation:
+      "Lumen asked the agent on this server to do something and got no reply within a minute. The server may be busy or its connection unstable.",
+    fix: "Check that the server is online, then try again.",
+    action: { kind: "button", label: "Retry", actionId: "retry" },
+  }),
+
+  JOIN_TOKEN_INVALID: () => ({
+    title: "This join command has expired or was already used",
+    explanation:
+      "Each join command works once and only for an hour, so a copied command can't be reused to add a server later.",
+    fix: "Create a new join command in Servers → Add server and paste it into the server.",
+    action: { kind: "button", label: "Create a new join command", actionId: "create_join_token" },
+  }),
+
+  SIGNATURE_INVALID: () => ({
+    title: "A message from this server couldn't be verified",
+    explanation:
+      "Every message between Lumen and a server is signed. This one wasn't signed by the key the server registered with, so it was ignored.",
+    fix: "If this keeps happening, remove the server and add it again with a new join command.",
+    action: { kind: "button", label: "Open troubleshooting", actionId: "open_troubleshooting" },
+  }),
+
+  UPDATE_VERIFY_FAILED: (ctx) => ({
+    title: "The agent update didn't pass verification",
+    explanation: `The download${ctx.version === undefined ? "" : ` for version ${ctx.version}`} didn't match its checksum or signature, so the server kept its current agent.`,
+    fix: "Nothing on the server changed. Try the update again; if it fails again, check the release files on the control plane.",
+    action: { kind: "button", label: "Retry", actionId: "retry" },
+  }),
+
+  UPDATE_ROLLED_BACK: (ctx) => ({
+    title: "The agent update was rolled back",
+    explanation: `The new agent${ctx.version === undefined ? "" : ` (${ctx.version})`} didn't become healthy, so the server went back to the previous version. Your apps kept running.`,
+    fix: "Check the agent log on the server with: journalctl -u lumen-agent -o cat. Then try the update again.",
+    action: { kind: "button", label: "Retry", actionId: "retry" },
+  }),
+
+  PROTOCOL_UNSUPPORTED: (ctx) => ({
+    title: `The agent on '${ctx.serverName ?? "this server"}' is too old for this Lumen`,
+    explanation:
+      "The control plane talks to agents one protocol version back at most, and this agent is older than that, so it can't connect.",
+    fix: "Run the install command on the server again. It updates the agent and keeps the server's settings.",
+    action: { kind: "button", label: "Open troubleshooting", actionId: "open_troubleshooting" },
+  }),
+
   VALIDATION_FAILED: (ctx) => ({
     title: "Something in this request isn't valid",
     explanation: ctx.detail ?? "One or more fields have values Lumen can't accept.",

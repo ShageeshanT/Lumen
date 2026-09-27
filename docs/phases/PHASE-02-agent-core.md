@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Not started |
+| **Status** | Implemented on branch `worktree-agent-ac9248c5c2d5f9d24` (2026-09-27); verified on systemd container hosts, awaiting real cloud VMs and cross-model review — see `docs/_pending/phase-02.md` and `docs/evidence/phase-02/` |
 | **Owner model** | Fable 5.1 → reviewed by Opus 5.5 |
 | **Depends on** | Phase 00 (monorepo, buf codegen pipeline, api skeleton, Drizzle setup, `packages/shared/errors` skeleton) |
 | **Unblocks** | Phase 03 (deploy engine runs inside this agent), Phase 04 (agent gateway is generalised there), Phase 11 (installer reuses the same preflight/firewall/verify logic), Phase 12 (mesh peers ride on `DesiredState`) |
@@ -276,6 +276,20 @@ Beginners lose most of their time on firewalls and OS differences, not on code (
 - [ ] Status change → visible on `/v1/ws` in < 1 s.
 - [ ] `DISK_FULL` is raised when free space < 2 GB.
 - [ ] All new routes: Zod-validated, tested for 200/400/401, present in OpenAPI.
+
+> **Status 2026-09-27 (container hosts, not cloud VMs):** met with evidence —
+> port checks with Oracle fix cards (blocked 443 → card, reopened → reachable),
+> offline + notification row + `server.offline`, self-update good/bad with no
+> proxy restart, protocol round-trips, signed envelopes (bad signatures dropped
+> and counted), single-use hashed 1 h tokens, listening sockets, idle RSS
+> (amd64: 8.6 MB `MemoryCurrent` after 65 min), tampered binaries refused (bats
+> + Go tests), `/v1/ws` latency 56–125 ms, DISK_FULL under 2 GB, routes tested.
+> Partly met — one-command join works and re-runs safely on Ubuntu 24.04 amd64,
+> and Debian 12 amd64, but took 3.5–4.8 min here (Docker's apt install) and
+> wasn't run on Ubuntu 22.04 or arm64 (emulated arm64 failed under QEMU); `buf breaking` passes against this branch
+> but fails once against `main` by design. Needs real cloud VMs — public
+> reachability, provider detection, the Oracle security list, arm64 RSS.
+> Details: `docs/evidence/phase-02/README.md`, `docs/_pending/phase-02.md`.
 
 ## 7. Test plan
 - **Unit:** Go — backoff schedule, envelope signing/verification, sequence checks, `/proc` parsers with fixture files from real Ubuntu/Debian/RHEL hosts, port-listener detection, provider detection with a mocked metadata server, update verification. TS — Zod schemas, join-token hashing, offline sweep logic, fix-card completeness.
