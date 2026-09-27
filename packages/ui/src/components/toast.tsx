@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useIsPresent } from "motion/react";
 import {
   useCallback,
   useEffect,
@@ -234,6 +234,8 @@ function ToasterItem({
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const itemRef = useRef<HTMLLIElement>(null);
+  // While its exit plays, a closed toast is hidden from assistive tech and from tests.
+  const present = useIsPresent();
   const paused = hovered || focused || windowBlurred;
   const expire = useCallback(() => {
     toast.dismiss(record.id);
@@ -269,6 +271,8 @@ function ToasterItem({
       transition={reduced ? { duration: durations.exitFast / 1000 } : springToast}
       tabIndex={-1}
       data-toast-id={record.id}
+      data-state={present ? "open" : "closing"}
+      aria-hidden={present ? undefined : true}
       role={record.variant === "danger" ? "alert" : undefined}
       aria-label={record.title}
       onKeyDown={onKeyDown}
@@ -343,7 +347,9 @@ export function Toaster({ max = 3, className }: ToasterProps) {
       if (event.key !== "F8") {
         return;
       }
-      const items = listRef.current?.querySelectorAll<HTMLElement>("[data-toast-id]");
+      const items = listRef.current?.querySelectorAll<HTMLElement>(
+        '[data-toast-id][data-state="open"]',
+      );
       const newest = items?.[items.length - 1];
       if (newest !== undefined) {
         event.preventDefault();

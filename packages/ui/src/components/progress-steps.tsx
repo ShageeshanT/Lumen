@@ -184,7 +184,11 @@ export function ProgressSteps({
               <li
                 key={step.id}
                 aria-current={isCurrent && step.state === "active" ? "step" : undefined}
-                className={cn("relative flex gap-3", !isLast && "pb-4", dimmed && "opacity-50")}
+                className={cn(
+                  "relative flex gap-3",
+                  !isLast && "pb-4", // Only the shapes dim: the words keep 4.5:1.
+                  dimmed && "[&_[aria-hidden=true]]:opacity-50",
+                )}
               >
                 {!isLast && (
                   <span
@@ -208,7 +212,8 @@ export function ProgressSteps({
               className={cn(
                 "relative flex min-w-0 flex-col gap-2",
                 isLast ? "shrink-0" : "flex-1",
-                dimmed && "opacity-50",
+                // Only the shapes dim: the words keep 4.5:1.
+                dimmed && "[&_[aria-hidden=true]]:opacity-50",
               )}
             >
               <div className="flex items-center">

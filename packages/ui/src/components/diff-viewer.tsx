@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { Icon, type IconName } from "../icons/icon";
 import { cn } from "../lib/cn";
@@ -96,6 +96,20 @@ export function DiffViewer({
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set(defaultCollapsed));
   const baseId = useId();
   const groups = changes.filter((group) => group.items.length > 0);
+  // Three columns do not fit a phone: side-by-side reads as inline under 640 px.
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 639px)");
+    const update = () => {
+      setNarrow(query.matches);
+    };
+    update();
+    query.addEventListener("change", update);
+    return () => {
+      query.removeEventListener("change", update);
+    };
+  }, []);
+  const layout = narrow ? "inline" : mode;
 
   if (groups.length === 0) {
     return (
@@ -172,7 +186,7 @@ export function DiffViewer({
                 <thead className="sr-only">
                   <tr>
                     <th scope="col">Setting</th>
-                    {mode === "side-by-side" ? (
+                    {layout === "side-by-side" ? (
                       <>
                         <th scope="col">Before</th>
                         <th scope="col">After</th>
@@ -184,7 +198,7 @@ export function DiffViewer({
                 </thead>
                 <tbody>
                   {group.items.map((item) => (
-                    <DiffRow key={item.field} item={item} mode={mode} />
+                    <DiffRow key={item.field} item={item} mode={layout} />
                   ))}
                 </tbody>
               </table>

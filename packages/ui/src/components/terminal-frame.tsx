@@ -103,6 +103,7 @@ export function TerminalFrame({
           <div
             ref={screenRef}
             tabIndex={0}
+            role="region"
             aria-label="Terminal output"
             className="text-log min-h-0 flex-1 overflow-auto p-3 -outline-offset-2"
           >
