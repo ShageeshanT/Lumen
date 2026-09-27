@@ -6,6 +6,7 @@ import {
   Handle,
   Position,
   ReactFlow,
+  useStore,
   type Edge,
   type EdgeProps,
   type EdgeTypes,
@@ -13,6 +14,7 @@ import {
   type NodeProps,
   type NodeTypes,
 } from "@xyflow/react";
+import { useCallback, useRef } from "react";
 
 import { cn } from "../lib/cn";
 
@@ -128,6 +130,26 @@ const EDGE_TYPES: EdgeTypes = {
   reference: ReferenceFlowEdge,
 };
 
+/**
+ * The 8 px grid only above 60 % zoom: below that its lines crowd into a haze
+ * and repainting the dense pattern on every pan frame costs frames.
+ */
+function FineGrid() {
+  const visible = useStore((state) => state.transform[2] >= 0.6);
+  if (!visible) {
+    return null;
+  }
+  return (
+    <Background
+      id="fine"
+      variant={BackgroundVariant.Lines}
+      gap={8}
+      lineWidth={1}
+      color="var(--color-grid)"
+    />
+  );
+}
+
 export interface CanvasFlowProps {
   nodes: CanvasFlowNode[];
   edges: CanvasFlowEdge[];
@@ -135,10 +157,15 @@ export interface CanvasFlowProps {
   label?: string;
   /** Height in px; the width follows the container. */
   height?: number;
-  /** Fit every node into view on first render (default true). */
+  /** Centre the scene on first render (default true), at 100 % zoom. */
   fitView?: boolean;
   /** Allow panning and zooming (default true). Nodes are never draggable in Phase 1. */
   interactive?: boolean;
+  /**
+   * Mount only the nodes and edges in view (default true). Large canvases pan
+   * without mounting work; small ones may turn it off.
+   */
+  onlyRenderVisible?: boolean;
   className?: string;
 }
 
@@ -155,10 +182,20 @@ export function CanvasFlow({
   height = 480,
   fitView = true,
   interactive = true,
+  onlyRenderVisible = true,
   className,
 }: CanvasFlowProps) {
+  // Edge flow pauses while the viewport moves: repainting dozens of animated
+  // dashes on top of a moving layer is what cost frames when panning (see
+  // docs/evidence/phase-01/perf). Toggled on the DOM so no re-render happens.
+  const sectionRef = useRef<HTMLElement>(null);
+  const setMoving = useCallback((moving: boolean) => {
+    sectionRef.current?.toggleAttribute("data-moving", moving);
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       aria-label={label}
       className={cn("border-border rounded-card w-full overflow-hidden border", className)}
       style={{ height }}
@@ -171,7 +208,9 @@ export function CanvasFlow({
         nodeTypes={NODE_TYPES}
         edgeTypes={EDGE_TYPES}
         fitView={fitView}
-        fitViewOptions={{ padding: 0.12 }}
+        // The first view never shrinks below 100 %: every control keeps its 24 px target
+        // (WCAG 2.5.8) and text stays readable. Larger scenes are centred; pan to explore.
+        fitViewOptions={{ padding: 0.12, minZoom: 1, maxZoom: 1 }}
         minZoom={0.2}
         maxZoom={2}
         nodesDraggable={false}
@@ -184,16 +223,16 @@ export function CanvasFlow({
         zoomOnPinch={interactive}
         zoomOnDoubleClick={false}
         preventScrolling={interactive}
-        onlyRenderVisibleElements
+        onlyRenderVisibleElements={onlyRenderVisible}
         disableKeyboardA11y
+        onMoveStart={() => {
+          setMoving(true);
+        }}
+        onMoveEnd={() => {
+          setMoving(false);
+        }}
       >
-        <Background
-          id="fine"
-          variant={BackgroundVariant.Lines}
-          gap={8}
-          lineWidth={1}
-          color="var(--color-grid)"
-        />
+        <FineGrid />
         <Background
           id="major"
           variant={BackgroundVariant.Lines}

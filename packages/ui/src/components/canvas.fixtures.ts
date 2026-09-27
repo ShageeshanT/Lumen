@@ -12,6 +12,9 @@ const MIN = 60_000;
 
 const GB = 1024 ** 3;
 
+/** Statuses a service can have (online and offline belong to servers). */
+const SERVICE_STATUSES = STATUSES.filter((status) => status !== "online" && status !== "offline");
+
 export const SERVICES = {
   web: {
     id: "web",
@@ -178,7 +181,7 @@ export function hundredNodeScene(): { nodes: CanvasFlowNode[]; edges: CanvasFlow
     for (let col = 0; col < 10; col += 1) {
       const index = row * 10 + col;
       const kind = kinds[index % kinds.length] ?? "web";
-      const status: Status = STATUSES[index % STATUSES.length] ?? "active";
+      const status: Status = SERVICE_STATUSES[index % SERVICE_STATUSES.length] ?? "active";
       const id = `svc-${String(index)}`;
       const service: CanvasService = {
         id,

@@ -80,7 +80,7 @@ function CommandLine({ command }: { command: string }) {
   const { copied, copy } = useCopied();
   return (
     <div className="border-border bg-bg-canvas rounded-control flex min-h-8 items-start gap-2 border py-1 pr-1 pl-3">
-      <code className="text-12 text-text min-w-0 flex-1 overflow-x-auto py-[5px] font-mono whitespace-pre">
+      <code className="text-12 text-text min-w-0 flex-1 py-[5px] font-mono break-words whitespace-pre-wrap">
         <span aria-hidden="true" className="text-text-secondary select-none">
           ${" "}
         </span>
@@ -212,8 +212,11 @@ export function PortCheckCard({
           const panelId = `${id}-fix-${String(port.port)}`;
           const row = (
             <>
-              <span className="text-13 text-text w-[88px] shrink-0 font-mono">{name}</span>
-              <span className="text-body-secondary min-w-0 flex-1 truncate">{port.label}</span>
+              {/* Phones stack the label under the port so neither is cut. */}
+              <span className="flex min-w-0 flex-1 flex-col py-2 sm:flex-row sm:items-center sm:gap-3 sm:py-0">
+                <span className="text-13 text-text shrink-0 font-mono sm:w-[88px]">{name}</span>
+                <span className="text-body-secondary min-w-0 sm:truncate">{port.label}</span>
+              </span>
               <StatusCell status={port.status} />
             </>
           );
@@ -257,7 +260,7 @@ export function PortCheckCard({
                 </div>
               )}
               {port.note !== undefined && (
-                <p className="text-meta -mt-2 px-4 pb-2 pl-[116px]">{port.note}</p>
+                <p className="text-meta -mt-2 px-4 pb-2 sm:pl-[116px]">{port.note}</p>
               )}
               {expanded && (
                 <div id={panelId} className="flex flex-col gap-3 px-4 pb-4">

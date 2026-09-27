@@ -224,7 +224,7 @@ function Segments({ line, term }: { line: LogLine; term: string }) {
             ? segment.text
             : splitMatches(segment.text, term).map((part, partIndex) =>
                 part.match ? (
-                  <mark key={partIndex} className="bg-warning/30 rounded-kbd text-inherit">
+                  <mark key={partIndex} className="bg-warning/30 rounded-kbd text-text">
                     {part.text}
                   </mark>
                 ) : (
@@ -530,11 +530,17 @@ export function LogViewer({
     [active],
   );
 
+  // Stable callbacks: TanStack Virtual recomputes every item's offset when these
+  // change identity, which for 50,000 lines would happen on every scroll frame.
+  const estimateSize = useCallback(() => rowHeight, [rowHeight]);
+  const getItemKey = useCallback((index: number) => lines[index]?.id ?? index, [lines]);
+  const getScrollElement = useCallback(() => scrollRef.current, []);
+
   const virtualizer = useVirtualizer({
     count: lines.length,
-    getScrollElement: () => scrollRef.current,
-    estimateSize: () => rowHeight,
-    getItemKey: (index) => lines[index]?.id ?? index,
+    getScrollElement,
+    estimateSize,
+    getItemKey,
     overscan: 16,
     rangeExtractor,
     initialRect: { width: 960, height: fill ? 480 : height },
@@ -545,13 +551,11 @@ export function LogViewer({
     virtualizer.measure();
   }, [virtualizer, wrap, dense]);
 
-  const programmaticScroll = useRef(false);
   const scrollToBottom = useCallback(() => {
     const element = scrollRef.current;
     if (element === null) {
       return;
     }
-    programmaticScroll.current = true;
     element.scrollTop = element.scrollHeight;
   }, []);
 
@@ -567,7 +571,6 @@ export function LogViewer({
   useLayoutEffect(() => {
     const boundaryIndex = initialBoundary.current;
     if (!following && boundaryIndex !== undefined) {
-      programmaticScroll.current = true;
       virtualizer.scrollToIndex(boundaryIndex, { align: "center" });
     }
     // Only on mount: later boundary changes must not steal the reader's position.
@@ -641,14 +644,10 @@ export function LogViewer({
       return;
     }
     measureBelow();
-    if (programmaticScroll.current) {
-      programmaticScroll.current = false;
-      return;
-    }
     const fromBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
     if (following && fromBottom > rowHeight * 2) {
       pause();
-    } else if (!following && fromBottom < 2 && pausedAt !== undefined) {
+    } else if (!following && fromBottom < rowHeight / 2 && pausedAt !== undefined) {
       setPausedAt(undefined);
       setFollowing(true);
     }
@@ -661,9 +660,15 @@ export function LogViewer({
     }
   }, []);
 
+  // Read through a ref so the click handler keeps its identity while lines stream in;
+  // otherwise every memoized row would re-render on each appended line.
+  const linesRef = useRef(lines);
+  useLayoutEffect(() => {
+    linesRef.current = lines;
+  }, [lines]);
   const onRowClick = useCallback(
     (index: number) => {
-      const line = lines[index];
+      const line = linesRef.current[index];
       if (line === undefined) {
         return;
       }
@@ -679,7 +684,7 @@ export function LogViewer({
         onLineClick(line);
       }
     },
-    [copyLine, lines, onLineClick],
+    [copyLine, onLineClick],
   );
 
   const toggle = useCallback((id: string) => {
@@ -779,7 +784,6 @@ export function LogViewer({
     const index = matches.lineIndexes[next];
     if (index !== undefined) {
       pause();
-      programmaticScroll.current = true;
       virtualizer.scrollToIndex(index, { align: "center" });
     }
   };

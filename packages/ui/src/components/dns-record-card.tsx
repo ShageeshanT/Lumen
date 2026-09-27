@@ -126,7 +126,7 @@ export function DnsRecordCard({
         </div>
       </div>
       <div className="flex min-h-[28px] flex-wrap items-center gap-x-3 gap-y-1">
-        <span className="flex min-w-0 flex-1 items-center gap-2">
+        <span className="flex min-w-0 flex-1 basis-full items-center gap-2 sm:basis-0">
           <Marker status={check.status} />
           <span
             className={cn("text-body-secondary min-w-0", TONE[check.status])}

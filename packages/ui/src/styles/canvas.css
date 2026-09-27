@@ -47,6 +47,11 @@
     color: var(--color-text-secondary);
   }
 
+  /* Flowing edge dashes hold still while the canvas pans or zooms. */
+  [data-moving] .edge-flow {
+    animation-play-state: paused;
+  }
+
   /* Group regions sit under services; React Flow's wrapper adds no chrome. */
   .lumen-canvas .react-flow__node {
     cursor: default;

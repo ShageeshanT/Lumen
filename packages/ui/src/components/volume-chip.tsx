@@ -130,7 +130,13 @@ export function VolumeChip({
         className={cn("text-12 min-w-0 flex-1 truncate font-mono", !attached && "text-text")}
         title={attached ? volume.mountPath : volume.name}
       >
-        {attached ? truncateMiddle(volume.mountPath, 10, 9) : volume.name}
+        {attached
+          ? truncateMiddle(
+              volume.mountPath,
+              tone === undefined ? 10 : 6,
+              tone === undefined ? 9 : 7,
+            )
+          : volume.name}
       </span>
       {usage !== "" && <span className="text-meta shrink-0">{usage}</span>}
       {tone !== undefined && (

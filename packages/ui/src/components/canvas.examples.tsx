@@ -17,7 +17,11 @@ function Nodes({
   children: React.ReactNode;
   withVolume?: boolean;
 }) {
-  return <div className={`flex flex-wrap gap-6 p-2 ${withVolume ? "pb-12" : ""}`}>{children}</div>;
+  return (
+    <div className={`flex flex-wrap gap-6 p-2 ${withVolume ? "gap-y-16 pb-12" : ""}`}>
+      {children}
+    </div>
+  );
 }
 
 function Caption({ children }: { children: React.ReactNode }) {
