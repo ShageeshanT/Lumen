@@ -547,6 +547,10 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 EnvironmentFile=/etc/lumen/agent.env
+# Runs the previous agent binary (kept after a self-update) as a guard: if a
+# new binary keeps failing to start, it restores the previous one. "-" because
+# there is no previous binary until the first update.
+ExecStartPre=-/usr/local/bin/lumen-agent.prev update-guard
 ExecStart=/usr/local/bin/lumen-agent run
 Restart=always
 RestartSec=2

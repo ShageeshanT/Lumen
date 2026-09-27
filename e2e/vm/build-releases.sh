@@ -3,7 +3,9 @@
 #   <out>/keys/release.{key,pub}          test release key (generated once)
 #   <out>/releases/<v>/lumen-agent-linux-<arch>{,.sha256,.minisig}
 # Versions: 0.2.0 and 0.2.1 are real agents; 0.2.2 is a broken build that
-# exits immediately (internal/update/testdata/badagent) for the rollback test.
+# exits immediately (internal/update/testdata/badagent, caught by the trial run);
+# 0.2.3 passes the trial but crashes on start (testdata/crashafter, caught by
+# the ExecStartPre update guard).
 # Usage: e2e/vm/build-releases.sh <out-dir> [arches]
 set -euo pipefail
 
@@ -26,13 +28,15 @@ for v in 0.2.0 0.2.1; do
   done
 done
 
-mkdir -p "$OUT/releases/0.2.2"
+mkdir -p "$OUT/releases/0.2.2" "$OUT/releases/0.2.3"
 for a in $ARCHES; do
   (cd "$ROOT/apps/agent" && CGO_ENABLED=0 GOOS=linux GOARCH="$a" go build -trimpath \
     -o "$OUT/releases/0.2.2/lumen-agent-linux-$a" ./internal/update/testdata/badagent)
+  (cd "$ROOT/apps/agent" && CGO_ENABLED=0 GOOS=linux GOARCH="$a" go build -trimpath \
+    -o "$OUT/releases/0.2.3/lumen-agent-linux-$a" ./internal/update/testdata/crashafter)
 done
 
-for v in 0.2.0 0.2.1 0.2.2; do
+for v in 0.2.0 0.2.1 0.2.2 0.2.3; do
   for a in $ARCHES; do
     (cd "$ROOT/apps/agent" && go run ./cmd/lumen-release sign -key "$OUT/keys/release.key" "$OUT/releases/$v/lumen-agent-linux-$a")
   done

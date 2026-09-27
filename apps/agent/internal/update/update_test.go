@@ -136,6 +136,45 @@ func TestCrashLoopRollsBack(t *testing.T) {
 	}
 }
 
+func TestGuardRestoresPreviousBinaryAfterRepeatedFailedStarts(t *testing.T) {
+	t.Parallel()
+	// The guard runs from the previous binary, so its own version is the old one.
+	m, dir := newManager(t, "0.0.1")
+	if err := os.WriteFile(m.BinPath, []byte("crashing-new"), 0o700); err != nil { //nolint:gosec // test binary
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "lumen-agent.prev"), []byte("old-good"), 0o700); err != nil { //nolint:gosec // test binary
+		t.Fatal(err)
+	}
+	if rolled, err := m.Guard(); rolled || err != nil {
+		t.Fatalf("no update in progress: %v %v", rolled, err)
+	}
+	if _, err := m.Store.UpdateState(func(s *state.State) {
+		s.Update = &state.UpdateRecord{OpID: "op", From: "0.0.1", To: "0.0.3", Phase: "pending"}
+	}); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < GuardMaxStarts; i++ {
+		if rolled, err := m.Guard(); rolled || err != nil {
+			t.Fatalf("start %d: %v %v", i, rolled, err)
+		}
+	}
+	rolled, err := m.Guard()
+	if !rolled || err != nil {
+		t.Fatalf("start %d must roll back: %v", GuardMaxStarts+1, err)
+	}
+	if b, _ := os.ReadFile(m.BinPath); string(b) != "old-good" {
+		t.Fatalf("binary %q", b)
+	}
+	if b, _ := os.ReadFile(m.BinPath + ".failed"); string(b) != "crashing-new" {
+		t.Fatalf("failed binary %q", b)
+	}
+	r := m.PendingResult()
+	if r == nil || r.Success || r.RunningVersion != "0.0.1" || r.OpID != "op" {
+		t.Fatalf("result %+v", r)
+	}
+}
+
 func TestApplyRefusesTamperedAndSameVersion(t *testing.T) {
 	t.Parallel()
 	sk, _ := minisign.GenerateKey()

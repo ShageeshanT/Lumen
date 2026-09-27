@@ -37,8 +37,10 @@ MSYS_NO_PATHCONV=1 docker run -d --name lumen-p2-cp --network lumen-p2 -p 4204:4
   -e WEB_ORIGIN=http://localhost:3204 \
   node:24-bookworm-slim node cp/index.js >/dev/null
 
+REVOKE=""
+case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*) REVOKE="--ssl-no-revoke" ;; esac
 for _ in $(seq 1 30); do
-  if curl -fsS --cacert "$ENV_DIR/certs/ca.pem" --resolve lumen-p2-cp:4204:127.0.0.1 https://lumen-p2-cp:4204/v1/health >/dev/null 2>&1; then
+  if curl -fsS $REVOKE --cacert "$ENV_DIR/certs/ca.pem" --resolve lumen-p2-cp:4204:127.0.0.1 https://lumen-p2-cp:4204/v1/health >/dev/null 2>&1; then
     echo "control plane is up at https://lumen-p2-cp:4204"
     exit 0
   fi

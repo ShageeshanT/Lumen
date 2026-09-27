@@ -86,6 +86,7 @@ export default tseslint.config(
       "packages/db/src/migrate-cli.ts",
       "scripts/**",
       "e2e/scripts/**",
+      "e2e/vm/**",
     ],
     rules: { "no-console": "off" },
   },

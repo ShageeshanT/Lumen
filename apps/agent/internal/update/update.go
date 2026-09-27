@@ -237,6 +237,7 @@ func (m *Manager) Confirm() (*state.UpdateResult, error) {
 		}
 		s.Update.Phase = "confirmed"
 		s.Update.Starts = 0
+		s.Update.GuardStarts = 0
 		s.Update.ProbationUntil = m.now().Add(Probation).UTC()
 		res = &state.UpdateResult{OpID: s.Update.OpID, Success: true, RunningVersion: m.Version}
 		s.PendingUpdateResult = res
@@ -286,6 +287,35 @@ func (m *Manager) Rollback(reason string) error {
 	})
 	m.Log.Warn("rolled back to the previous agent", "version", from, "reason", reason, "op_id", opID)
 	return err
+}
+
+// GuardMaxStarts is how many starts the guard allows a freshly updated binary
+// before restoring the previous one.
+const GuardMaxStarts = 5
+
+// Guard runs as the systemd ExecStartPre, executed from the *previous*
+// binary (`lumen-agent.prev update-guard`), before every start of the agent.
+// It covers the case the new binary's own checks cannot: a binary that
+// passed its trial run but then crashes before it can roll itself back.
+// While an update is in progress it counts starts; past GuardMaxStarts it
+// restores the previous binary and records the failure. It returns true when
+// it rolled back.
+func (m *Manager) Guard() (bool, error) {
+	st, err := m.Store.LoadState()
+	if err != nil {
+		return false, err
+	}
+	if st.Update == nil {
+		return false, nil
+	}
+	st.Update.GuardStarts++
+	if st.Update.GuardStarts <= GuardMaxStarts {
+		return false, m.Store.SaveState(st)
+	}
+	if err := m.Rollback(fmt.Sprintf("the new agent failed to start %d times", GuardMaxStarts)); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // PendingResult returns the result waiting to be sent, if any.

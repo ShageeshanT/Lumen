@@ -31,6 +31,7 @@ import (
 	"github.com/ShageeshanT/Lumen/apps/agent/internal/logs"
 	"github.com/ShageeshanT/Lumen/apps/agent/internal/provider"
 	"github.com/ShageeshanT/Lumen/apps/agent/internal/state"
+	"github.com/ShageeshanT/Lumen/apps/agent/internal/update"
 )
 
 // Exit codes the installer relies on.
@@ -43,7 +44,25 @@ const (
 )
 
 func main() {
+	loadEnvFile(env("LUMEN_ENV_FILE", "/etc/lumen/agent.env"))
 	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
+}
+
+// loadEnvFile applies LUMEN_* settings from the installer's env file (the
+// file systemd passes to `run`) so manual commands like `lumen-agent status`
+// see the same control plane and CA. Variables already set win.
+func loadEnvFile(path string) {
+	b, err := os.ReadFile(path) //nolint:gosec // fixed configuration path
+	if err != nil {
+		return
+	}
+	for _, line := range strings.Split(string(b), "\n") {
+		k, v, ok := strings.Cut(strings.TrimSpace(line), "=")
+		if !ok || !strings.HasPrefix(k, "LUMEN_") || os.Getenv(k) != "" {
+			continue
+		}
+		_ = os.Setenv(k, strings.Trim(v, `"'`))
+	}
 }
 
 func env(key, def string) string {
@@ -83,6 +102,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdStatus(args[1:], stdout, stderr)
 	case "uninstall":
 		return cmdUninstall(args[1:], os.Stdin, stdout, stderr)
+	case "update-guard":
+		return cmdUpdateGuard(stdout)
 	case "-h", "--help", "help":
 		usage(stdout)
 		return exitOK
@@ -236,6 +257,10 @@ func cmdStatus(args []string, stdout, stderr io.Writer) int {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 		id, name, err := join.CheckCredential(ctx, client, s)
+		if errors.Is(err, join.ErrUnreachable) {
+			fmt.Fprintf(stderr, "Couldn't reach the control plane to check the credential: %s\n", logs.Scrub(err.Error()))
+			return exitUnreachable
+		}
 		if err != nil {
 			fmt.Fprintln(stderr, "This server's credential isn't valid (not joined, or removed from Lumen).")
 			return exitFailure
@@ -274,6 +299,27 @@ func cmdStatus(args []string, stdout, stderr io.Writer) int {
 	}
 	fmt.Fprintf(stdout, "Connection: %s · Docker: %s · Proxy: %s · Disk: %s\n",
 		rs.Connection, okText(rs.DockerOK), okText(rs.CaddyOK), map[bool]string{true: "low (under 2 GB free)", false: "ok"}[rs.DiskLow])
+	return exitOK
+}
+
+// cmdUpdateGuard is the systemd ExecStartPre, run from the previous binary
+// (`/usr/local/bin/lumen-agent.prev update-guard`). It always exits 0 so a
+// guard problem never blocks the agent from starting.
+func cmdUpdateGuard(stdout io.Writer) int {
+	log := logs.Component(logs.New(stdout, env("LUMEN_LOG_LEVEL", "info")), "update-guard")
+	m := &update.Manager{
+		BinPath: env("LUMEN_BIN_PATH", "/usr/local/bin/lumen-agent"),
+		Store:   store(),
+		Version: buildinfo.Version,
+		Log:     log,
+	}
+	rolled, err := m.Guard()
+	switch {
+	case err != nil:
+		log.Warn("the update guard could not run", "err", err)
+	case rolled:
+		log.Warn("the updated agent kept failing to start; restored the previous binary")
+	}
 	return exitOK
 }
 

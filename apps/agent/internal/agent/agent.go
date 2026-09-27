@@ -94,7 +94,11 @@ type Agent struct {
 	statusMu sync.Mutex
 	status   state.Status
 
-	stop     context.CancelCauseFunc
+	stop context.CancelCauseFunc
+	// runCtx outlives single connections: work started by a message (an
+	// update's trial run, a port check) must not die when the connection
+	// that carried it is replaced.
+	runCtx   context.Context
 	updating atomic.Bool
 }
 
@@ -179,6 +183,7 @@ func (a *Agent) run(parent context.Context) error {
 	ctx, cancel := context.WithCancelCause(parent)
 	defer cancel(nil)
 	a.stop = cancel
+	a.runCtx = ctx
 
 	started := time.Now()
 	prov := a.detectProvider(ctx)
@@ -375,14 +380,14 @@ func (a *Agent) dispatch(ctx context.Context, body *agentv1.Envelope) {
 		if !a.seen.Add(op) {
 			return
 		}
-		go a.handlePortCheck(ctx, m.PortCheck)
+		go a.handlePortCheck(a.workCtx(ctx), m.PortCheck)
 	case *agentv1.Envelope_AgentUpdate:
 		op := m.AgentUpdate.GetMeta().GetOpId()
 		if !a.seen.Add(op) {
 			return
 		}
 		a.send(&agentv1.Envelope{Body: &agentv1.Envelope_Ack{Ack: &agentv1.Ack{OpId: op}}}, conn.Critical)
-		go a.handleUpdate(ctx, m.AgentUpdate)
+		go a.handleUpdate(a.workCtx(ctx), m.AgentUpdate)
 	case *agentv1.Envelope_Revoke:
 		op := m.Revoke.GetMeta().GetOpId()
 		a.send(&agentv1.Envelope{Body: &agentv1.Envelope_Ack{Ack: &agentv1.Ack{OpId: op}}}, conn.Critical)
@@ -399,6 +404,15 @@ func (a *Agent) dispatch(ctx context.Context, body *agentv1.Envelope) {
 	default:
 		a.log.Debug("ignored an unexpected message", "type", fmt.Sprintf("%T", body.GetBody()))
 	}
+}
+
+// workCtx is the context for work a message starts: the agent's run context
+// when set, so it survives a reconnect.
+func (a *Agent) workCtx(msgCtx context.Context) context.Context {
+	if a.runCtx != nil {
+		return a.runCtx
+	}
+	return msgCtx
 }
 
 func (a *Agent) handlePortCheck(ctx context.Context, pc *agentv1.PortCheck) {

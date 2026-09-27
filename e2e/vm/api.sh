@@ -11,7 +11,11 @@ TOKEN="$(tr -d '\r\n' < "$ENV_DIR/admin.token")"
 REVOKE=""
 case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*) REVOKE="--ssl-no-revoke" ;; esac
 
-args=(-sS $REVOKE --cacert "$ENV_DIR/certs/ca.pem" --resolve lumen-p2-cp:4204:127.0.0.1
+CA="$ENV_DIR/certs/ca.pem"
+if command -v cygpath >/dev/null 2>&1; then
+  CA="$(cygpath -m "$CA")"
+fi
+args=(-sS $REVOKE --cacert "$CA" --resolve lumen-p2-cp:4204:127.0.0.1
   -X "$METHOD" -H "authorization: Bearer $TOKEN" -w '\nHTTP %{http_code} in %{time_total}s\n')
 if [ -n "$BODY" ]; then
   args+=(-H 'content-type: application/json' -d "$BODY")

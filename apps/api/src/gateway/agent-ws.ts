@@ -347,10 +347,14 @@ class AgentSession implements AgentLink {
     }
   }
 
+  /**
+   * Replies reuse the request's op id (an Ack and later an AgentUpdateResult
+   * for the same AgentUpdate), so the de-duplication key is kind + op id.
+   */
   private async firstSeen(opId: string, kind: string): Promise<boolean> {
     const res = await this.cp.pool.query(
       "insert into agent_ops (server_id, op_id, kind) values ($1, $2, $3) on conflict do nothing",
-      [this.serverId, opId, kind],
+      [this.serverId, `${kind}:${opId}`, kind],
     );
     return res.rowCount === 1;
   }

@@ -8,7 +8,9 @@ import WebSocket from "ws";
 
 import { createDb, notifications, runMigrations, servers, type DbHandle } from "@lumen/db";
 import {
+  AckSchema,
   AgentHelloSchema,
+  AgentUpdateResultSchema,
   decodeFrame,
   ed25519PublicKeyFromRaw,
   ed25519RawPublicKey,
@@ -507,6 +509,47 @@ describe.skipIf(DATABASE_URL === undefined)("agent gateway over WebSocket (Postg
       ).status;
     expect(await check(agent.credential)).toBe(200);
     expect(await check(rotated)).toBe(200);
+  });
+
+  it("records an update result that reuses the op id of an earlier Ack", async () => {
+    const agent = await joinAgent("upd-1");
+    await agent.connect(running.port);
+    agent.hello();
+    await agent.waitFor((b) => b.case === "controlHello");
+    const opId = uuidv7();
+    await handle.db
+      .update(servers)
+      .set({
+        agentUpdate: {
+          op_id: opId,
+          version: "0.2.2",
+          status: "sent",
+          error: null,
+          at: new Date().toISOString(),
+        },
+      })
+      .where(eq(servers.id, agent.serverId));
+    agent.send({ case: "ack", value: create(AckSchema, { opId }) });
+    agent.send({
+      case: "agentUpdateResult",
+      value: create(AgentUpdateResultSchema, {
+        opId,
+        success: false,
+        runningVersion: "0.2.1",
+        error: "UPDATE_ROLLED_BACK: the new agent failed its trial run",
+      }),
+    });
+    const ack = await agent.waitFor((b) => b.case === "ack" && b.value.opId === opId);
+    expect(ack.case).toBe("ack");
+    const [row] = await handle.db.select().from(servers).where(eq(servers.id, agent.serverId));
+    expect(row?.agentUpdate).toMatchObject({ op_id: opId, status: "failed", version: "0.2.2" });
+    expect(row?.agentVersion).toBe("0.2.1");
+    const rows = await handle.db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.targetId, agent.serverId));
+    expect(rows.map((r) => r.code)).toEqual(["UPDATE_ROLLED_BACK"]);
+    agent.ws.close();
   });
 
   it("serves gateway metrics to loopback only", async () => {

@@ -43,7 +43,10 @@ type UpdateRecord struct {
 	Phase string    `json:"phase"` // pending | confirmed
 	// Starts counts process starts of the new binary while pending or on
 	// probation; three starts without settling roll back.
-	Starts         int       `json:"starts"`
+	Starts int `json:"starts"`
+	// GuardStarts is counted by the ExecStartPre guard (update.Manager.Guard),
+	// which runs even when the new binary crashes before its own checks.
+	GuardStarts    int       `json:"guard_starts"`
 	ProbationUntil time.Time `json:"probation_until,omitzero"`
 }
 

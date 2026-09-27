@@ -1220,12 +1220,18 @@ step_join() {
   step "Joining Lumen"
   had_identity=0
   if [ -f "$STATE_DIR/credential" ]; then
-    if joined=$(lumen-agent status --check-credential 2>>"$LOG_FILE"); then
+    # The agent reads LUMEN_CA_FILE to trust a private control plane's CA.
+    joined=$(LUMEN_CA_FILE="${ENV_CA:+$CA_COPY}" lumen-agent status --check-credential 2>>"$LOG_FILE")
+    check_rc=$?
+    if [ "$check_rc" = 0 ]; then
       joined=$(printf '%s' "$joined" | tr -d '\000-\010\013-\037\177' | head -n 1)
       already "${joined:-Already joined}"
       return 0
     fi
-    log "credential present but lumen-agent status --check-credential failed"
+    if [ "$check_rc" = 4 ]; then
+      die 5 "This server can't reach Lumen at $CONTROL_PLANE to check its credential." "Check outbound HTTPS (port 443) and DNS on this server, then run the install command again."
+    fi
+    log "credential present but lumen-agent status --check-credential failed ($check_rc)"
     if [ -z "$TOKEN" ]; then
       die 2 "This server's Lumen credential is no longer valid (it may have been revoked or the server removed)." "Create a new join command in Lumen (Servers -> Add server) and run it here."
     fi
@@ -1254,7 +1260,11 @@ step_join() {
   log "lumen-agent join exited with $join_rc"
   case $join_rc in
     0)
-      ok "This server joined Lumen" ;;
+      if grep -q '^Already joined' "$join_out" 2>/dev/null; then
+        already "$(head -n 1 "$join_out" | tr -d '\000-\010\013-\037\177')"
+      else
+        ok "This server joined Lumen"
+      fi ;;
     3)
       if [ "$had_identity" = 1 ]; then
         die 4 "An earlier install stopped partway through joining, so this join command was probably already used." "Create a new one in Lumen: Servers → Add server."
@@ -1286,6 +1296,10 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 EnvironmentFile=/etc/lumen/agent.env
+# Runs the previous agent binary (kept after a self-update) as a guard: if a
+# new binary keeps failing to start, it restores the previous one. "-" because
+# there is no previous binary until the first update.
+ExecStartPre=-/usr/local/bin/lumen-agent.prev update-guard
 ExecStart=/usr/local/bin/lumen-agent run
 Restart=always
 RestartSec=2

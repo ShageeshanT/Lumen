@@ -68,6 +68,21 @@ func TestStatusWithoutControlPlane(t *testing.T) {
 	}
 }
 
+func TestLoadEnvFile(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "agent.env")
+	if err := os.WriteFile(p, []byte("LUMEN_TEST_A=from-file\nLUMEN_TEST_B=\"quoted\"\nOTHER=x\n# comment\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("LUMEN_TEST_A", "")
+	t.Setenv("LUMEN_TEST_B", "already-set")
+	t.Setenv("OTHER", "")
+	loadEnvFile(p)
+	if os.Getenv("LUMEN_TEST_A") != "from-file" || os.Getenv("LUMEN_TEST_B") != "already-set" || os.Getenv("OTHER") != "" {
+		t.Fatalf("got A=%q B=%q OTHER=%q", os.Getenv("LUMEN_TEST_A"), os.Getenv("LUMEN_TEST_B"), os.Getenv("OTHER"))
+	}
+	loadEnvFile(filepath.Join(t.TempDir(), "missing"))
+}
+
 func TestRunWithoutJoin(t *testing.T) {
 	t.Setenv("LUMEN_STATE_DIR", t.TempDir())
 	var stdout, stderr bytes.Buffer
