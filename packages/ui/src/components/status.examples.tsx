@@ -2,6 +2,7 @@ import type { ComponentDoc } from "../examples/types";
 import { STATUSES } from "../status/status";
 
 import { Avatar } from "./avatar";
+import { AvatarStack } from "./avatar-stack";
 import { Badge } from "./badge";
 import { Kbd } from "./kbd";
 import { StatusMarker } from "./status-marker";
@@ -172,6 +173,51 @@ export const kbdDoc: ComponentDoc = {
           <Kbd keys={["mod", "K"]} platform="mac" />
           <Kbd keys={["mod", "K"]} platform="other" />
           <Kbd keys={["shift", "enter"]} platform="other" size="sm" />
+        </div>
+      ),
+    },
+  ],
+};
+
+const TEAM = [
+  { name: "Ana Ruiz" },
+  { name: "Ben Okafor" },
+  { name: "Chen Wei" },
+  { name: "Dana Kim" },
+  { name: "Eli Novak" },
+  { name: "Farah Aziz" },
+];
+
+export const avatarStackDoc: ComponentDoc = {
+  slug: "avatar-stack",
+  name: "Avatar stack",
+  group: "Status",
+  summary:
+    "Who is on a project, in a small overlapping row: four faces at most, then +N. With nobody, the parent says so in words.",
+  components: ["AvatarStack"],
+  examples: [
+    {
+      id: "counts",
+      title: "One, three, six, none",
+      render: () => (
+        <div className="flex flex-col gap-4">
+          <AvatarStack people={TEAM.slice(0, 1)} />
+          <AvatarStack people={TEAM.slice(0, 3)} />
+          <AvatarStack people={TEAM} />
+          <div className="flex items-center gap-2">
+            <AvatarStack people={[]} />
+            <span className="text-body-secondary">No members</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "small-interactive",
+      title: "Small, and interactive with names on focus",
+      render: () => (
+        <div className="flex flex-col gap-4">
+          <AvatarStack people={TEAM} size={20} />
+          <AvatarStack people={TEAM.slice(0, 4)} interactive />
         </div>
       ),
     },
