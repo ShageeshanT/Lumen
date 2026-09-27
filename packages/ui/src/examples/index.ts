@@ -1,5 +1,19 @@
 import { buttonDoc, iconButtonDoc, spinnerDoc } from "../components/button.examples";
 import {
+  chartDoc,
+  codeBlockDoc,
+  dataTableDoc,
+  diffViewerDoc,
+  terminalFrameDoc,
+} from "../components/data.examples";
+import {
+  alertDoc,
+  emptyStateDoc,
+  errorCardDoc,
+  progressStepsDoc,
+  toastDoc,
+} from "../components/feedback.examples";
+import {
   checkboxDoc,
   comboboxDoc,
   copyFieldDoc,
@@ -13,7 +27,13 @@ import {
   switchDoc,
   textareaDoc,
 } from "../components/form.examples";
-import { avatarDoc, badgeDoc, kbdDoc, statusTagDoc } from "../components/status.examples";
+import {
+  avatarDoc,
+  avatarStackDoc,
+  badgeDoc,
+  kbdDoc,
+  statusTagDoc,
+} from "../components/status.examples";
 import { tooltipDoc } from "../components/tooltip.examples";
 import { iconsDoc } from "../icons/icons.examples";
 
@@ -40,8 +60,19 @@ export const COMPONENT_DOCS: readonly ComponentDoc[] = [
   copyFieldDoc,
   tooltipDoc,
   skeletonDoc,
+  toastDoc,
+  alertDoc,
+  progressStepsDoc,
+  emptyStateDoc,
+  errorCardDoc,
   statusTagDoc,
   badgeDoc,
   avatarDoc,
+  avatarStackDoc,
   kbdDoc,
+  dataTableDoc,
+  chartDoc,
+  codeBlockDoc,
+  terminalFrameDoc,
+  diffViewerDoc,
 ];

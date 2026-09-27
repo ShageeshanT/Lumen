@@ -80,6 +80,16 @@
   }
 }
 
+/* Toast auto-close timer: the bar drains over the toast's duration. */
+@keyframes lumen-toast-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
 /* Entrance: wipe down from the top edge while rising 6 px. */
 @keyframes lumen-reveal {
   from {
