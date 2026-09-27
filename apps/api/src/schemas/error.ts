@@ -6,7 +6,13 @@ const ErrorAction = z
   .discriminatedUnion("kind", [
     z.object({ kind: z.literal("none") }),
     z.object({ kind: z.literal("link"), label: z.string(), href: z.string() }),
-    z.object({ kind: z.literal("button"), label: z.string(), actionId: z.string() }),
+    z.object({
+      kind: z.literal("button"),
+      label: z.string(),
+      actionId: z.string(),
+      // Seconds until the action can succeed (rate limits); the client counts down.
+      availableInS: z.number().nonnegative().optional(),
+    }),
     z.object({ kind: z.literal("command"), label: z.string(), command: z.string() }),
   ])
   .openapi("ErrorAction");

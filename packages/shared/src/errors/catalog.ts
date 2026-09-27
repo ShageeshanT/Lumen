@@ -245,7 +245,7 @@ export const catalog: Record<LumenErrorCode, CatalogEntry> = {
     title: "Something in this request isn't valid",
     explanation: ctx.detail ?? "One or more fields have values Lumen can't accept.",
     fix: "Check the highlighted fields and try again.",
-    action: { kind: "none" },
+    action: { kind: "button", label: "Show fields", actionId: "show_invalid_fields" },
   }),
 
   NOT_FOUND: (ctx) => ({
@@ -258,8 +258,8 @@ export const catalog: Record<LumenErrorCode, CatalogEntry> = {
   FORBIDDEN: (ctx) => ({
     title: "You need a different role for that",
     explanation: `This action needs the ${ctx.roleNeeded ?? "admin"} role in the workspace.`,
-    fix: "Ask a workspace admin to change your role.",
-    action: { kind: "none" },
+    fix: "Ask a workspace admin to change your role. The members list shows who they are.",
+    action: { kind: "button", label: "View members", actionId: "view_members" },
   }),
 
   UNAUTHENTICATED: () => ({
@@ -273,7 +273,12 @@ export const catalog: Record<LumenErrorCode, CatalogEntry> = {
     title: "You're sending requests too quickly",
     explanation: `Lumen limits how many requests a token can make. ${ctx.retryAfterS === undefined ? "Wait a moment and try again." : `Wait ${String(ctx.retryAfterS)} seconds and try again.`}`,
     fix: "Slow down the client, or use a separate token per integration.",
-    action: { kind: "none" },
+    action: {
+      kind: "button",
+      label: "Retry",
+      actionId: "retry",
+      ...(ctx.retryAfterS === undefined ? {} : { availableInS: ctx.retryAfterS }),
+    },
   }),
 
   INTERNAL: (ctx) => ({
