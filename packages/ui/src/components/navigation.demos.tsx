@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 
 import { cn } from "../lib/cn";
 
+import { Alert } from "./alert";
 import { Breadcrumbs } from "./breadcrumbs";
 import { CommandPalette } from "./command-palette";
 import { EnvironmentSwitcher, type Environment } from "./environment-switcher";
@@ -354,13 +355,9 @@ export function TopBarDemo({
 
 export function OfflineBanner() {
   return (
-    <div
-      role="status"
-      className="bg-warning-subtle border-warning/40 text-13 text-text flex min-h-[36px] items-center gap-2 border-b px-4 py-2"
-    >
-      <StatusMarker status="offline" />
-      <span>You’re offline. Changes sync when the connection comes back.</span>
-    </div>
+    <Alert variant="warning" global critical>
+      You’re offline. Changes sync when the connection comes back.
+    </Alert>
   );
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
-import * as Menu from "@radix-ui/react-dropdown-menu";
 import {
   createSortedRowModel,
   rowSelectionFeature,
@@ -31,6 +30,12 @@ import { Icon, type IconName } from "../icons/icon";
 import { cn } from "../lib/cn";
 
 import { Alert } from "./alert";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
 import { Skeleton } from "./skeleton";
 
 export type { SortingState } from "@tanstack/react-table";
@@ -203,8 +208,8 @@ function RowActionsMenu({
   onOpenChange: (open: boolean) => void;
 }) {
   return (
-    <Menu.Root open={open} onOpenChange={onOpenChange} modal={false}>
-      <Menu.Trigger asChild>
+    <DropdownMenu open={open} onOpenChange={onOpenChange} modal={false}>
+      <DropdownMenuTrigger asChild>
         <button
           type="button"
           aria-label={label}
@@ -218,32 +223,21 @@ function RowActionsMenu({
         >
           <Icon name="ellipsis" size={14} />
         </button>
-      </Menu.Trigger>
-      <Menu.Portal>
-        <Menu.Content
-          align="end"
-          sideOffset={4}
-          collisionPadding={8}
-          className="border-border-strong bg-surface-raised shadow-raised rounded-card z-[var(--z-popover)] min-w-[200px] border p-1"
-        >
-          {actions.map((action) => (
-            <Menu.Item
-              key={action.label}
-              disabled={action.disabled === true}
-              onSelect={action.onSelect}
-              className={cn(
-                "rounded-control text-body flex h-8 cursor-default items-center gap-2 px-2 outline-none select-none",
-                "data-[highlighted]:bg-surface-hover data-[disabled]:opacity-50",
-                action.danger === true && "text-danger-text",
-              )}
-            >
-              {action.icon !== undefined && <Icon name={action.icon} size={14} />}
-              {action.label}
-            </Menu.Item>
-          ))}
-        </Menu.Content>
-      </Menu.Portal>
-    </Menu.Root>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.map((action) => (
+          <DropdownMenuItem
+            key={action.label}
+            icon={action.icon}
+            destructive={action.danger === true}
+            disabled={action.disabled === true}
+            onSelect={action.onSelect}
+          >
+            {action.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

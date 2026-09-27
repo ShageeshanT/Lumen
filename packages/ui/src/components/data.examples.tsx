@@ -364,6 +364,24 @@ export const terminalFrameDoc: ComponentDoc = {
       wide: true,
       render: () => <TerminalDemo />,
     },
+    {
+      id: "panel",
+      title: "Full panel",
+      description: "Fills the inspector's Shell tab; the screen takes all the height it is given.",
+      wide: true,
+      render: () => (
+        <div className="flex h-[440px] w-full">
+          <TerminalFrame
+            label="Shell in api (replica 1)"
+            status="connected"
+            mode="panel"
+            className="w-full flex-1"
+          >
+            <TerminalTranscript />
+          </TerminalFrame>
+        </div>
+      ),
+    },
   ],
 };
 

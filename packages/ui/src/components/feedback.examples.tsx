@@ -10,9 +10,11 @@ import {
 import type { ComponentDoc } from "../examples/types";
 
 import { Alert } from "./alert";
+import { Button } from "./button";
 import { EmptyState } from "./empty-state";
 import { ErrorCard } from "./error-card";
 import { LiveStepsDemo, ToastDemo } from "./feedback.demos";
+import { ModalPreview } from "./overlays.demos";
 import { ProgressSteps, type ProgressStep, type StepState } from "./progress-steps";
 import { StatusTag } from "./status-tag";
 import { Toast, type ToastRecord } from "./toast";
@@ -178,6 +180,30 @@ export const alertDoc: ComponentDoc = {
             Your apps keep running if the machine is up; only the dashboard has lost contact.
           </Alert>
         </div>
+      ),
+    },
+    {
+      id: "in-modal",
+      title: "Inside a modal",
+      description: "A failed save explains itself above the form instead of closing the dialog.",
+      wide: true,
+      render: () => (
+        <ModalPreview
+          size="md"
+          height={380}
+          title="Add a custom domain"
+          footer={
+            <>
+              <Button variant="ghost">Cancel</Button>
+              <Button variant="primary">Try again</Button>
+            </>
+          }
+        >
+          <Alert variant="danger" title="app.example.com is already in use">
+            Another service in this workspace owns it. Remove it there first, or pick a different
+            name.
+          </Alert>
+        </ModalPreview>
       ),
     },
   ],
