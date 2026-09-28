@@ -29,6 +29,7 @@ import {
 import { Icon, type IconName } from "../icons/icon";
 import { cn } from "../lib/cn";
 import { useDensity } from "../lib/use-density";
+import { useMediaQuery } from "../lib/use-media-query";
 
 import { Alert } from "./alert";
 import {
@@ -138,25 +139,6 @@ function compareValues(a: CellValue, b: CellValue): number {
 
 function resolve<V>(updater: Updater<V>, previous: V): V {
   return typeof updater === "function" ? (updater as (old: V) => V)(previous) : updater;
-}
-
-function useNarrow(enabled: boolean): boolean {
-  const [narrow, setNarrow] = useState(false);
-  useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-    const query = window.matchMedia("(max-width: 639px)");
-    const update = () => {
-      setNarrow(query.matches);
-    };
-    update();
-    query.addEventListener("change", update);
-    return () => {
-      query.removeEventListener("change", update);
-    };
-  }, [enabled]);
-  return enabled && narrow;
 }
 
 const ALIGN = { left: "text-left", right: "text-right", center: "text-center" } as const;
@@ -283,12 +265,15 @@ export function DataTable<T extends RowData>({
   const [focusIndex, setFocusIndex] = useState(0);
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const pendingFocus = useRef<number | null>(null);
-  const narrow = useNarrow(responsive === "cards");
+  // Cards render every row, so large (virtualized) tables keep the scrolling
+  // table on phones rather than mount thousands of cards.
+  const phone = useMediaQuery("(max-width: 639px)");
 
   const density = useDensity();
   const dense = denseProp ?? density === "compact";
   const rowHeight = dense ? 32 : 40;
   const virtualize = virtualizeProp ?? data.length > 100;
+  const narrow = responsive === "cards" && !virtualize && phone;
 
   const rowSelection = useMemo<RowSelectionState>(
     () => Object.fromEntries(selectedKeys.map((key) => [key, true])),

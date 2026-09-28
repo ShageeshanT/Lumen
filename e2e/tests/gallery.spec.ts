@@ -21,10 +21,22 @@ test.describe("component gallery", () => {
       for (const id of ids) {
         const example = page.locator(`[data-gallery-example="${id}"]`);
         await expect(example).toBeVisible();
+        // An example taller than the viewport never settles: each screenshot
+        // retry scrolls it to a different alignment. Grow the viewport's height
+        // (never its width, so the layout is unchanged) for that one capture.
+        const viewport = page.viewportSize();
+        const box = await example.boundingBox();
+        const tall = viewport !== null && box !== null && box.height + 48 > viewport.height;
+        if (tall) {
+          await page.setViewportSize({ width: viewport.width, height: Math.ceil(box.height) + 96 });
+        }
         await expect(example).toHaveScreenshot(`${id.replace("/", "--")}.png`, {
           animations: "disabled",
           caret: "hide",
         });
+        if (tall) {
+          await page.setViewportSize(viewport);
+        }
         count += 1;
       }
     }
