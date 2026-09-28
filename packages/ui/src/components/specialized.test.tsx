@@ -10,7 +10,7 @@ import { STATUS, STATUSES } from "../status/status";
 
 import { CanvasEdge, edgeLabel } from "./canvas-edge";
 import { CanvasGroup } from "./canvas-group";
-import { CanvasNode, describeService } from "./canvas-node";
+import { CanvasNode, describeService, headerHoldsStatus } from "./canvas-node";
 import { CANVAS_NOW, SERVICES } from "./canvas.fixtures";
 import { decodeFrame, decodeGlyphs, DecodeText } from "./decode-text";
 import { checkedAgo, DnsRecordCard, dnsStatusText } from "./dns-record-card";
@@ -26,6 +26,26 @@ function renderUi(ui: ReactElement) {
 }
 
 describe("CanvasNode", () => {
+  it("moves the status tag to the meta row rather than cut a long name", () => {
+    expect(headerHoldsStatus("api", "active")).toBe(true);
+    expect(headerHoldsStatus("api-build-cache", "building")).toBe(false);
+    expect(headerHoldsStatus("payments-reconciler", "active")).toBe(false);
+    // The offline marker takes header room too.
+    expect(headerHoldsStatus("worker-0123", "active")).toBe(true);
+    expect(headerHoldsStatus("worker-0123", "active", true)).toBe(false);
+
+    const { container } = renderUi(
+      <CanvasNode
+        service={{ ...SERVICES.api, name: "payments-reconciler", status: "building" }}
+        now={CANVAS_NOW}
+      />,
+    );
+    const name = screen.getByText("payments-reconciler");
+    const header = name.parentElement;
+    expect(header?.querySelector("[data-status]")).toBeNull();
+    expect(container.querySelector('[data-status="building"]')).toHaveTextContent("Building");
+  });
+
   it("is a group named by service, status and last deploy, with one open button", () => {
     const onOpen = vi.fn();
     renderUi(<CanvasNode service={SERVICES.api} now={CANVAS_NOW} onOpen={onOpen} />);

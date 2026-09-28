@@ -326,8 +326,8 @@ export const terminalFrameDoc: ComponentDoc = {
           toolbar={
             <>
               <span className="text-meta font-mono">replica 1 · /bin/sh</span>
-              <Button size="sm" variant="ghost" leadingIcon="refresh-cw">
-                Reconnect
+              <Button size="sm" variant="ghost">
+                Disconnect
               </Button>
             </>
           }

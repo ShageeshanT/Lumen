@@ -2,6 +2,8 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { formatMegabytes } from "../lib/format";
+
 import { Checkbox } from "./checkbox";
 import { Combobox } from "./combobox";
 import { CopyField } from "./copy-field";
@@ -11,7 +13,7 @@ import { KeyValueEditor, keyProblem, parseEnvLines, type KeyValueRow } from "./k
 import { RadioGroup } from "./radio-group";
 import { SecretField } from "./secret-field";
 import { SegmentedControl } from "./segmented-control";
-import { SliderWithInput } from "./slider-with-input";
+import { limitMessage, SliderWithInput } from "./slider-with-input";
 import { Switch } from "./switch";
 import { Textarea } from "./textarea";
 import { TooltipProvider } from "./tooltip";
@@ -277,11 +279,45 @@ describe("SliderWithInput", () => {
         step={128}
         value={4096}
         onValueChange={() => undefined}
-        limit={{ value: 2048, label: "Server has 2 GB free" }}
+        formatValue={formatMegabytes}
+        limit={{ value: 2048, server: "oracle-1" }}
       />,
     );
-    expect(screen.getByLabelText("Memory in megabytes")).toHaveAttribute("aria-invalid", "true");
-    expect(screen.getByText(/More than Server has 2 GB free/)).toBeInTheDocument();
+    const input = screen.getByLabelText("Memory in megabytes");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    const message = document.getElementById(input.getAttribute("aria-describedby") ?? "");
+    expect(message).toHaveTextContent(
+      "oracle-1 only has 2 GB free. Lower it or move to a bigger server.",
+    );
+  });
+
+  it("builds the limit sentence from parts and formats values for people", () => {
+    expect(limitMessage({ value: 18432, server: "oracle-1" }, 20480, formatMegabytes)).toEqual({
+      tone: "over",
+      server: "oracle-1",
+      text: " only has 18 GB free. Lower it or move to a bigger server.",
+    });
+    expect(limitMessage({ value: 12288, server: "oracle-1" }, 512, formatMegabytes).text).toBe(
+      " has 12 GB free.",
+    );
+    expect(
+      limitMessage({ value: 4, server: "hetzner-2" }, 4, (v) => `${String(v)} vCPU`).tone,
+    ).toBe("at");
+    render(
+      <SliderWithInput
+        label="Memory"
+        unit="MB"
+        unitName="megabytes"
+        min={128}
+        max={24576}
+        step={128}
+        value={20480}
+        onValueChange={() => undefined}
+        formatValue={formatMegabytes}
+      />,
+    );
+    expect(screen.getByText("20 GB")).toBeInTheDocument();
+    expect(screen.getByRole("slider")).toHaveAttribute("aria-valuetext", "20 GB");
   });
 });
 

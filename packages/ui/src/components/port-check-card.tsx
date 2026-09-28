@@ -271,8 +271,10 @@ export function PortCheckCard({
                 <div id={panelId} className="flex flex-col gap-3 px-4 pb-4">
                   <FixSteps fix={fix} provider={provider} />
                   {onRerun !== undefined && (
-                    <div>
-                      <Button size="sm" onClick={onRerun} loading={running}>
+                    // The next step once the fix is applied: the one strong button.
+                    // "Run port check" in the header stays secondary.
+                    <div className="pt-1">
+                      <Button variant="primary" size="sm" onClick={onRerun} loading={running}>
                         I've done this — check again
                       </Button>
                     </div>

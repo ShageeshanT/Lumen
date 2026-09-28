@@ -14,6 +14,7 @@ import {
 import { cn } from "../lib/cn";
 import { useSkipMountFocus } from "../lib/use-skip-mount-focus";
 
+import { TOUCH_FOOTER } from "./control-styles";
 import { IconButton } from "./icon-button";
 
 const WIDTH = { sm: "max-w-[400px]", md: "max-w-[560px]", lg: "max-w-[720px]" } as const;
@@ -131,7 +132,12 @@ export function Modal({
         {children}
       </div>
       {footer !== undefined && (
-        <div className="border-border flex shrink-0 flex-wrap items-center justify-end gap-3 border-t px-6 py-4">
+        <div
+          className={cn(
+            "border-border flex shrink-0 flex-wrap items-center justify-end gap-3 border-t px-6 py-4",
+            TOUCH_FOOTER,
+          )}
+        >
           {footer}
         </div>
       )}
@@ -143,7 +149,9 @@ export function Modal({
       {trigger !== undefined && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
       <Dialog.Portal container={container}>
         {contained ? (
-          <div aria-hidden="true" className="bg-overlay absolute inset-0" />
+          // Same layer as the content, so a nested dialog's overlay covers the
+          // dialog underneath (DOM order decides) and only one primary reads.
+          <div aria-hidden="true" className="bg-overlay absolute inset-0 z-[var(--z-modal)]" />
         ) : (
           <Dialog.Overlay
             className={cn(

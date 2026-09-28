@@ -6,6 +6,7 @@ import { useRef, useState, type PointerEvent, type ReactElement, type ReactNode 
 import { cn } from "../lib/cn";
 import { useSkipMountFocus } from "../lib/use-skip-mount-focus";
 
+import { TOUCH_FOOTER } from "./control-styles";
 import { Tabs, type TabItem } from "./tabs";
 
 /** A release this fast (px per ms) dismisses or snaps, whatever the distance. */
@@ -26,7 +27,10 @@ export interface SheetProps {
   onOpenChange?: (open: boolean) => void;
   /** bottom: rises to a snap point. full: covers the screen (the mobile inspector). */
   side?: "bottom" | "full";
+  /** The object's name, in the inspector's display voice: "api", "a1b2c3d". */
   title: string;
+  /** What kind of object, above the title in mono caps: "Service", "Deployment". */
+  eyebrow?: string;
   description?: ReactNode;
   /** Fitted tabs under the header; swipe the content sideways to switch. */
   tabs?: SheetTabs;
@@ -55,6 +59,7 @@ export function Sheet({
   onOpenChange,
   side = "bottom",
   title,
+  eyebrow,
   description,
   tabs,
   snapPoints = [0.5, 0.9],
@@ -222,13 +227,21 @@ export function Sheet({
             <div className="flex h-5 items-start justify-center pt-2">
               <span aria-hidden="true" className="bg-border-strong block h-1 w-[36px]" />
             </div>
-            <div className="flex h-12 items-center gap-3 px-4">
-              <Dialog.Title className="text-subsection min-w-0 flex-1 truncate">
-                {title}
+            <div className="flex min-h-12 items-center gap-3 px-4 py-1">
+              {/* Same voice as the desktop inspector header: mono eyebrow + display name. */}
+              {/* The eyebrow is part of the name, so it reads "Deployment a1b2c3d". */}
+              <Dialog.Title className="flex min-w-0 flex-1 flex-col justify-center">
+                {eyebrow !== undefined && (
+                  <span className="text-eyebrow truncate">
+                    {eyebrow}
+                    <span className="sr-only"> </span>
+                  </span>
+                )}
+                <span className="text-section-title min-w-0 truncate">{title}</span>
               </Dialog.Title>
               <Dialog.Close
                 className={cn(
-                  "text-action border-border bg-surface text-text inline-flex h-8 items-center border px-3",
+                  "text-action border-border bg-surface text-text inline-flex h-8 items-center border px-3 max-sm:h-[44px]",
                   "pointer-events-none opacity-0 focus-visible:pointer-events-auto focus-visible:opacity-100",
                 )}
               >
@@ -264,7 +277,14 @@ export function Sheet({
             {children}
           </div>
           {footer !== undefined && (
-            <div className="border-border flex shrink-0 flex-col gap-2 border-t p-4">{footer}</div>
+            <div
+              className={cn(
+                "border-border flex shrink-0 flex-col gap-2 border-t p-4",
+                TOUCH_FOOTER,
+              )}
+            >
+              {footer}
+            </div>
           )}
         </Dialog.Content>
       </Dialog.Portal>

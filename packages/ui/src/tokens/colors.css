@@ -45,6 +45,8 @@
   /* Glow: two light sources behind the selected object. Decorative only. */
   --color-glow-a: rgba(61, 90, 254, 0.22);
   --color-glow-b: rgba(139, 92, 246, 0.16);
+  /* The glow's violet as a solid line color (second chart series); 3:1 on every surface. */
+  --color-violet: #8b5cf6;
   --color-vignette: rgba(0, 0, 0, 0.65);
 
   --color-success: #2bd97c;
@@ -71,6 +73,9 @@
   --color-sleeping-subtle: rgba(107, 114, 128, 0.12);
 
   --color-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Primary button fill: a 4 % ink wash on the black panel. */
+  --color-primary-bg: rgba(233, 236, 242, 0.04);
 
   /* Terminals stay dark in both themes. */
   --color-terminal-bg: #040506;
@@ -111,6 +116,7 @@
 
   --color-glow-a: rgba(61, 90, 254, 0.08);
   --color-glow-b: rgba(139, 92, 246, 0.06);
+  --color-violet: #7c3aed;
   --color-vignette: rgba(243, 244, 246, 0.7);
 
   --color-success: #15803d;
@@ -137,6 +143,9 @@
   --color-sleeping-subtle: rgba(100, 116, 139, 0.1);
 
   --color-overlay: rgba(7, 9, 13, 0.35);
+
+  /* Primary button fill: plain paper, so the ink frame alone carries it. */
+  --color-primary-bg: #ffffff;
 
   --color-terminal-bg: #040506;
 

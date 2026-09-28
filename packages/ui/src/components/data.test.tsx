@@ -14,7 +14,7 @@ import {
 import { ChartSyncGroup } from "./chart-sync";
 import { CodeBlock, tokenizeLine } from "./code-block";
 import { DataTable, type DataTableColumn } from "./data-table";
-import { describeChange, DiffViewer, type DiffGroup } from "./diff-viewer";
+import { breakAtUnderscores, describeChange, DiffViewer, type DiffGroup } from "./diff-viewer";
 import { TerminalFrame } from "./terminal-frame";
 import { TooltipProvider } from "./tooltip";
 
@@ -375,6 +375,31 @@ describe("CodeBlock", () => {
     expect(block.textContent).toBe("a = 1b = 2");
   });
 
+  it("keeps the copy button visible on a one-line command, hover-revealed on longer blocks", () => {
+    const { container, unmount } = render(
+      <TooltipProvider>
+        <CodeBlock label="Install command" code="curl lumen | sh" />
+      </TooltipProvider>,
+    );
+    const button = screen.getByRole("button", { name: "Copy Install command" });
+    const holder = button.closest("[data-code-copy]");
+    expect(holder).not.toBeNull();
+    expect(holder?.className).toContain("opacity-40");
+    expect(holder?.className).not.toMatch(/(^|\s)opacity-0(\s|$)/);
+    expect(screen.getByLabelText("Install command").className).toContain("pr-[56px]");
+    // The fade in front of the button is decoration.
+    expect(container.querySelector('[aria-hidden="true"].bg-linear-to-r')).not.toBeNull();
+    unmount();
+
+    render(
+      <TooltipProvider>
+        <CodeBlock label="Two lines" code={"a\nb"} />
+      </TooltipProvider>,
+    );
+    const multi = screen.getByRole("button", { name: "Copy Two lines" });
+    expect(multi.closest("[data-code-copy]")).toBeNull();
+  });
+
   it("escapes markup", () => {
     const { container } = render(
       <TooltipProvider>
@@ -497,6 +522,15 @@ describe("DiffViewer", () => {
       "KEY, value changed",
     );
     render(<DiffViewer changes={[]} />);
-    expect(screen.getByText("Nothing to review")).toBeInTheDocument();
+    expect(screen.getByText("Nothing to review yet.").parentElement).toHaveTextContent(
+      "Nothing to review yet. Edit a variable or setting and it shows up here.",
+    );
+  });
+
+  it("breaks variable names after underscores, never mid-word", () => {
+    const { container } = render(<p>{breakAtUnderscores("STRIPE_SECRET_KEY")}</p>);
+    expect(container.querySelectorAll("wbr")).toHaveLength(2);
+    expect(container).toHaveTextContent("STRIPE_SECRET_KEY");
+    expect(breakAtUnderscores("PORT")).toBe("PORT");
   });
 });

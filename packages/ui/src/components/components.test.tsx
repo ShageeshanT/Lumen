@@ -151,15 +151,38 @@ describe("Badge, Avatar, Spinner", () => {
     expect(container).toHaveTextContent("99+");
   });
 
-  it("falls back to initials when the image fails", () => {
-    render(<Avatar name="Ben Okafor" src="/missing.png" />);
-    const img = screen.getByRole("img", { name: "Ben Okafor" });
-    fireEvent.error(img);
-    expect(screen.getByRole("img", { name: "Ben Okafor" })).toHaveTextContent("BO");
+  it("keeps the image hidden over the initials until it loads, and drops it on error", () => {
+    const { container } = render(<Avatar name="Ben Okafor" src="/ben.png" />);
+    const avatar = screen.getByRole("img", { name: "Ben Okafor" });
+    expect(avatar).toHaveTextContent("BO");
+    const img = container.querySelector("img");
+    expect(img).not.toBeNull();
+    expect(img?.className).toContain("opacity-0");
+    if (img !== null) {
+      fireEvent.load(img);
+    }
+    expect(container.querySelector("img")?.className).toContain("opacity-100");
+
+    const broken = render(<Avatar name="Ana Lima" src="/missing.png" />);
+    const brokenImg = broken.container.querySelector("img");
+    if (brokenImg !== null) {
+      fireEvent.error(brokenImg);
+    }
+    expect(broken.container.querySelector("img")).toBeNull();
+    expect(screen.getByRole("img", { name: "Ana Lima" })).toHaveTextContent("AL");
   });
 
-  it("gives a name a stable tint", () => {
+  it("fits one initial when asked, for small overlapping avatars", () => {
+    render(<Avatar name="Ben Okafor" size={20} maxInitials={1} />);
+    expect(screen.getByRole("img", { name: "Ben Okafor" })).toHaveTextContent(/^B$/);
+  });
+
+  it("gives a name a stable tint that is never a status color", () => {
     expect(tintFor("Ana")).toBe(tintFor("Ana"));
+    const names = ["Ana", "Ben", "Chen", "Dara", "Eli", "Femi", "Gus", "Hana", "Ivo", "Jo"];
+    for (const name of names) {
+      expect(tintFor(name)).not.toMatch(/success|warning|danger|info/);
+    }
   });
 
   it("announces a standalone spinner and hides a decorative one", () => {

@@ -111,6 +111,33 @@ describe("error catalog", () => {
     expect(ERROR_STATUS.JOIN_TOKEN_INVALID).toBe(401);
   });
 
+  it("gives the request errors a way forward (C14), with a countdown for rate limits", () => {
+    expect(makeError("VALIDATION_FAILED").action).toEqual({
+      kind: "button",
+      label: "Show fields",
+      actionId: "show_invalid_fields",
+    });
+    expect(makeError("FORBIDDEN").action).toEqual({
+      kind: "button",
+      label: "View members",
+      actionId: "view_members",
+    });
+    expect(makeError("RATE_LIMITED", { retryAfterS: 30 }).action).toEqual({
+      kind: "button",
+      label: "Retry",
+      actionId: "retry",
+      availableInS: 30,
+    });
+    expect(makeError("RATE_LIMITED").action).not.toHaveProperty("availableInS");
+    // Only the support copy is left for errors whose fix is outside Lumen.
+    const withoutAction = LUMEN_ERROR_CODES.filter(
+      (code) => makeError(code).action.kind === "none",
+    );
+    expect(withoutAction).not.toContain("VALIDATION_FAILED");
+    expect(withoutAction).not.toContain("FORBIDDEN");
+    expect(withoutAction).not.toContain("RATE_LIMITED");
+  });
+
   it("keeps raw details and support ids only when given", () => {
     const plain = makeError("INTERNAL");
     expect(plain).not.toHaveProperty("raw");

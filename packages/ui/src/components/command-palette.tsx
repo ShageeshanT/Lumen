@@ -304,7 +304,9 @@ export function CommandPalette({
             position,
             "z-[var(--z-palette)] flex flex-col overflow-hidden outline-none",
             "border-border-strong bg-surface-raised text-text shadow-raised rounded-panel border",
-            "inset-x-0 top-[15%] mx-auto max-h-[480px] w-[calc(100%-32px)] max-w-[640px]",
+            // Never taller than the space under the 15 % offset: the result list
+            // scrolls and the key-hint footer always stays in view.
+            "inset-x-0 top-[15%] mx-auto max-h-[min(480px,calc(85%-16px))] w-[calc(100%-32px)] max-w-[640px]",
             "data-[state=open]:animate-[lumen-dialog-in_var(--dur-base)_var(--ease-panel)]",
             "data-[state=closed]:animate-[lumen-dialog-out_var(--dur-exit-base)_var(--ease-in)]",
             "max-sm:inset-0 max-sm:top-0 max-sm:h-full max-sm:max-h-none max-sm:w-full max-sm:rounded-none max-sm:border-0",
@@ -351,8 +353,9 @@ export function CommandPalette({
               </div>
             )}
             {!loading && (
-              <Command.Empty className="text-body-secondary px-3 py-8 text-center">
-                No matches for “{trimmed}”
+              <Command.Empty className="text-body-secondary flex flex-col gap-1 px-3 py-8 text-center">
+                <span className="text-text">No matches for “{trimmed}”</span>
+                <span>Try a service name or an action like Deploy.</span>
               </Command.Empty>
             )}
             <ResultList loading={loading}>

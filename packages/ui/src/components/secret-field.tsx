@@ -12,6 +12,20 @@ import { Tooltip } from "./tooltip";
 const MASK = "••••••••";
 const REMASK_MS = 10_000;
 
+/**
+ * The one way a sealed value appears anywhere (field, table cell, diff): a
+ * lock and "Sealed" in secondary sans. Not mono caps and never an accent
+ * color, so it doesn't read as a button or a link.
+ */
+export function SealedValue({ className }: { className?: string }) {
+  return (
+    <span className={cn("text-body-secondary inline-flex items-center gap-[6px]", className)}>
+      <Icon name="lock" size={14} className="shrink-0" />
+      Sealed
+    </span>
+  );
+}
+
 export interface SecretFieldProps {
   /** The secret. Never rendered into the DOM while masked. */
   value: string;
@@ -75,8 +89,7 @@ export function SecretField({
         role="group"
         aria-label={`${label}, sealed`}
       >
-        <Icon name="lock" size={14} />
-        <span className="text-action text-text-secondary">Sealed</span>
+        <SealedValue />
       </div>
     );
   }

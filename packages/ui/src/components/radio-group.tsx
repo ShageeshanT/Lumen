@@ -87,7 +87,9 @@ export function RadioGroup({
                 />
               )}
               <span className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="text-label">{option.label}</span>
+                {/* Option titles are phrases people read ("Use a free temporary address"):
+                    sans 14 / 500, not mono caps, which is for chrome only. */}
+                <span className="text-body text-text font-medium">{option.label}</span>
                 {option.description !== undefined && (
                   <span id={descriptionId} className="text-body-secondary">
                     {option.description}

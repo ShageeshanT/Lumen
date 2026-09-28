@@ -73,7 +73,9 @@ export const SearchButton = forwardRef<HTMLButtonElement, SearchButtonProps>(fun
       aria-label="Search"
       aria-keyshortcuts="Meta+K Control+K"
       className={cn(
-        buttonVariants({ variant: "secondary", size: "sm" }),
+        // Ghost: the page's own primary stays the one strong element; only the
+        // environment switcher keeps a frame in the top bar.
+        buttonVariants({ variant: "ghost", size: "sm" }),
         "max-lg:w-[28px] max-lg:px-0",
         className,
       )}

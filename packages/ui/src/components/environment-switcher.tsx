@@ -124,11 +124,13 @@ export function EnvironmentSwitcher({
             <DropdownMenuRadioItem key={environment.id} value={environment.id} indicator="check">
               <EnvironmentMarker environment={environment} />
               <span className="min-w-0 flex-1 truncate font-mono">{environment.name}</span>
-              {environment.kind === "production" && (
-                <Badge size="sm" variant="success">
-                  Production
-                </Badge>
-              )}
+              {/* The badge only earns its place when the name doesn't say it already. */}
+              {environment.kind === "production" &&
+                !environment.name.toLowerCase().includes("production") && (
+                  <Badge size="sm" variant="success">
+                    Production
+                  </Badge>
+                )}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

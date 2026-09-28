@@ -81,7 +81,7 @@ export function keyProblem(key: string, index: number, rows: KeyValueRow[]): str
 export function KeyValueEditor({
   rows,
   onChange,
-  keyPlaceholder = "NAME",
+  keyPlaceholder = "e.g. DATABASE_URL",
   valuePlaceholder = "value",
   addLabel = "Add variable",
   maxRows = 200,

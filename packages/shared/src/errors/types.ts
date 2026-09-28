@@ -65,12 +65,20 @@ export type ErrorActionId =
   | "test_backup_destination"
   | "retry"
   | "sign_in"
-  | "create_join_token";
+  | "create_join_token"
+  | "show_invalid_fields"
+  | "view_members";
 
 export type ErrorAction =
   | { kind: "none" }
   | { kind: "link"; label: string; href: string }
-  | { kind: "button"; label: string; actionId: ErrorActionId }
+  | {
+      kind: "button";
+      label: string;
+      actionId: ErrorActionId;
+      /** Seconds before the action can work (rate limits): the button counts down. */
+      availableInS?: number;
+    }
   | { kind: "command"; label: string; command: string };
 
 /** The shape every error card, API error body and CLI error message is built from. */

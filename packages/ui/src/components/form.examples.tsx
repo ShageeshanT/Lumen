@@ -341,7 +341,7 @@ export const copyFieldDoc: ComponentDoc = {
   group: "Form controls",
   summary:
     "Read-only values with one-click copy. Secrets stay masked in the DOM until revealed and mask again after 10 s.",
-  components: ["CopyField", "SecretField"],
+  components: ["CopyField", "SecretField", "SealedValue"],
   examples: [
     {
       id: "copy",

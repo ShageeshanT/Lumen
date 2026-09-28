@@ -100,7 +100,10 @@ export interface DataTableProps<T> {
   /** Height of the scrolling body when virtualized. Default 480. */
   maxHeight?: number;
   stickyHeader?: boolean;
-  /** Under 640 px: scroll sideways (default) or stack each row as a card. */
+  /**
+   * Under 640 px: stack each row as a card (default; a sideways-scrolling
+   * table gives no hint that columns are hidden) or keep the table and scroll.
+   */
   responsive?: "scroll" | "cards";
   className?: string;
 }
@@ -270,7 +273,7 @@ export function DataTable<T extends RowData>({
   virtualize: virtualizeProp,
   maxHeight = 480,
   stickyHeader = true,
-  responsive = "scroll",
+  responsive = "cards",
   className,
 }: DataTableProps<T>) {
   const [innerSorting, setInnerSorting] = useState<SortingState>(defaultSorting);
@@ -462,6 +465,16 @@ export function DataTable<T extends RowData>({
         nameOf={nameOf}
         renderCell={renderCell}
         {...(rowActions === undefined ? {} : { rowActions })}
+        {...(selectable
+          ? {
+              selection: {
+                isSelected: (key: string) => rowSelection[key] === true,
+                toggle: (key: string, checked: boolean) => {
+                  table.getRow(key).toggleSelected(checked);
+                },
+              },
+            }
+          : {})}
         loading={loading}
         empty={empty}
         error={error}
@@ -714,6 +727,7 @@ function DataTableCards<T extends RowData>({
   nameOf,
   renderCell,
   rowActions,
+  selection,
   loading,
   empty,
   error,
@@ -726,6 +740,10 @@ function DataTableCards<T extends RowData>({
   nameOf: (row: T) => string;
   renderCell: (column: DataTableColumn<T> | undefined, row: T) => ReactNode;
   rowActions?: (row: T) => DataTableRowAction[];
+  selection?: {
+    isSelected: (key: string) => boolean;
+    toggle: (key: string, checked: boolean) => void;
+  };
   loading: boolean;
   empty: ReactNode;
   error: { message: string; onRetry?: () => void } | undefined;
@@ -775,12 +793,27 @@ function DataTableCards<T extends RowData>({
       {rows.map((row) => {
         const key = rowKey(row);
         const actions = rowActions?.(row);
+        const selected = selection?.isSelected(key) === true;
         return (
           <li
             key={key}
-            className="border-border bg-surface rounded-card flex flex-col gap-2 border p-3"
+            className={cn(
+              "border-border bg-surface rounded-card flex flex-col gap-2 border p-3",
+              selected && "bg-accent-subtle border-accent",
+            )}
           >
             <div className="flex items-start gap-2">
+              {selection !== undefined && (
+                <span className="flex h-5 shrink-0 items-center">
+                  <SelectBox
+                    checked={selected}
+                    label={`Select ${nameOf(row)}`}
+                    onChange={(checked) => {
+                      selection.toggle(key, checked);
+                    }}
+                  />
+                </span>
+              )}
               <div className="text-13 min-w-0 flex-1">{renderCell(first, row)}</div>
               {actions !== undefined && (
                 <RowActionsMenu

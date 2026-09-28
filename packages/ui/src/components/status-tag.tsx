@@ -9,7 +9,10 @@ export interface StatusTagProps {
   label?: string;
   /** Extra context after the word: "3 restarts", "restarting in 8s". */
   detail?: string;
-  /** Show the [ ] brackets. On by default; off in dense table cells. */
+  /**
+   * Show the [ ] brackets. On by default, in 40 px rows and cards too; they
+   * drop out on their own inside a dense (32 px, `data-dense`) table.
+   */
   brackets?: boolean;
   size?: "sm" | "md";
   className?: string;
@@ -39,6 +42,8 @@ export function StatusTag({
         // Decorative brackets as pseudo-elements: dim like the HUD, invisible to assistive tech and contrast audits.
         brackets &&
           "before:text-text-muted after:text-text-muted before:content-['['] after:content-[']']",
+        // Brackets stay everywhere except dense 32 px rows, which drop them for room.
+        brackets && "[[data-dense]_&]:before:hidden [[data-dense]_&]:after:hidden",
         className,
       )}
     >

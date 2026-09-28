@@ -24,6 +24,11 @@ export interface ConfirmDialogProps {
   /** A verb: "Restart", "Roll back". Destructive defaults to "Delete". */
   confirmLabel?: string;
   cancelLabel?: string;
+  /**
+   * Simple dialogs only: "danger" when confirming throws work away (Discard),
+   * so the safe choice (Cancel, focused first) is not outweighed by a primary.
+   */
+  confirmTone?: "primary" | "danger";
   /** May return a promise: the button shows a spinner until it settles. */
   onConfirm: () => void | Promise<void>;
   /** An extra choice such as "Also restore variables". */
@@ -55,6 +60,7 @@ export function ConfirmDialog({
   confirmText,
   confirmLabel,
   cancelLabel = "Cancel",
+  confirmTone = "primary",
   onConfirm,
   checkbox,
   error: errorProp,
@@ -147,7 +153,7 @@ export function ConfirmDialog({
           </Button>
           <Button
             type="submit"
-            variant={destructive ? "danger-solid" : "primary"}
+            variant={destructive ? "danger-solid" : confirmTone}
             disabled={!matched}
             loading={loading}
           >

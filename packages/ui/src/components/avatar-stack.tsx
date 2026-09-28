@@ -55,6 +55,8 @@ export function AvatarStack({
           <Avatar
             name={person.name}
             size={size}
+            // Two initials don't survive a 6–8 px overlap at 20 / 24 px.
+            maxInitials={1}
             {...(person.src === undefined ? {} : { src: person.src })}
           />
         );

@@ -167,7 +167,7 @@ export const MEMORY: ChartSeries[] = [
 
 export const NETWORK: ChartSeries[] = [
   { id: "in", label: "In", data: wave(3, { base: 420, swing: 160, noise: 90 }) },
-  { id: "out", label: "Out", color: "info", data: wave(4, { base: 180, swing: 70, noise: 40 }) },
+  { id: "out", label: "Out", color: "violet", data: wave(4, { base: 180, swing: 70, noise: 40 }) },
 ];
 
 export const REQUESTS: ChartSeries[] = [
@@ -179,7 +179,7 @@ export const REPLICAS: ChartSeries[] = [
   {
     id: "r1",
     label: "Replica 1",
-    color: "info",
+    color: "violet",
     dashed: true,
     data: wave(7, { base: 24, swing: 8, noise: 4 }),
   },
@@ -249,7 +249,7 @@ export function denseMetrics(): {
         {
           id: "out",
           label: "Out",
-          color: "info",
+          color: "violet",
           data: wave(14, { base: 160, swing: 60, noise: 50, stepS: 1 }),
         },
       ],

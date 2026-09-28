@@ -90,6 +90,25 @@ export function describeService(
   return parts.join(", ");
 }
 
+// Geist Mono advances 0.6 em. Name: 14 px + 0.02 em tracking; tag: 11 px + 0.08 em.
+const NAME_CHAR = 14 * 0.62;
+const TAG_CHAR = 11 * 0.68;
+/** Header width left for name + tag: 260 − 28 padding − 20 mark − 8 gap. */
+const HEADER_ROOM = 204;
+
+/**
+ * Whether the status tag fits in the header beside the whole name. When it
+ * doesn't, the tag moves to the meta row so the name is never cut to a few
+ * characters ("api-build…") and the status word stays visible. Mono type makes
+ * the estimate exact enough to decide without measuring the DOM.
+ */
+export function headerHoldsStatus(name: string, status: Status, serverOffline = false): boolean {
+  const room = HEADER_ROOM - (serverOffline ? 32 : 0);
+  // Brackets (two glyphs), three 6 px gaps and the 6 px marker, then the word.
+  const tag = 2 * TAG_CHAR + 18 + 6 + STATUS[status].label.length * TAG_CHAR;
+  return name.length * NAME_CHAR + 8 + tag <= room;
+}
+
 /**
  * A service on the project canvas: 260 × 120, fixed. Header (kind or framework
  * mark, mono name, status tag), the public URL or what replaces it, the last
@@ -150,6 +169,7 @@ export function CanvasNode({
       : `${formatRelativeTime(service.lastDeploy.at, reference)} · ${service.lastDeploy.commitMessage}`;
 
   const selectedAny = selected || multiSelected;
+  const statusInHeader = headerHoldsStatus(service.name, service.status, serverOffline);
 
   return (
     <div
@@ -239,7 +259,7 @@ export function CanvasNode({
             </span>
           </Tooltip>
         )}
-        <StatusTag status={service.status} size="sm" className="shrink-0" />
+        {statusInHeader && <StatusTag status={service.status} size="sm" className="shrink-0" />}
       </div>
 
       <div className="text-12 text-text-secondary pointer-events-none relative flex h-[18px] min-w-0 items-center gap-[6px]">
@@ -277,9 +297,14 @@ export function CanvasNode({
         )}
       </div>
 
-      <p className="text-meta pointer-events-none relative truncate" title={meta}>
-        {meta}
-      </p>
+      {/* When the header is tight the status shares the meta row: the commit
+          message gives way (it has a tooltip), never the name or the status. */}
+      <div className="pointer-events-none relative flex min-w-0 items-center gap-2">
+        <p className="text-meta min-w-0 flex-1 truncate" title={meta}>
+          {meta}
+        </p>
+        {!statusInHeader && <StatusTag status={service.status} size="sm" className="shrink-0" />}
+      </div>
 
       <div className="pointer-events-none relative mt-auto flex min-w-0 items-center gap-[6px]">
         {service.replicas !== undefined && service.replicas > 1 && (
