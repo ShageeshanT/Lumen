@@ -41,8 +41,8 @@ branch `worktree-agent-a2252730cd1bb563d` (not merged). Phases 1 and 2 are done.
   kit. Cross-model UI review (SPEC H2, Fable 5.1) done: 36 of 38 findings fixed,
   React Flow attribution kept, phone canvas-as-list deferred (DECISIONS 0091+).
   Evidence: 360 UI unit tests; gallery screenshots per example × 6 projects
-  (Windows baselines; Linux baselines rendered by the Visual baselines
-  workflow); axe (WCAG 2.2 AA + best practices) clean on every page; automated
+  (1,338 Windows and 1,338 Linux baselines; the Linux set is rendered by
+  the Visual baselines workflow and checked by CI's Visual job); axe (WCAG 2.2 AA + best practices) clean on every page; automated
   keyboard walk; 60 fps traces for the 5,000-row table, 50,000-line log viewer
   and 100-node canvas pan (`docs/evidence/phase-01/perf/`); Button-only bundle
   21 KB gzip vs 304 KB for the whole kit (`docs/evidence/phase-01/bundle/`);
@@ -76,9 +76,8 @@ branch `worktree-agent-a2252730cd1bb563d` (not merged). Phases 1 and 2 are done.
 1. Finish Phase 3 (deploy engine): Docker runtime and hardening, Caddy routes,
    zero-downtime swap, crash loops, BuildKit + Railpack builds, log streaming
    and scrubbing, port detection, metrics, GC, chaos and host verification.
-2. Commit the Linux gallery baselines from the Visual baselines workflow run.
-3. Cross-model reviews: Phase 0 and Phase 2 (SPEC H1; H4 on the agent registry).
-4. Real-VM runs (Hetzner/DO amd64, Oracle Ampere arm64) to close Phase 2's
+2. Cross-model reviews: Phase 0 and Phase 2 (SPEC H1; H4 on the agent registry).
+3. Real-VM runs (Hetzner/DO amd64, Oracle Ampere arm64) to close Phase 2's
    cloud-only criteria.
 
 ## Known gaps
