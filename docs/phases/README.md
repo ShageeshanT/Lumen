@@ -12,9 +12,9 @@ acceptance criteria, not polish to do later.
 | # | Phase | File | Owner model | Depends on | Status |
 |---|---|---|---|---|---|
 | 0 | Foundations | [PHASE-00-foundations.md](PHASE-00-foundations.md) | Opus 5.5 | — | Done (2026-09-26) |
-| 1 | Design direction and design system | [PHASE-01-design-system.md](PHASE-01-design-system.md) | Opus 5.5 → Fable 5.1 review | 0 | Not started |
-| 2 | Agent core and server join | [PHASE-02-agent-core.md](PHASE-02-agent-core.md) | Fable 5.1 | 0 | Not started |
-| 3 | Deploy engine on the agent | [PHASE-03-deploy-engine.md](PHASE-03-deploy-engine.md) | Fable 5.1 | 2 | Not started |
+| 1 | Design direction and design system | [PHASE-01-design-system.md](PHASE-01-design-system.md) | Opus 5.5 → Fable 5.1 review | 0 | Done (2026-09-28) |
+| 2 | Agent core and server join | [PHASE-02-agent-core.md](PHASE-02-agent-core.md) | Fable 5.1 | 0 | Done (2026-09-27) |
+| 3 | Deploy engine on the agent | [PHASE-03-deploy-engine.md](PHASE-03-deploy-engine.md) | Fable 5.1 | 2 | In progress |
 | 4 | Control plane core | [PHASE-04-control-plane.md](PHASE-04-control-plane.md) | Fable 5.1 (schema, security) → Opus 5.5 (CRUD) | 2, 3 | Not started |
 | 5 | App shell, projects, canvas, inspector | [PHASE-05-shell-canvas-inspector.md](PHASE-05-shell-canvas-inspector.md) | Opus 5.5 | 1, 4 | Not started |
 | 6 | GitHub integration | [PHASE-06-github.md](PHASE-06-github.md) | Opus 5.5 | 5 | Not started |

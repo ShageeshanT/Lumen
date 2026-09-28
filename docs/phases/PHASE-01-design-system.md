@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Not started |
+| **Status** | Done (2026-09-28) |
 | **Owner model** | Opus 5.5 → reviewed by Fable 5.1 (SPEC H2 UI review on every gallery screenshot set) |
 | **Depends on** | Phase 00 (workspace, Tailwind v4, Geist loaded, `/dev/components` route stub, Playwright projects) |
 | **Unblocks** | Phase 05 (shell, canvas, inspector) and every UI phase after it; Phase 11 (setup wizard UI) |

@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Not started |
+| **Status** | In progress (2026-09-28) |
 | **Owner model** | Fable 5.1 → reviewed by Opus 5.5 |
 | **Depends on** | Phase 02 (agent process, connection, envelope, Caddy bootstrap, host metrics, `DISK_FULL` flag) |
 | **Unblocks** | Phase 04 (the desired-state compiler targets the `DesiredState` contract fixed here), Phase 05 (deploy timeline, runtime logs, canvas status), Phase 07 (routes and HTTP logs extend the Caddy layer), Phase 08 (container metrics and log query), Phase 09 (volumes reconcile here), Phase 12 (replicas across servers), Phase 16 (cron, sleep) |

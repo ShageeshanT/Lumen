@@ -952,3 +952,71 @@ signs real and deliberately broken builds.
 **Why:** The development machine is Windows with Docker Desktop; Multipass is not
 available. The harness exercises systemd, iptables, Docker installation and the
 network path the port check uses.
+
+## 0091 · 2026-09-27 · 44 px touch targets under 640 px
+**Decision:** Below 640 px, full-width buttons and the buttons and links
+directly inside dialog, confirm and sheet footers are 44 px tall
+(`TOUCH_FOOTER` in `control-styles.ts`, `max-sm:h-[44px]` on `fullWidth`).
+Desktop sizes stay 28 / 32 / 36.
+**Why:** 36 px footer buttons in phone-only surfaces (sheets, bottom-sheet
+dialogs) are below the comfortable touch size; scoping by breakpoint keeps the
+dense desktop rhythm.
+
+## 0092 · 2026-09-27 · Primary button fill is a token; paper in light
+**Decision:** `--color-primary-bg` fills the primary button: the 4 % ink wash in
+dark, `#ffffff` in light. Frame, brackets and hover are unchanged.
+**Why:** In light, 4 % ink on the page read as a pressed grey key; paper with a
+full-ink frame reads as the one strong element.
+
+## 0093 · 2026-09-27 · Empty-state tiles are actions or rows, never dead buttons
+**Decision:** A tile with `onSelect` or `href` is a framed button or link; a
+tile without is a frameless, non-focusable row. When the tiles are actions, the
+EmptyState's own `action` renders ghost (the "other" way out).
+**Why:** Tiles rendered as buttons without handlers were four competing targets
+that did nothing.
+
+## 0094 · 2026-09-27 · Canvas node status moves to the meta row when tight
+**Decision:** Node width stays 260. If the name and the full `[ ■ STATUS ]` tag
+don't both fit the header (estimated from Geist Mono metrics), the tag moves to
+the meta row and the commit message truncates instead.
+**Why:** Names are the identifier people scan for; the status word must stay
+visible (C11), and the commit message already has a tooltip.
+**Rejected:** a marker-only tag with the word in a tooltip (hides the word);
+the status on the chip row (squeezed the server badge to "ORAC…").
+
+## 0095 · 2026-09-27 · Tables stack into cards on phones by default
+**Decision:** `DataTable` `responsive` defaults to `"cards"`; cards support
+selection. `"scroll"` remains as an opt-out.
+**Why:** A sideways-scrolling table under 640 px gives no sign that columns are
+hidden.
+**Amended 2026-09-28:** virtualized tables (over 100 rows by default) keep the
+scrolling table on phones, because the card list renders every row; a
+virtualized card list is a Phase 5 known gap.
+
+## 0096 · 2026-09-27 · One sealed-value form; Enter as a word
+**Decision:** `SealedValue` (lock + "Sealed", sans, text-secondary) is the only
+rendering of a sealed value (field, table, diff). `Kbd` renders `enter` as
+"Enter" on every platform.
+**Why:** Mono caps "SEALED" read as a button; ⏎ is missing from Geist Mono and
+fell back to a system font. SPEC C13 and Phase 10 write "⇧⏎"; the Kbd keeps the
+`enter` key name, only the glyph changes.
+
+## 0097 · 2026-09-27 · Violet as the second chart series
+**Decision:** New solid token `--color-violet` (dark `#8b5cf6`, light `#7c3aed`),
+checked at 3:1 against every surface. Chart default series colors are accent,
+violet, success, warning.
+**Why:** Accent blue and info blue were indistinguishable as neighbouring lines.
+
+## 0098 · 2026-09-27 · Error actions can wait: `availableInS`
+**Decision:** A catalog `button` action may carry `availableInS`; ErrorCard
+disables it and counts down ("Retry in 12s"). RATE_LIMITED sets it from
+`retryAfterS`. VALIDATION_FAILED and FORBIDDEN gained "Show fields" and "View
+members" (`show_invalid_fields`, `view_members`).
+**Why:** C14: every error carries a way forward, and a retry that is certain to
+fail should say when it will work.
+
+## 0099 · 2026-09-28 · Tall gallery examples get a taller viewport for their screenshot
+**Decision:** When an example is taller than the viewport, `gallery.spec.ts`
+grows the viewport height (never the width) for that one capture.
+**Why:** Playwright's retries scroll an element taller than the screen to a new
+alignment each time, so it never reads as stable; the phone card tables hit it.

@@ -1,40 +1,11 @@
 # Progress
 
-_Updated: 2026-09-26_
+_Updated: 2026-09-28_
 
 ## Current phase
-Phase 1 — Design direction and design system. In progress (sessions 1–4 of 7
-done). **Direction chosen: D "Signal"** (owner's reference images, 2026-09-26),
-and its tokens, type, surfaces and motion are live in `@lumen/ui`. Phase 0
-awaits its cross-model review (SPEC H1).
-
-### Phase 1 so far (2026-09-26)
-- Four direction pages in `docs/design/directions/`; D "Signal" chosen, with
-  screenshots in both themes and a motion capture (`d-signal-motion.webm`).
-- `@lumen/ui` carries the Direction D palette (both themes, `-text` / `-fill` /
-  `-ink` tiers, glow and grid tokens), Geist Pixel display type, uppercase mono
-  chrome styles, square radii, entrance/draw/flow/breathe/blink keyframes with
-  full reduced-motion support, and the surface utilities `.hud`, `.bg-grid`,
-  `.bg-vignette`, `.glow-field`, `.boot`, `.blink`.
-- Theme script, `ThemeProvider` and `useTheme` (system / dark / light, OS-follow,
-  cross-tab sync); named text styles checked against the usage table; `cn`,
-  format, truncation and contrast helpers; the `Text` component. 88 unit tests.
-- Contrast test parses `colors.css`: every text token 4.5:1 and every status
-  color 3:1 on all four surfaces in both themes.
-- Gallery: Tokens (live contrast table), Typography, Signal surfaces pages.
-- Playwright: smoke + theme specs, 42 runs across 6 projects, including no-flash
-  at 6× CPU throttle and a guard that color utilities override text styles.
-- Session 3: SPEC C4 rewritten to Signal. Icon (83-icon Lucide allowlist, Signal
-  stroke), LumenMark, the status model, StatusMarker, StatusTag, Button,
-  IconButton, Spinner, Tooltip, Kbd, Badge, Avatar. Gallery registry with a page
-  per component; registry.json; gallery spec with 156 element screenshots
-  (26 examples × 6 projects), axe on every page, tooltip-on-focus and
-  reduced-motion checks. 124 unit tests, 66 Playwright tests.
-- Session 4: Field, Input, Textarea, Select, Combobox, Switch, Checkbox,
-  RadioGroup, SegmentedControl, SliderWithInput, KeyValueEditor, CopyField,
-  SecretField, Skeleton. 143 unit tests; 282 screenshot baselines (47 examples
-  × 6 projects); axe clean on all 23 gallery pages at 390, 1024 and 1440 in both
-  themes, including WCAG 2.2 target size.
+**Phase 3 — Deploy engine on the agent.** In progress: protocol additions,
+runtime building blocks and the reconcile loop with zero-downtime steps are on
+branch `worktree-agent-a2252730cd1bb563d` (not merged). Phases 1 and 2 are done.
 
 ## Done
 - 2026-09-26 — Repository initialized. Spec saved as `docs/SPEC.md`. `CLAUDE.md`
@@ -55,6 +26,36 @@ awaits its cross-model review (SPEC H1).
   six viewport × theme projects with axe; GitHub Actions CI; git hooks; Renovate
   config. Evidence: `docs/evidence/phase-00/`.
 
+- 2026-09-27/28 — **Phase 1 — Design system (Direction D "Signal").** Every
+  SPEC C5 component in `@lumen/ui` with a gallery page and examples: overlays
+  (command palette, dropdown/context menus, popover, modal, confirm dialog, side
+  panel, sheet), navigation (tabs, breadcrumbs, environment/workspace switchers,
+  rail, top bar, shell frame), feedback (toast, alert, progress steps, live
+  region, empty state, error card for every catalog entry), status, data display
+  (virtualized data table, uPlot chart with synced crosshair, code block,
+  terminal frame, diff viewer), specialized (virtualized log viewer with ANSI,
+  canvas node/volume/group/edge on React Flow, stepper, DNS and port-check
+  cards), Devicon framework/database marks, provider tiles, the decode title.
+  Gallery with filter, density toggle and Run axe. Guards: token-only lint rule
+  and CSS test (no hex, raw font size or raw z-index), React hooks rules on the
+  kit. Cross-model UI review (SPEC H2, Fable 5.1) done: 36 of 38 findings fixed,
+  React Flow attribution kept, phone canvas-as-list deferred (DECISIONS 0091+).
+  Evidence: 360 UI unit tests; gallery screenshots per example × 6 projects
+  (Windows baselines; Linux baselines rendered by the Visual baselines
+  workflow); axe (WCAG 2.2 AA + best practices) clean on every page; automated
+  keyboard walk; 60 fps traces for the 5,000-row table, 50,000-line log viewer
+  and 100-node canvas pan (`docs/evidence/phase-01/perf/`); Button-only bundle
+  21 KB gzip vs 304 KB for the whole kit (`docs/evidence/phase-01/bundle/`);
+  Chromium/Firefox focus-ring and type check (`docs/evidence/phase-01/cross-browser/`).
+- 2026-09-27 — **Phase 2 — Agent core and server join.** Protocol v1 with signed
+  envelopes; `lumen-agent` (static amd64/arm64) with join, signed WebSocket,
+  heartbeats, host metrics and disk-full flag, hardened Caddy bootstrap, port
+  check, provider detection (7 providers), self-update with trial run and
+  rollback, revocation; `deploy/agent-install.sh` + uninstaller (62 bats tests);
+  control-plane join, `/agent/v1` gateway, offline sweep, server routes, fix
+  cards, `/v1/ws`. Verified on systemd Ubuntu 24.04 and Debian 12 container
+  hosts (`e2e/vm/`, `docs/evidence/phase-02/`). DECISIONS 0073–0090.
+
 ## Baselines (Phase 0, dev machine: Windows 11, Node 24.11, pnpm 11.14, Go 1.26)
 
 | Measure | Value | Target (SPEC / Phase 0) |
@@ -72,19 +73,17 @@ awaits its cross-model review (SPEC H1).
 | Fresh clone → `db: ok` following README.md | 23 s (clone 5 s, install 9 s with a warm store, infra 2 s, API ready 5 s, web ready 2 s) | < 5 min |
 
 ## Next
-1. Phase 1 sessions 5–7 in the Signal language: overlays (command palette, dropdown and
-   context menus, popover, modal, confirm dialog, side panel, sheet, split
-   button), navigation (tabs, breadcrumbs, environment and workspace switchers,
-   rail, top bar), feedback (toast, alert, progress steps, skeleton, empty state,
-   error card), data display (table, chart, code block, terminal frame, diff),
-   specialized (log viewer, canvas node / volume / group / edge, stepper, DNS and
-   port-check cards), framework icons, the Decode title component, the keyboard
-   spec.
-2. Cross-model review of Phase 0 (SPEC H1) and Phase 1 (SPEC H2).
+1. Finish Phase 3 (deploy engine): Docker runtime and hardening, Caddy routes,
+   zero-downtime swap, crash loops, BuildKit + Railpack builds, log streaming
+   and scrubbing, port detection, metrics, GC, chaos and host verification.
+2. Commit the Linux gallery baselines from the Visual baselines workflow run.
+3. Cross-model reviews: Phase 0 and Phase 2 (SPEC H1; H4 on the agent registry).
+4. Real-VM runs (Hetzner/DO amd64, Oracle Ampere arm64) to close Phase 2's
+   cloud-only criteria.
 
 ## Known gaps
-- Screenshot baselines exist for Windows only; CI runs the smoke test with
-  `--ignore-snapshots` until Linux baselines are generated in Phase 1.
+- The smoke page screenshot has Windows baselines only (it needs the API and
+  Postgres); CI's smoke job ignores snapshots, the Visual job checks the gallery.
 - First Load JS is above the Phase 0 target because of the framework floor; the
   budget is re-set per page in Phase 5 (SPEC_QUESTIONS 38).
 - The Scalar docs page has not been audited with axe (third-party UI); Phase 14
@@ -94,6 +93,22 @@ awaits its cross-model review (SPEC H1).
 - No repository license is chosen yet; the OpenAPI document therefore has no
   `info.license` (Redocly warning, not an error).
 - Cold `pnpm install` measured 93 s against a 90 s target on this machine.
+- Phase 1: canvas under 640 px should become a list (SPEC C12) — Phase 5.
+  Virtualized tables (over 100 rows) keep the scrolling table on phones; a
+  virtualized card list is Phase 5 work. Canvas wheel-zoom holds ~55 fps (pan
+  meets 60). Provider marks are monograms until a brand-guideline review.
+  Foundation pages `tokens` and `signal` overflow a 390 px phone. The
+  "canvas below 100 % zoom shrinks targets under 24 px" trade-off stands.
+- Phase 2: no public cloud VM was available — public reachability, metadata
+  provider detection on real clouds, Oracle security lists, native Ampere arm64
+  and paste-to-online under 3 min on a 1 vCPU VM are unverified (the test host
+  took 3m31s–4m48s, dominated by Docker's apt install). arm64 end-to-end under
+  QEMU failed (Docker never came up). The installer's 90 s proxy wait can expire
+  on slow pulls. Dashboard pieces (add-server wizard, fix cards) are Phase 5;
+  `rolloutAgentUpdate` has no route yet (Phase 11). bats and the host harness
+  don't run in CI yet. No goreleaser config (Phase 18).
+- Local development: set `DATABASE_URL` (from `.env`) when running the api/db
+  tests, or the Postgres suites skip and db coverage fails its threshold.
 
 ## Found issues
 - None outside the phase scope.
