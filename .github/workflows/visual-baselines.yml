@@ -1,0 +1,35 @@
+name: Visual baselines
+
+# Renders the gallery's Linux screenshot baselines in the same container the
+# Visual job in ci.yml compares against, and uploads them as artifacts. Run it
+# after an intentional visual change, download the artifacts and commit the
+# *-linux.png files (scripts/visual-linux.sh does the same locally in Docker).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: Render (${{ matrix.project }})
+    runs-on: ubuntu-24.04
+    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [desktop-dark, desktop-light, tablet-dark, tablet-light, mobile-dark, mobile-light]
+    env:
+      E2E_WEB_ONLY: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Render gallery baselines
+        run: >-
+          pnpm --filter e2e test --project=${{ matrix.project }}
+          tests/gallery.spec.ts --update-snapshots=all
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-baselines-${{ matrix.project }}
+          path: e2e/__screenshots__/**/*-linux.png
+          if-no-files-found: error
